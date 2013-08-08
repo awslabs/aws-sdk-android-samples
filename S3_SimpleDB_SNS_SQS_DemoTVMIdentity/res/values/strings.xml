@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AWS Demo TVM - Id</string>
+	<array name="protocols">
+		<item>http</item>
+		<item>https</item>
+		<item>email</item>
+		<item>email-json</item>
+		<item>sqs</item>
+	</array>
+		<string name="submit">Submit</string>
+		<string name="loading_">Loading…</string>
+		<string name="more_">More…</string>
+		<string name="login">Login</string>
+		<string name="register">Register</string>
+		<string name="simple_notifications_sns_">Simple Notifications (SNS)</string>
+		<string name="simple_queue_sqs">Simple Queue (SQS)</string>
+		<string name="simple_storage_s3">Simple Storage (S3)</string>
+		<string name="simple_database_sdb">Simple Database (SDB)</string>
+		<string name="logout">Logout</string>
+		<string name="_tvm_identity_">(TVM - Identity)</string>
+		<string name="s3_main_menu">S3 Main Menu</string>
+		<string name="create_bucket">Create Bucket</string>
+		<string name="view_buckets">View Buckets</string>
+		<string name="sdb_main_menu">SDB Main Menu</string>
+		<string name="create_domain">Create Domain</string>
+		<string name="create_item">Create Item</string>
+		<string name="view_domains">View Domains</string>
+		<string name="sns_main_menu">SNS Main Menu</string>
+		<string name="create_topic">Create Topic</string>
+		<string name="delete_topic">Delete Topic</string>
+		<string name="delete_queue">Delete Queue</string>
+		<string name="view_queues">View Queues</string>
+		<string name="select_queue_url_">Select Queue Url:</string>
+		<string name="protocol_">Protocol:</string>
+		<string name="enter_your_message_">Enter Your Message:</string>
+		<string name="list_topics">List Topics</string>
+		<string name="list_all_subscribers">List All Subscribers</string>
+		<string name="subscribe_to_topic">Subscribe to Topic</string>
+		<string name="publish_to_topic">Publish to Topic</string>
+		<string name="select_topic_arn_">Select Topic ARN:</string>
+		<string name="endpoint_">Endpoint:</string>
+		<string name="send_message_to_queue">Send Message to Queue</string>
+		<string name="create_queue">Create Queue</string>
+		<string name="sqs_main_menu">SQS Main Menu</string>
+		<string name="topic_arn_">Topic Arn:</string>
+</resources>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <TextView
+    	android:id="@+id/main_into_text"
+    	android:text="Loading..."
+    	android:layout_width="fill_parent"
+		android:textStyle="bold"
+		android:textColor="#ffe3ce08"
+    	android:layout_height="40dip"
+    	android:gravity="center"
+    	/>
+	<Button 
+		android:id="@+id/main_notify_button"
+		android:text="Simple Notifications (SNS)"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="invisible"
+		/>
+	<Button 
+		android:id="@+id/main_queue_button"
+		android:text="Simple Queue (SQS)"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="invisible"
+		/>	
+	<Button 
+		android:id="@+id/main_storage_button"
+		android:text="Simple Storage (S3)"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="invisible"
+		/>
+	<Button 
+		android:id="@+id/main_sdb_button"
+		android:text="Simple Database (SDB)"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="invisible"
+		/>
+	<Button 
+		android:id="@+id/main_logout_button"
+		android:text="Clear Credentials"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="invisible"
+		/>
+    <TextView
+    	android:id="@+id/main_subtitle_text"
+    	android:text="(TVM - Anonymous)"
+    	android:layout_width="fill_parent"
+    	android:layout_height="20dip"
+		android:textColor="#ffe3ce08"
+    	android:gravity="center"
+    	/>
+</LinearLayout>

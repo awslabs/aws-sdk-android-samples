@@ -1,0 +1,33 @@
+<LinearLayout 
+			android:id="@+id/LinearLayout01" 
+			android:layout_width="fill_parent" 
+			android:layout_height="fill_parent"
+			xmlns:android="http://schemas.android.com/apk/res/android" 
+			android:orientation="vertical">
+	<TextView 
+		android:text="@string/select_queue_url_" 
+		android:id="@+id/sqs_send_queue_intro_text" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"/>
+	<Spinner 
+		android:id="@+id/sqs_send_queue_spinner" 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"/>
+	<TextView 
+		android:text="@string/enter_your_message_" 
+		android:id="@+id/sqs_send_message_intro_text" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"/>
+	<EditText
+    	android:id="@+id/sqs_send_message_input"
+    	android:layout_width="fill_parent"
+    	android:layout_height="45dip"
+    	/>
+	<Button
+    	android:id="@+id/sqs_send_submit_button"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:text="@string/submit"
+    	 />
+
+</LinearLayout>

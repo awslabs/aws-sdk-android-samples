@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.amazonaws.demo.identity"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8"/>   
+    <application android:icon="@drawable/icon" android:label="@string/app_name">
+        <activity android:name=".AWSAndroidDemoTVMIdentity"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Login"></activity>        
+        
+        <activity android:name=".sqs.SqsMenu"></activity>
+        <activity android:name=".sqs.SqsCreateQueue"></activity>        
+        <activity android:name=".sqs.SqsQueueList"></activity> 
+        <activity android:name=".sqs.SqsDeleteQueueList"></activity>
+        <activity android:name=".sqs.SqsRecieveMessages"></activity> 
+        <activity android:name=".sqs.SqsSendMessages"></activity> 
+        <activity android:name=".sqs.SqsMessageBody"></activity> 
+        
+		<activity android:name=".sns.SnsMenu"></activity>
+		<activity android:name=".sns.SnsTopicList"></activity>
+		<activity android:name=".sns.SnsTopicView"></activity>
+		<activity android:name=".sns.SnsSubscribe"></activity>
+		<activity android:name=".sns.SnsPublish"></activity>
+		<activity android:name=".sns.SnsCreateTopic"></activity>
+		<activity android:name=".sns.SnsDeleteTopicList"></activity>
+		
+		<activity android:name=".s3.S3Menu"></activity>
+		<activity android:name=".s3.S3BucketList"></activity>
+		<activity android:name=".s3.S3CreateBucket"></activity>
+		<activity android:name=".s3.S3BucketView"></activity>
+		<activity android:name=".s3.S3ObjectView"></activity>
+		
+		<activity android:name=".sdb.SdbMenu"></activity>
+		<activity android:name=".sdb.SdbDomainCreate"></activity>
+		<activity android:name=".sdb.SdbDomainList"></activity>
+		<activity android:name=".sdb.SdbItemCreate"></activity>
+		<activity android:name=".sdb.SdbItemList"></activity>
+		<activity android:name="AlertActivity"></activity>
+		
+    </application>
+
+
+</manifest> 

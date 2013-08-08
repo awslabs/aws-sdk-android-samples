@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <TextView
+    	android:id="@+id/sns_sub_topic_intro_text"
+    	android:text="@string/topic_arn_"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	/>
+    <Spinner
+    	android:id="@+id/sns_sub_topic_spinner"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:visibility="invisible" />
+    <TextView
+    	android:id="@+id/sns_sub_protocol_intro_text"
+    	android:text="@string/protocol_"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	/>
+    <Spinner
+    	android:id="@+id/sns_sub_protocol_spinner"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:entries="@+array/protocols"
+ 	/>	
+   <TextView
+    	android:id="@+id/sns_sub_endpoint_intro_text"
+    	android:text="@string/endpoint_"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	/>	
+    <EditText
+    	android:id="@+id/sns_sub_endpoint_input"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	/>
+   <Spinner
+    	android:id="@+id/sns_sub_endpoint_spinner"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:visibility="gone"
+ 	/>	
+    <Button
+    	android:id="@+id/sns_sub_submit_button"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:text="@string/submit"
+    	 />
+</LinearLayout>

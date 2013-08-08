@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <TextView
+    	android:id="@+id/sns_main_into_text"
+    	android:text="SNS Main Menu"
+    	android:layout_width="fill_parent"
+		android:textStyle="bold"
+		android:textColor="#ffe3ce08"
+    	android:layout_height="40dip"
+    	android:gravity="center"
+    	/>
+    <Button 
+		android:id="@+id/sns_main_create_button"
+		android:text="Create Topic"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		/>
+	<Button 
+		android:id="@+id/sns_main_delete_button"
+		android:text="Delete Topic"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		/>
+	<Button 
+		android:id="@+id/sns_main_topic_list_button"
+		android:text="List Topics"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		/>
+	<Button 
+		android:id="@+id/sns_main_subscriber_list_button"
+		android:text="List All Subscribers"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		/>
+	<Button 
+		android:id="@+id/sns_main_subscribe_button"
+		android:text="Subscribe to Topic"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		/>
+	<Button 
+		android:id="@+id/sns_main_publish_button"
+		android:text="Publish to Topic"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		/>
+		
+</LinearLayout>

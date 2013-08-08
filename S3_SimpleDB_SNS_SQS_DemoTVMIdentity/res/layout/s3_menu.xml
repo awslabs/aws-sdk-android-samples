@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <TextView
+    	android:id="@+id/s3_main_into_text"
+    	android:text="@string/s3_main_menu"
+    	android:layout_width="fill_parent"
+		android:textStyle="bold"
+		android:textColor="#ffe3ce08"
+    	android:layout_height="40dip"
+    	android:gravity="center"
+    	/>
+	<Button 
+		android:id="@+id/s3_main_create_button"
+		android:text="@string/create_bucket"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		/>
+	<Button 
+		android:id="@+id/s3_main_list_button"
+		android:text="@string/view_buckets"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		/>
+</LinearLayout>
