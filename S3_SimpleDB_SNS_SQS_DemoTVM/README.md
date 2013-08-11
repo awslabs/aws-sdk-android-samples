@@ -19,7 +19,16 @@ To run this specific sample you will need to do the following:
      + The DNS domain name where your Token Vending Machine is running (ex: tvm.elasticbeanstalk.com)
      + Set useSSL to "true" or "false" based on whether your configured your Token Vending Machine with SSL or not.
 
-3. Run the project:
+3. Add the AWS SDK for Android jar file to your project:
+   * Right-click on the Project and select Build Path -> Configure Build Path...
+   * Click on the Libraries tab.
+   * Click Add External JARs...
+   * Navigate to the location where you downloaded the AWS SDK for Android and go into the lib directory.
+   * Select aws-android-sdk-X.X.X-debug.jar and press Open.
+   * Click on the Order and Export tab.
+   * Make sure that the aws-android-sdk-X.X.X-debug.jar is checked and press OK.
+
+4. Run the project:
    * Go to Project ->  Clean.
    * Go to Project ->  Build All.
    * Go to Run -> Run.
