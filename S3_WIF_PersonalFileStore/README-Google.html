@@ -1,0 +1,106 @@
+<html>
+<head>
+<title>Running the Amazon S3 Personal File Store Sample with Web Identity Federation and Google+ Authentication</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>Running the Amazon S3 Personal File Store Sample with Web Identity Federation and Google+ Authentication</h2>
+<p>This <i>Amazon S3 Personal File Store</i> sample is fully detailed in the <a href="PersonalFileStoreWIF.html">web identity federation</a> article.  The sample demonstrates how to use AWS Security Token Service (STS) to give application users specific and constrained permissions to an Amazon S3 bucket.  Each application user will get a "folder" of an Amazon S3 bucket as specified by the role policy.  This README details all the steps necessary to get the sample running with Google+ Authentication.  It assumes you've alredy completed the steps in the <a href="README.html">base README</a> for setting up the application with Facebook:</p>
+     <h3>1. Create a Google application and Android client ID</h3>
+        <ol>
+	  <li>Visit the <a href="https://developers.google.com/+/quickstart/android">Quick start for Android</a> guide and follow the instructions to <b>Enable the Google+ API</b>. Make note of your <code>Project Number</code>. You'll use it in later steps. The other steps in this guide will be useful with your future Google+ Apps, but are not necessary for this sample.<br/>
+	  <img src="images/Google_Project_Number.png"/>
+	  <li>Under <b>Application type</b> select <b>Installed application</b>.
+	  <li>Under <b>Installed application type</b>, select <b>Android</b>.</li> 
+	  <li>Enter the following as your <b>Package name</b>: <code>com.amazonaws.demo.personalfilestore</code>.</li>
+	  <li>Enter the appropriate value for your environment in <b>Signing certificate fingerprint</b>.<br/>
+	  <img src="images/Google_Install_Android_App.png"/></li>
+	</ol>
+    <h3>2. Create a second client ID</h3>
+        <ol>
+	  <li>The kind of credentials required by web identity federation require a second client ID.
+	  <li>In the API Console, select your existing project and then click <b>Create another Client ID</b>.<br/>
+	  <img src="images/Create_another_client_ID.png"/></li>
+	  <li>Select <b>Web Application</b> as <b>Application Type</b>.</li> 
+	  <li>You do not need to set a redirect URL for this application.<br/>
+	  <img src="images/Google_Web_Application.png"/></li>
+	  <li>Make note of this client ID, you will use this when configuring the sample.<br/>
+	  <img src="images/Google_Web_Client_ID.png"/></li>
+	</ol>
+    <h3>3. Create your role for web identity federation</h3>
+        <ol>
+	  <li>Visit the <a href="https://console.aws.amazon.com/iam/home">AWS Management Console</a> to create a <b>new</b> role.<br/>
+	  <img src="images/Create_New_Role.png"/></li>
+	  <li>Give your role a meaningful name, such as <b>GoogleWIFS3FileStore</b>.<br/>
+	  <img src="images/Google_Role_Name.png"/></li>
+	  <li>Select <b>Role for Web Identity Provider Access</b> as your role type.<br/>
+	  <img src="images/Select_WIF_Role.png"/></li>
+	  <li>Select Google as the Identity Provider and provide the <b>Project Number</b> you generated with Google.<br/>
+	  <img src="images/Role_With_Google.png"/></li>
+	  <li>Click Continue when prompted to verify the role trust policy.</li>
+	  <li>Select <b>Custom Policy</b> when asked to set permissions. This allows us to enter our policy as JSON.<br/>
+	  <img src="images/Select_Custom_Policy.png"/></li>
+	  <li>Give the policy a name and enter the following JSON as the <b>Policy Document</b>, replacing <code>__BUCKET_NAME__</code> with the S3 bucket you created earlier:
+<pre>
+{
+ "Version":"2012-10-17",
+ "Statement":[{
+   "Effect":"Allow",
+   "Action":["s3:ListBucket"],
+   "Resource":["arn:aws:s3:::__BUCKET_NAME__"],
+   "Condition": 
+     {"StringLike": 
+       {"s3:prefix":"${accounts.google.com:sub}/*"}
+     }
+  },
+  {
+   "Effect":"Allow",
+   "Action":["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+   "Resource":[
+       "arn:aws:s3:::__BUCKET_NAME__/${accounts.google.com:sub}",
+       "arn:aws:s3:::__BUCKET_NAME__/${accounts.google.com:sub}/*"
+   ]
+  }
+ ]
+}
+</pre>
+	  </li>
+	  <li>Review the information you entered and click <b>Create Role</b> to finish creating your role.<br/>
+	  <img src="images/Confirm_Google_WIF_Role.png"/></li>
+	  <li>Select the Role and switch to the <b>Summary</b> tab. Take note of the <b>Role ARN</b>; you'll use it in configuring the sample.<br/>
+	  <img src="images/Google_Role_ARN.png"/></li>
+	</ol>
+    <h3>4. Download Google Play Service SDK and add to project</h3>
+    <ol>
+      <li>Launch the Android SDK Manager</li>
+      <li>Under <b>Extras</b>, select <b>Google Play services</b>.</li>
+      <li>In Eclipse, select <b>Import</b>, and then select <b>Android</b>-><b>Existing Android Code into Workspace</b>.
+      <li>Browse to the location of the Android SDKs on your system (often <code>android-sdks</code> in your home directory).</li>
+      <li>Select <code>extras/google/google_play_services</code>.</li>
+      <li>Make sure to check <b>google-play-services_lib</b></li>
+      <li>In Eclipse, go to the samples Properties page.</li>
+      <li>Under <b>Android</b> select <b>Add...</b> and select the google-play-services_lib project.</li>
+    </ol>
+
+    <h3>5. Enable Google Code</h3>
+    <ol>
+      <li>Open Eclipse and modify <code>Login.java</code><br/>
+      Change <code>/* GOOGLE_LOGIN BEGIN</code> to <code>/* GOOGLE_LOGIN BEGIN */</code> to enable the Google login button.<br/></li>
+      <li>Right click <code>GoogleLogin.java_</code> and select <b>Refactor</b>-><b>Rename</b>.  Remove the underscore and click OK.</li>
+    </ol>
+    
+    <h3>6. Update sample configuration</h3>
+        <ol>
+	  <li>Open the <code>res/values/strings.xml</code> file in Eclipse.</li>
+	  <li>Enter the client ID for the <b>Web Application</b> and role ARN where noted:
+<pre>
+&lt;string name="google_client_id"&gt;GOOGLE_CLIENT_ID&lt;/string&gt;
+&lt;string name="google_role_arn"&gt;ROLE_ARN&lt;/string&gt;
+</pre>
+	  </li>
+	</ol>
+    <h3>7. Run the sample</h3>
+	 <p>Run the sample on your Android device.</p>
+	 <p><b>Note:</b> The sample requires the <b>Google Play Services</b> application, which cannot be installed in the emulator.</p>
+</body>
+</html>

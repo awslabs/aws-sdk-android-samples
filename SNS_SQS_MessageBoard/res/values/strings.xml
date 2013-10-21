@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MessageBoard</string>
+    <string name="message_board">Message Board</string>
+    <string name="publish">Publish:</string>
+    <string name="post">Post</string>
+    <string name="email">Email:</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="sms">SMS:</string>
+    <string name="queue">Queue:</string>
+    <string name="view_message_queue">View Message Queue</string>
+    <string name="members">Members:</string>
+    <string name="view_members">View Members</string>
+    <string name="back">Back</string>
+    <string name="members2">Members</string>
+    <string name="message_queue">Message Queue</string>
+</resources>

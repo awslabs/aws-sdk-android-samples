@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+	
+	<TextView  
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	    android:text="@string/message_board"
+	    android:gravity="center_horizontal"
+	    android:textAppearance="?android:attr/textAppearanceLarge"
+	    />
+    
+    <TextView
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	    android:textStyle="bold"
+	    android:text="@string/publish"
+	    android:layout_marginTop="10dp"
+	    />
+    <LinearLayout
+    	android:orientation="horizontal"
+    	android:layout_width="fill_parent" 
+    	android:layout_height="wrap_content" 
+    	>
+		<EditText
+			android:id="@+id/message"
+			android:inputType="textCapSentences"
+			android:imeOptions="actionDone"
+		    android:layout_width="0dip" 
+		    android:layout_height="wrap_content" 
+		    android:layout_weight="0.25" 		    
+			/>
+		<Button
+			android:layout_width="wrap_content"
+		    android:layout_height="wrap_content" 
+			android:text="@string/post"		 
+			android:onClick="post" 
+			/>	
+	</LinearLayout>
+    
+    
+    <TextView
+	    android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content" 
+	    android:textStyle="bold"	
+	    android:layout_marginTop="10dp"
+	    android:text="@string/email"
+	    />
+    <LinearLayout 
+    	android:orientation="horizontal" 
+    	android:layout_width="fill_parent" 
+    	android:layout_height="wrap_content">
+		<EditText
+			android:id="@+id/email"
+			android:inputType="textEmailAddress"
+			android:imeOptions="actionDone"			
+		    android:layout_width="0dip" 
+		    android:layout_height="wrap_content" 
+		    android:layout_weight="0.25" 
+		    android:nextFocusDown="@+id/emailbutton"
+			/>
+		<Button
+			android:id="@+id/emailbutton"
+			android:layout_width="wrap_content"
+		    android:layout_height="wrap_content" 
+			android:text="@string/subscribe"		
+			android:onClick="subscribeEmail" 
+			/>		
+    </LinearLayout>
+    	
+    	
+    <TextView
+	    android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content" 
+	    android:textStyle="bold"	
+	    android:layout_marginTop="10dp"	        
+	    android:text="@string/sms"
+	    />
+    <LinearLayout 
+    	android:orientation="horizontal" 
+    	android:layout_width="fill_parent" 
+    	android:layout_height="wrap_content">
+		<EditText
+			android:id="@+id/sms"
+			android:inputType="phone"	
+			android:imeOptions="actionDone"					
+		    android:layout_width="0dip" 
+		    android:layout_height="wrap_content"
+		    android:layout_weight="0.25" 
+		    android:nextFocusDown="@+id/emailbutton"
+			/>
+		<Button
+			android:layout_width="wrap_content"
+		    android:layout_height="wrap_content" 
+			android:text="@string/subscribe"		 
+			android:onClick="subscribeSms" 
+			/>			
+    </LinearLayout>
+    
+    
+    <TextView
+	    android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content" 
+	    android:textStyle="bold"	
+	    android:layout_marginTop="10dp"	        
+	    android:text="@string/queue"
+	    />
+	<Button
+		android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" 
+		android:text="@string/view_message_queue"	
+		android:onClick="viewQueue" 
+		/>			
+    
+    <TextView
+	    android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content" 
+	    android:textStyle="bold"	
+	    android:layout_marginTop="10dp"	        
+	    android:text="@string/members"
+	    />
+ 	<Button
+		android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" 
+		android:text="@string/view_members"		 
+		android:onClick="viewMembers" 
+		/>			
+    
+</LinearLayout>

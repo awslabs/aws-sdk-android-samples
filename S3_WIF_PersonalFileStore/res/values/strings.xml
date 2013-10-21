@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">S3 Personal File Store</string>
+    <string name="s3_bucket_name">BUCKET_NAME</string>
+    <string name="fb_app_id">FB_APP_ID</string>
+    <string name="fb_role_arn">FB_ROLE_ARN</string>
+    <string name="google_client_id">GOOGLE_CLIENT_ID</string>
+    <string name="google_role_arn">GOOGLE_ROLE_ARN</string>
+    <string name="amzn_api_key">AMZN_API_KEY</string>
+    <string name="amzn_role_arn">AMZN_ROLE_ARN</string>
+</resources>

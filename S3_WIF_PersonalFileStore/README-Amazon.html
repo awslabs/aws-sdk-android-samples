@@ -1,0 +1,83 @@
+<html>
+<head>
+<title>Running the Amazon S3 Personal File Store Sample with Web Identity Federation and Amazon Authentication</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>Running the Amazon S3 Personal File Store Sample with Web Identity Federation and Amazon Authentication</h2>
+<p>This <i>Amazon S3 Personal File Store</i> sample is fully detailed in the <a href="PersonalFileStoreWIF.html">web identity federation</a> article.  The sample demonstrates how to use AWS Security Token Service (STS) to give application users specific and constrained permissions to an Amazon S3 bucket.  Each application user will get a "folder" of an Amazon S3 bucket as specified by the role policy.  This README details all the steps necessary to get the sample running with Amazon Authentication.  It assumes you've alredy completed the steps in the <a href="README.html">base README</a> for setting up the application with Facebook:</p>
+     <h3>1. Create an Amazon application and Android API key</h3>
+        <ol>
+	  <li>Visit the <a href="http://login.amazon.com/android">Getting Started for Android</a> guide and follow the instructions to <b>Register a New Application</b>. Make note of your <code>App ID</code>. You'll use it in later steps. The other steps in this guide will be useful with your future Login with Amazon apps, but will not be necessary for this sample.<br/>
+	  <img src="images/Amazon_App_ID.png"/>
+	  <li>Under <b>Label</b> give the key a meaningful name.</li> 
+	  <li>Enter the following as your <b>Package name</b>: <code>com.amazonaws.demo.personalfilestore</code>.</li>
+	  <li>Enter the appropriate value for your environment in <b>Signature</b>.<br/>
+	  <img src="images/Amazon_Android_API_Key.png"/></li>
+	  <li>Make sure to click <b>Get API Key Value</b> after creating your API key. You'll use this value in configuring the sample.<br/>
+	  <img src="images/Amazon_Get_Andorid_API_Key.png"/></li>
+	</ol>
+    <h3>2. Create your role for web identity federation</h3>
+        <ol>
+	  <li>Visit the <a href="https://console.aws.amazon.com/iam/home">AWS Management Console</a> to create a <b>new</b> role.<br/>
+	  <img src="images/Create_New_Role.png"/></li>
+	  <li>Give your role a meaningful name, such as <b>AmazonWIFS3FileStore</b>.<br/>
+	  <img src="images/Amazon_Role_Name.png"/></li>
+	  <li>Select <b>Role For Web Identity Provider Access</b> as your Role Type.<br/>
+	  <img src="images/Select_WIF_Role.png"/></li>
+	  <li>Select Login with Amazon as the Identity Provider and provide the application ID you generated with Amazon.<br/>
+	  <img src="images/Role_With_Amazon.png"/></li>
+	  <li>Click Continue when prompted to verify the role trust policy.</li>
+	  <li>Select <b>Custom Policy</b> when asked to set permissions. This allows us to enter our policy as JSON.<br/>
+	  <img src="images/Select_Custom_Policy.png"/></li>
+	  <li>Give the policy a name and enter the following JSON as the <b>Policy Document</b>, replacing <code>__BUCKET_NAME__</code> with the S3 bucket you created earlier:
+<pre>
+{
+ "Version":"2012-10-17",
+ "Statement":[{
+   "Effect":"Allow",
+   "Action":["s3:ListBucket"],
+   "Resource":["arn:aws:s3:::__BUCKET_NAME__"],
+   "Condition": 
+     {"StringLike": 
+       {"s3:prefix":"${www.amazon.com:user_id}/*"}
+     }
+  },
+  {
+   "Effect":"Allow",
+   "Action":["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+   "Resource":[
+       "arn:aws:s3:::__BUCKET_NAME__/${www.amazon.com:user_id}",
+       "arn:aws:s3:::__BUCKET_NAME__/${www.amazon.com:user_id}/*"
+   ]
+  }
+ ]
+}
+</pre>
+	  </li>
+	  <li>Review the information you entered and click <b>Create Role</b> to finish creating your role.<br/>
+	  <img src="images/Confirm_Amazon_WIF_Role.png"/></li>
+	  <li>Select the Role and switch to the <b>Summary</b> tab. Take note of the <b>Role ARN</b>; you'll use it in configuring the sample.<br/>
+	  <img src="images/Amazon_Role_ARN.png"/></li>
+	</ol>
+
+    <h3>3. Enable Amazon Code</h3>
+    <p>We've bundled the Login with Amazon SDK as part of the sample, but have disabled the authentication code from running.</p>
+    <p>Open Eclipse and modify <code>Login.java</code><br/>
+      Change <code>/* AMZN_LOGIN BEGIN</code> to <code>/* AMZN_LOGIN BEGIN */</code> to enable the Amazon login button.</p>
+    </ul></li>
+    
+    <h3>4. Update sample configuration</h3>
+        <ol>
+	  <li>Open the <code>res/values/strings.xml</code> file in Eclipse.</li>
+	  <li>Enter the API key and role ARN where noted:
+<pre>
+&lt;string name="amzn_api_key"&gt;AMZN_API_KEY&lt;/string&gt;
+&lt;string name="amzn_role_arn"&gt;ROLE_ARN&lt;/string&gt;
+</pre>
+	  </li>
+	</ol>
+    <h3>5. Run the sample</h3>
+       <p>Run the sample on your Android device or emulator.</p>
+</body>
+</html>

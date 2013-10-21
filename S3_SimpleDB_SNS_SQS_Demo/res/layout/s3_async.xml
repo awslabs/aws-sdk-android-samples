@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <TextView
+    	android:id="@+id/s3_main_into_text"
+    	android:text="S3 Async Transfer"
+    	android:layout_width="fill_parent"
+		android:textStyle="bold"
+		android:textColor="#ffe3ce08"
+    	android:layout_height="40dip"
+    	android:gravity="center"
+    	/>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:orientation="horizontal"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/s3_upload_label"
+    	android:text="Data Uploaded"
+    	android:layout_width="wrap_content"
+		android:textStyle="bold"
+		android:textColor="#ffe3ce08"
+    	android:layout_height="40dip"
+    	android:gravity="left"
+    	/> 
+    <TextView
+        android:id="@+id/s3_upload_amount"
+    	android:text="0"
+    	android:layout_width="fill_parent"
+		android:textStyle="bold"
+		android:textColor="#ffe3ce08"
+    	android:layout_height="40dip"
+    	android:gravity="right"
+    	/> 
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:orientation="horizontal"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/s3_download_label"
+    	android:text="Data Downloaded"
+    	android:layout_width="wrap_content"
+		android:textStyle="bold"
+		android:textColor="#ffe3ce08"
+    	android:layout_height="40dip"
+    	android:gravity="left"
+    	/> 
+    <TextView
+        android:id="@+id/s3_download_amount"
+    	android:text="0"
+    	android:layout_width="fill_parent"
+		android:textStyle="bold"
+		android:textColor="#ffe3ce08"
+    	android:layout_height="40dip"
+    	android:gravity="right"
+    	/> 
+    </LinearLayout>
+	<Button 
+		android:id="@+id/s3_async_start_up_button"
+		android:text="Start Upload"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		/>
+	<Button 
+		android:id="@+id/s3_async_start_down_button"
+		android:text="Start Download"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		/>
+	<Button 
+		android:id="@+id/s3_async_stop_down_button"
+		android:text="Stop Download"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		/>
+</LinearLayout>

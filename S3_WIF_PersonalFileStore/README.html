@@ -1,0 +1,97 @@
+<html>
+<head>
+<title>Running the Amazon S3 Personal File Store Sample with Web Identity Federation</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>Running the Amazon S3 Personal File Store Sample with Web Identity Federation</h2>
+<p>This <i>Amazon S3 Personal File Store</i> sample is fully detailed in the <a href="PersonalFileStoreWIF.html">web identity federation</a> article.  The sample demonstrates how to use AWS Security Token Service (STS) to give application users specific and constrained permissions to an Amazon S3 bucket.  Each application user will get a "folder" of an Amazon S3 bucket as specified by the role policy.  This README details all the steps necessary to get the sample fully running:</p>
+    <h3>1. Create a Facebook application</h3>
+        <ol>
+	  <li>Sign up for the Facebook developer program at <a href="https://developers.facebook.com/">developers.facebook.com</a>. <b>Note:</b>You will need to be signed in with your Facebook account in order to register for the developer program.</li>
+	  <li>Visit the guide <a href="https://developers.facebook.com/docs/getting-started/facebook-sdk-for-android/3.0/">Getting Started with the Facebook SDK for Android</a> and follow the instructions to <b>Create a Facebook App</b>. Make note of your <code>App ID</code>. You'll use it in configuring the sample. The other steps in this guide will be useful with your future Facebook Apps, but are not necessary for this sample.<br/>
+	  <img src="images/Facebook_App_ID.png"/>
+	  <li>You may enter any reasonable values under <b>Basic Info</b>. These will not affect the integration between the sample and Facebook.</li>
+	  <li>Under <b>Select how your app integrates with Facebook</b>, select <b>Native Android App</b>.<br/>
+	  <img src="images/Facebook_Native_App-Android.png"/></li> 
+	  <li>Enter the following for <b>Package Name</b>: <code>com.amazonaws.demo.personalfilestore</code></li>
+	  <li>Enter the following for <b>Class Name</b>: <code>S3PersonalFileStore</code></li>
+	  <li>Enter the appropriate value for your environment in <b>Key Hashes</b>.<br/>
+	  <img src="images/Facebook_Android_Package_Name.png"/></li>
+	</ol>
+    </li>
+    <h3>2. Create an Amazon S3 bucket to use for the sample.</h3>
+        <p>Using the <a href="https://console.aws.amazon.com/s3/home">AWS Management Console</a> create a <b>new</b> Amazon S3 bucket for testing with this sample.  The name you choose for the bucket is necessary for a number of steps to follow.</p>
+    <h3>3. Create your Role for web identity federation</h3>
+        <ol>
+	  <li>Visit the <a href="https://console.aws.amazon.com/iam/home">AWS Management Console</a> to create a <b>new</b> role.<br/>
+	  <img src="images/Create_New_Role.png"/></li>
+	  <li>Give your role a meaningful name, such as <b>FBWIFS3FileStore</b>.<br/>
+	  <img src="images/FB_Role_Name.png"/></li>
+	  <li>Select <b>Role for Web Identity Provider Access</b> as your role type.<br/>
+	  <img src="images/Select_WIF_Role.png"/></li>
+	  <li>Select Facebook as the <b>Identity Provider</b> and provide the application ID you generated with Facebook.<br/>
+	  <img src="images/Role_With_Facebook.png"/></li>
+	  <li>Click Continue when prompted to verify the role trust policy.</li>
+	  <li>Select <b>Custom Policy</b> when asked to set permissions. This allows us to enter our policy as JSON.<br/>
+	  <img src="images/Select_Custom_Policy.png"/></li>
+	  <li>Give the policy a name and enter the following JSON as the <b>Policy Document</b>, replacing <code>__BUCKET_NAME__</code> with the S3 bucket you created earlier:
+<pre>
+{
+ "Version":"2012-10-17",
+ "Statement":[{
+   "Effect":"Allow",
+   "Action":["s3:ListBucket"],
+   "Resource":["arn:aws:s3:::__BUCKET_NAME__"],
+   "Condition": 
+     {"StringLike": 
+       {"s3:prefix":"${graph.facebook.com:id}/*"}
+     }
+  },
+  {
+   "Effect":"Allow",
+   "Action":["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+   "Resource":[
+       "arn:aws:s3:::__BUCKET_NAME__/${graph.facebook.com:id}",
+       "arn:aws:s3:::__BUCKET_NAME__/${graph.facebook.com:id}/*"
+   ]
+  }
+ ]
+}
+</pre>
+	  </li>
+	  <li>Review the information you entered and click <b>Create Role</b> to finish creating your role.<br/>
+	  <img src="images/Confirm_FB_WIF_Role.png"/></li>
+	  <li>Select the role and switch to the <b>Summary</b> tab. Take note of the <b>Role ARN</b>; you'll use it in configuring the sample.<br/>
+	  <img src="images/FB_Role_ARN.png"/></li>
+	</ol>
+    <h3>4. Import the sample and FacebookSDK</h3>
+        <ol>
+	  <li>In Eclipse, select, <i>File</i>-><i>Import</i>. The Import Wizard will open.</li>
+	  <li>Select <i>General</i>-><i>Existing Projects into Workspace</i>.  Click Next.</li>
+	  <li>In Select root directory, browse to samples directory.  List of all samples projects will appear.</li>
+	  <li>Select <code>AmazonS3PersonalFileStore</code> </li>
+	  <li>Click Finish.</li>
+	  <li>Download the <code>FacebookSDK</code> for Android <a href="https://developers.facebook.com/docs/android/">here</a> <b>and</b> import the SDK into your workspace using the same process described above.</li>
+	  <li>Next right click on the AmazonS3PersonalFileStore project and click <i>properties</i>, on the left hand column click <i>android</i>, and under Library click add.  Select the <code>FacebookSDK</code> in your workspace when prompted.  Click okay. Click Apply. </li>
+	</ol>
+    <h3>5. Update sample configuration</h3>
+        <ol>
+	  <li>Open the <code>res/values/strings.xml</code> file in Eclipse.</li>
+	  <li>Enter the Amazon S3 bucket name, Facebook application ID, and role ARN where noted:
+	  <li>Open the <code>Login.java</code> class in the src and uncomment the code high lighted for Facebook login.
+<pre>
+&lt;string name="s3_bucket_name"&gt;BUCKET_NAME&lt;/string&gt;
+&lt;string name="fb_app_id"&gt;FACEBOOK_ID&lt;/string&gt;
+&lt;string name="fb_role_arn"&gt;ROLE_ARN&lt;/string&gt;
+</pre>
+	  </li>
+	</ol>
+    <h3>6. Run the sample</h3>
+       <ol>
+	 <li>Run the sample on your emulator or device.</li>
+	 <li>You may want to install the Facebook application on your emulator or device to see the native login experience.</li>
+
+       </ol>
+</body>
+</html>

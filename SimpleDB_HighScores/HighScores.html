@@ -1,0 +1,263 @@
+<html>
+<head>
+    <title>Storing High Scores in Amazon SimpleDB</title>
+    <style type="text/css">
+        table.sample {
+	        border-width: 2px;
+	        border-spacing: 5px;
+	        border-style: dashed;
+	        border-color: cornflowerblue;
+        }
+        table.sample td {
+	        padding: 5px;
+        }        
+        table.sample tr {
+	        padding: 5px;
+        }        
+    </style>    
+</head>
+<body style="padding: 10px">
+    <h1>Storing High Scores in Amazon SimpleDB using the AWS SDK for iOS and the AWS SDK for Android</h1>
+    <p>
+    This article highlights the benefits of connecting mobile devices to the cloud while also presenting 
+    an <a href="http://aws.amazon.com/simpledb/">Amazon SimpleDB</a> use case. Amazon SimpleDB is a highly 
+    available, flexible, and scalable non-relational data 
+    store that offloads the work of database administration. The mobile application 
+    described here demonstrates how to store a high score list or <i>leader board</i> in 
+    SimpleDB. The application enables the user to view the high scores sorted by name or score, add and remove 
+    scores, and more. This article shows sample code for both the 
+    iOS and Android platforms. The complete sample code and project files are included in the AWS 
+    SDKs for these mobile platforms. Links to the SDKs are available at the end of this article. 
+    <p/>
+    To use the AWS SDK for iOS or the AWS SDK for Android, you will need your AWS credentials, that is, 
+    your Access Key ID and Secret Access Key. If you haven't already signed up for <a href="http://aws.amazon.com/">Amazon Web Services</a> (AWS), 
+    you will need to do that first to get your AWS credentials. 
+    You can sign up for AWS <a href="https://aws-portal.amazon.com/gp/aws/developer/registration/index.html">here</a>. 
+    After you have signed up, you can retrieve your credentials at <a href="https://aws-portal.amazon.com/gp/aws/developer/account?ie=UTF8&amp;action=access-key">this page</a>.
+    </p>
+
+    <h2>Overview</h2>
+    <p>SimpleDB stores data in <i>domains</i>. Each domain is a collection of <i>items</i> and each item is a 
+    collection of attribute/value pairs. For the app, we create a single domain to store 
+    our high score list. Each item in the domain represents an individual player. The items 
+    will have two attributes, the player's name and their score. Items also have a unique identifier 
+    called the item name that, in this case, is equal to the player's name. Storing the 
+    player's name and score as item attributes enables us to sort the items by name or score.</p>
+    
+    <p>The app demonstrates how to add and remove individual players, sort the scores by player 
+    name or score, and retrieve a single item from the domain. The app also demonstrates how to create
+    and delete SimpleDB domains.</p>
+
+    <h2>Creating a SimpleDB Client</h2>
+    <p>Making requests to SimpleDB requires a client. Creating a SimpleDB client for iOS or Android is shown below.
+    
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+AmazonSimpleDBClient sdbClient = [[AmazonSimpleDBClient alloc] initWithAccessKey:ACCESS_KEY_ID withSecretKey:SECRET_KEY];</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+AWSCredentials credentials = new BasicAWSCredentials( ACCESS_KEY_ID, SECRET_KEY );
+AmazonSimpleDBClient sdbClient = new AmazonSimpleDBClient( credentials);</pre></td></tr>
+                </table>
+            </p>
+    </p>
+
+    <h2>High Score List Creation (Domain Creation)</h2>
+    <p>Individual player scores are stored as items in a SimpleDB domain. This requires that we create the domain 
+    first. Using the appropriate client that we created above, we can use the following code to create the domain.
+    
+        <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SimpleDBCreateDomainRequest *createDomain = [[[SimpleDBCreateDomainRequest alloc] initWithDomainName:HIGH_SCORE_DOMAIN] autorelease]; 
+[sdbClient createDomain:createDomain];</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+CreateDomainRequest cdr = new CreateDomainRequest( HIGH_SCORES_DOMAIN );
+sdbClient.createDomain( cdr );</pre></td></tr>
+                </table>
+            </p>
+
+    </p>
+
+    <h2>Add Score (Item Creation)</h2>
+    <p>An item is a collection of attribute/value pairs. For our items, we create two attributes, one 
+    for the player's name and one for the player's score. These are added to a request along with an item 
+    name in order to create the item. Because a player appears at most only once on the high score list, 
+    we use the player's name to uniquely identify each item. 
+    All data in SimpleDB are stored as strings, therefore numbers must be zero padded if you want to sort them properly.</p>
+
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                The AWS SDK for iOS does not include a utility to pad numbers.  A simple utility is included in the full sample code.
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+NSString *paddedScore = [self getPaddedScore:score];
+
+SimpleDBReplaceableAttribute *playerAttribute = [[[SimpleDBReplaceableAttribute alloc] initWithName:@"player" andValue:player andReplace:YES] autorelease];
+SimpleDBReplaceableAttribute *scoreAttribute = [[[SimpleDBReplaceableAttribute alloc] initWithName:@"score" andValue:paddedScore andReplace:YES] autorelease];
+
+NSMutableArray *attributes = [[[NSMutableArray alloc] initWithCapacity:2] autorelease];
+[attributes addObject:playerAttribute];
+[attributes addObject:scoreAttribute];
+
+SimpleDBPutAttributesRequest *putAttributesRequest = [[[SimpleDBPutAttributesRequest alloc] initWithDomainName:HIGH_SCORE_DOMAIN andItemName:player andAttributes:attributes] autorelease];
+[sdbClient putAttributes:putAttributesRequest];</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                The AWS SDK for Android includes a utility to pad numbers, used below.
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+String paddedScore = SimpleDBUtils.encodeZeroPadding( score, 10 );
+		
+ReplaceableAttribute playerAttribute = new ReplaceableAttribute( PLAYER_ATTRIBUTE, player, Boolean.TRUE );
+ReplaceableAttribute scoreAttribute = new ReplaceableAttribute( SCORE_ATTRIBUTE, paddedScore, Boolean.TRUE );
+		
+List<ReplaceableAttribute> attrs = new ArrayList<ReplaceableAttribute>(2);
+attrs.add( playerAttribute );
+attrs.add( scoreAttribute );
+		
+PutAttributesRequest par = new PutAttributesRequest( HIGH_SCORES_DOMAIN, player, attrs);		
+sdbClient.putAttributes( par );</pre></td></tr>
+                </table>
+            </p>
+
+    <h2>Remove Score (Item Deletion)</h2>
+    <p>Removing a score from the list simply means deleting an item from the domain. Deleting an item requires the unique name for the item you wish to delete.
+    In SimpleDB, deleting an item is done by removing all the attributes from that item.  
+    Invoking <b>deleteAttributes</b> with no specified attributes removes all the attributes by default.
+
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SimpleDBDeleteAttributesRequest *deleteItem = [[[SimpleDBDeleteAttributesRequest alloc] initWithDomainName:HIGH_SCORE_DOMAIN andItemName:player] autorelease];
+[sdbClient deleteAttributes:deleteItem];</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+DeleteAttributesRequest dar = new DeleteAttributesRequest( HIGH_SCORES_DOMAIN, player );
+sdbClient.deleteAttributes( dar );</pre></td></tr>
+                </table>
+            </p>
+    </p>
+
+    <h2>Player View (Getting an Item)</h2>
+    <p>Knowing an item's name makes it easy to find the item. 
+    This next snippet shows how to get all the attributes for an item using the item name.
+    Note that items may contain many attributes and values.</p>
+
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SimpleDBGetAttributesRequest *gar = [[SimpleDBGetAttributesRequest alloc] initWithDomainName:HIGH_SCORE_DOMAIN andItemName:player];
+SimpleDBGetAttributesResponse *response = [sdbClient getAttributes:gar];</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+GetAttributesRequest gar = new GetAttributesRequest( HIGH_SCORES_DOMAIN, player );
+GetAttributesResult response = sdbClient.getAttributes(gar);</pre></td></tr>
+                </table>
+            </p>
+    </p>
+
+    <h2>List View and Sorting (Select)</h2>
+    <p>Getting a collection of scores, sorted by player name or the score itself requires the use of a <i>select request</i>. 
+    A select request uses a simple query language to determine which items to match and what data to return and how. 
+    Select requests are paginated because the number of items matching the query can be large. Therefore, select requests return 
+    a <i>next token</i> that enables you to "page" through the data in an ordered fashion. 
+    The code here shows how to return items ordered by score from highest to lowest. Only the score and player attributes are returned.
+    More information regarding SimpleDB queries can be found in a reference article linked below. 
+    </p>
+    
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SimpleDBSelectRequest *selectRequest = [[[SimpleDBSelectRequest alloc] initWithSelectExpression:@"select player, score from HighScores where score >= '0' order by score desc"] autorelease];
+selectRequest.consistentRead = YES;
+selectRequest.nextToken = nextToken;
+
+SimpleDBSelectResponse *selectResponse = [sdbClient select:selectRequest];
+nextToken = selectResponse.nextToken;</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SelectRequest selectRequest = new SelectRequest( "select player, score from HighScores where score >= '0' order by score desc" ).withConsistentRead( true );
+selectRequest.setNextToken( nextToken );
+		
+SelectResult response = sdbClient.select( selectRequest );
+nextToken = response.getNextToken();</pre></td></tr>
+                </table>
+            </p>
+    </p>
+
+    <h2>List Deletion (Domain Deletion)</h2>
+    <p>The quickest and easiest way to remove the entire high score list would be to delete the SimpleDB domain. Here is how to do that.
+
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SimpleDBDeleteDomainRequest *deleteDomain = [[[SimpleDBDeleteDomainRequest alloc] initWithDomainName:HIGH_SCORE_DOMAIN] autorelease]; 
+[sdbClient deleteDomain:deleteDomain];</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+DeleteDomainRequest ddr = new DeleteDomainRequest( HIGH_SCORES_DOMAIN );
+sdbClient.deleteDomain(ddr);</pre></td></tr>
+                </table>
+            </p>
+    </p>
+
+    <h2>Conclusion</h2>
+    <p>The code in this article demonstrates how to use Amazon SimpleDB as an indexed storage device for your
+     mobile application. The complete sample app is included as part of the AWS mobile SDKs, which 
+     are linked below. The reference section also contains a link to a SimpleDB article which 
+     discusses writing queries for SimpleDB in detail.</p>
+
+
+    <h2>References</h2>
+    <p>Find more information about SimpleDB <a href="http://aws.amazon.com/articles/1231">here.</a></p>
+    <p>A sample app that includes this code is provided with both mobile SDKs. The download links can be found here:</p>
+
+    <ul>
+        <li><a href="http://aws.amazon.com/sdkforios">AWS SDK for iOS</a></li>
+        <li><a href="http://aws.amazon.com/sdkforandroid">AWS SDK for Android</a></li>
+    </ul>
+
+    <p>For more information about using AWS credentials with mobile applications see the following article:</p>
+    <ul>
+        <li><a href="http://aws.amazon.com/articles/SDKs/Android/4611615499399490">Authenticating Users of AWS Mobile Applications with a Token Vending Machine</a></li>    
+    </ul>
+    
+    <h2>Questions?</h2>
+    <p>Please feel free to ask questions or provide comments in the <a href="https://forums.aws.amazon.com/forum.jspa?forumID=88">Mobile Development Forum</a>.</p>
+</body>
+</html>

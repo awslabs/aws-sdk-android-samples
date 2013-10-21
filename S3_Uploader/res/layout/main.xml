@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<TextView  
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:layout_marginTop="20dip"
+    android:text="@string/step1"
+    />
+<Button android:visibility="visible" 
+		android:text="@string/select_photo" 
+		android:id="@+id/select_photo_button" 
+		android:layout_height="wrap_content" 
+		android:layout_width="fill_parent"/>
+<TextView  
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="@string/sync_requests_note"
+    android:textSize="10dip"
+    />
+<TextView  
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:layout_marginTop="30dip"
+    android:text="@string/step2"
+    />
+<Button 
+		android:id="@+id/show_in_browser_button"
+		android:text="@string/show_in_browser"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="visible"/>
+</LinearLayout>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <TextView
+    	android:id="@+id/main_into_text"
+    	android:text="Loading..."
+    	android:layout_width="fill_parent"
+		android:textStyle="bold"
+		android:textColor="#ffe3ce08"
+    	android:layout_height="40dip"
+    	android:gravity="center"
+    	/>
+	<Button 
+		android:id="@+id/main_login_button"
+		android:text="Login"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="invisible"
+		/>
+	<Button 
+		android:id="@+id/main_logout_button"
+		android:text="Logout"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="invisible"
+		/>
+	<Button 
+		android:id="@+id/main_storage_button"
+		android:text="My Objects"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="invisible"
+		/>
+</LinearLayout>

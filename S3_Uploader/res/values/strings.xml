@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="step1">1. You can upload an image file to the Amazon S3 using AsyncTask:</string>
+    <string name="app_name">S3Uploader</string>
+    <string name="show_in_browser">Show in Browser</string>
+    <string name="select_photo">Select Photo</string>
+    <string name="step2">2. You can see the image that you have uploaded in the browser:</string>
+    <string name="sync_requests_note">*** Do not call synchronous AWS requests on the main thread.</string>
+    <string name="upload_failure_title">Upload Failure</string>
+    <string name="browser_failure_title">Browser Failure</string>
+    <string name="ok">OK</string>
+    <string name="uploading">Uploading…</string>
+</resources>

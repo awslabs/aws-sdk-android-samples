@@ -1,0 +1,247 @@
+<html>
+<head>
+    <title>Mobile Photo Uploads to Amazon S3</title>
+    <style type="text/css">
+        table.sample {
+	        border-width: 2px;
+	        border-spacing: 5px;
+	        border-style: dashed;
+	        border-color: cornflowerblue;
+        }
+        table.sample td {
+	        padding: 5px;
+        }        
+        table.sample tr {
+	        padding: 5px;
+        }        
+    </style>    
+</head>
+<body style="padding: 10px">
+    <h1>Mobile Photo Uploads to Amazon S3 using the AWS SDK for iOS and AWS SDK for Android.</h1>
+    <p>
+    This article demonstrates how to upload an image to <a href="http://aws.amazon.com/s3/">Amazon S3</a> from your mobile device and how 
+    to make that image available on the web. Amazon S3 is storage for the Internet. It's a 
+    simple storage service that offers software developers a highly-scalable, reliable, secure, fast, and inexpensive data storage. The article shows sample code for both the iOS and 
+    Android platforms. The complete sample code and project files are included in the mobile SDKs for 
+    these platforms. Links to the SDKs are available at the end of this article.
+    </p>
+
+    <p>
+    To use the AWS SDK for iOS or the AWS SDK for Android, you will need your AWS credentials, that is, 
+    your Access Key ID and Secret Access Key. If you haven't already signed up for 
+    <a href="http://aws.amazon.com/">Amazon Web Services</a>
+    (AWS), you will need to do that first to get your AWS credentials. You can sign up for AWS 
+    <a href="https://aws-portal.amazon.com/gp/aws/developer/registration/index.html">here</a>.    
+    <p>
+
+    <p>
+    Here's what the sample app looks like at start up on iOS and Android: 
+    </p>
+    <ul><li>iOS</li></ul>
+        <p style="padding-left:2cm;">
+          <img src="http://media.amazonwebservices.com/iOS-Uploader.png" />
+        </p>
+    <ul><li>Android</li></ul>
+        <p style="padding-left:2cm;">
+            <img src="http://media.amazonwebservices.com/Android-Uploader.png" />
+        </p>
+            
+
+    <h2>Image Upload</h2>
+    <p>
+    The app uses each platform's "image picker" utility to have the end-user select an image for upload. The 
+    app then creates an Amazon S3 client, uses the client to create an Amazon S3 bucket in which to store the 
+    image, and finally uploads the image into the bucket. A bucket is a container for objects stored in Amazon 
+    S3. Every object--such as an image--is contained within a bucket. 
+    </p>
+
+    <h3>Get the image </h3>
+    <p>The first step is to retrieve the content, in this case an image, to be uploaded to Amazon S3. For this sample app, selecting an image from the device itself is an easy choice.</p>
+    <ul><li>iOS</li></ul>
+    <p style="padding-left:2cm;">    
+        <table class="sample"><tr><td align="left">
+            <pre>
+UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+imagePicker.delegate = self;
+[self presentModalViewController:imagePicker animated:YES];</pre></td></tr>
+        </table>
+    </p>
+    <p style="padding-left:2cm;">    
+        <img src="http://media.amazonwebservices.com/iOS-Image-Picker.png"/>
+    </p>
+    <ul><li>Android</li></ul>
+    <p style="padding-left:2cm;">    
+        <table class="sample"><tr><td align="left" >
+            <pre>
+Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+intent.setType("image/*");
+startActivityForResult(intent, PHOTO_SELECTED);</pre></td></tr>
+        </table>
+    </p>
+    <p style="padding-left:2cm;">    
+        <img src="http://media.amazonwebservices.com/Android-Image-Picker.png"/>    
+    </p>
+    <p>On both platforms, once an image is selected, a callback method is invoked with the selected image's information. The app uses this information to complete the upload. </p>
+    <h3>Upload the image</h3>
+    <p>Once we have the image, we can attempt to upload it to Amazon S3.</p>
+    <p><b>First</b>, create an Amazon S3 client to communicate with the service.</p>
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+AmazonS3Client *s3 = [[[AmazonS3Client alloc] initWithAccessKey:MY_ACCESS_KEY_ID withSecretKey:MY_SECRET_KEY] autorelease];</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+AmazonS3Client s3Client = new AmazonS3Client( new BasicAWSCredentials( MY_ACCESS_KEY_ID, MY_SECRET_KEY ) );                    
+</pre></td></tr>
+                </table>
+            </p>
+                
+                
+    <p><b>Second</b>, create an S3 bucket to store the picture. </p>
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>[s3 createBucket:[[[S3CreateBucketRequest alloc] initWithName:MY_PICTURE_BUCKET] autorelease]];</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>s3Client.createBucket( MY_PICTURE_BUCKET );<pre></td></tr>
+                </table>
+            </p>
+                
+                
+    <p><b>Finally</b>, put the image object into the S3 bucket.</p>
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>S3PutObjectRequest *por = [[[S3PutObjectRequest alloc] initWithKey:MY_PICTURE_NAME inBucket:MY_PICTURE_BUCKET] autorelease];
+por.contentType = @"image/jpeg";
+por.data = imageData;
+[s3 putObject:por];</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>PutObjectRequest por = new PutObjectRequest( Constants.getPictureBucket(), Constants.PICTURE_NAME, new java.io.File( filePath) );  
+s3Client.putObject( por );</pre></td></tr>
+                </table>
+            </p>
+
+    
+    <h2>Browser Display</h2>
+    <p>The app makes the image available for viewing in a browser by generating a pre-signed URL. 
+    A pre-signed URL is a URL for an Amazon S3 resource that is signed with current AWS security 
+    credentials. The pre-signed URL can then be shared with other users, allowing them to access 
+    resources without providing an account's AWS security credentials.</p>
+    
+    <p><b>First</b>, create an override content type to ensure that the "content" will be treated as an image by the browser.</p>
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>S3ResponseHeaderOverrides *override = [[[S3ResponseHeaderOverrides alloc] init] autorelease];
+override.contentType = @"image/jpeg";</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>ResponseHeaderOverrides override = new ResponseHeaderOverrides();
+override.setContentType( "image/jpeg" );</pre></td></tr>
+                </table>
+            </p>
+    
+
+    <p><b>Second</b>, create the pre-signed URL request. Pre-signed URLs can be created with an expiration date, 
+    that is, a date and time after which the resource will no longer be available. In the sample, the pre-signed URLs are valid for only one hour.</p>
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>S3GetPreSignedURLRequest *gpsur = [[[S3GetPreSignedURLRequest alloc] init] autorelease];
+gpsur.key     = PICTURE_NAME;
+gpsur.bucket  = [Constants pictureBucket];
+gpsur.expires = [NSDate dateWithTimeIntervalSinceNow:(NSTimeInterval) 3600];  // Added an hour's worth of seconds to the current time.
+gpsur.responseHeaderOverrides = override;</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest( Constants.getPictureBucket(), Constants.PICTURE_NAME );
+urlRequest.setExpiration( new Date( System.currentTimeMillis() + 3600000 ) );  // Added an hour's worth of milliseconds to the current time.
+urlRequest.setResponseHeaders( override );</pre></td></tr>
+                </table>
+            </p>
+
+
+
+    <p><b>Third</b>, generate the pre-signed URL. </p>
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>NSURL *url = [s3 getPreSignedURL:gpsur];</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>URL url = s3Client.generatePresignedUrl( urlRequest );</pre></td></tr>
+                </table>
+            </p>
+
+
+
+    <p><b>Finally</b>, launch the browser to view the pre-signed URL which will display the image. </p>
+    <ul><li><a href="http://developer.apple.com/library/ios/DOCUMENTATION/UIKit/Reference/UIApplication_Class/Reference/Reference.html#//apple_ref/occ/instm/UIApplication/openURL">iOS</a></li></ul>
+    <p style="padding-left:2cm;">
+        <table class="sample"><tr><td align="left" >
+            <pre>[[UIApplication sharedApplication] openURL:url];</pre></td></tr>
+        </table>
+    </p>
+    <p style="padding-left:2cm;">
+        <img src="http://media.amazonwebservices.com/iOS-ShowPic.png"/>    
+    </p>
+
+    <ul><li><a href="http://developer.android.com/guide/appendix/g-app-intents.html">Android</a></li></ul>
+    <p style="padding-left:2cm;">
+        <table class="sample"><tr><td align="left" >
+            <pre>startActivity( new Intent( Intent.ACTION_VIEW, Uri.parse( url.toURI().toString() ) ) );</pre></td></tr>
+        </table>
+    </p>
+    <p style="padding-left:2cm;">
+        <img src="http://media.amazonwebservices.com/Android-ShowPic.png"/>    
+    </p>    
+
+
+    <h2>Next Steps</h2>
+    <p>These few lines of code demonstrate how Amazon S3 could become a limitless storage device for your mobile 
+    photos. A photo sharing app that allows users to view photos from other users would not be a difficult 
+    extension to the above code. Also, the content that is uploaded and shared is not limited to images. The 
+    content could be audio files, video files, text, or other content that users want to store and share. </p>
+
+    <h2>References</h2>
+    <p>A sample app that includes this code is provided with both mobile SDKs. The download links can be found here:</p>
+
+    <ul>
+        <li><a href="http://aws.amazon.com/sdkforios">AWS SDK for iOS</a></li>
+        <li><a href="http://aws.amazon.com/sdkforandroid">AWS SDK for Android</a></li>
+    </ul>
+
+    <p>For more information about using AWS credentials with mobile applications see the following article:</p>
+    <ul>
+        <li><a href="http://aws.amazon.com/articles/SDKs/Android/4611615499399490">Authenticating Users of AWS Mobile Applications with a Token Vending Machine</a></li>    
+    </ul>
+    
+    <h2>Questions?</h2>
+    <p>Please feel free to ask questions or make comments in the <a href="https://forums.aws.amazon.com/forum.jspa?forumID=88">Mobile Development Forum</a>.</p>
+
+
+</body>
+</html>

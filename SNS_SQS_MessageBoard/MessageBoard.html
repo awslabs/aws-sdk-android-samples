@@ -1,0 +1,428 @@
+<html>
+<head>
+    <title>Messaging Users with Amazon SNS and Amazon SQS</title>
+    <style type="text/css">
+        table.sample {
+	        border-width: 2px;
+	        border-spacing: 5px;
+	        border-style: dashed;
+	        border-color: cornflowerblue;
+        }
+        table.sample td {
+	        padding: 5px;
+        }        
+        table.sample tr {
+	        padding: 5px;
+        }        
+    </style>    
+</head>
+<body style="padding: 10px">
+    <h1>Messaging Users with Amazon SNS and Amazon SQS using the AWS SDK for iOS and the AWS SDK for Android</h1>
+
+    <center>
+    <table>
+        <tr>
+            <td><img src="http://media.amazonwebservices.com/android-message-board.png"/></td>
+            <td><img src="http://media.amazonwebservices.com/ios-message-board.png"/></td>
+        </tr>
+    </table>
+    </center>
+    
+    <h2>Overview</h2>
+
+    <p>
+    This article discusses how mobile applications can use Amazon Web Services to communicate with users via email, short message service (SMS), and other communication channels.  
+    The sample code presented here uses <a href="http://aws.amazon.com/sns/">Amazon Simple Notification Service</a> and 
+    <a href="http://aws.amazon.com/sqs/">Amazon Simple Queue Service</a>.  Amazon Simple Notification Service (Amazon SNS) 
+    makes it easy to set up, manage, and send notifications from mobile applications and have these notifications delivered immediately to 
+    any users who have chosen to subscribe to them. Amazon SNS provides a highly scalable, flexible, and cost-effective method to
+    implement such notification systems.  
+    </p>
+
+    <p>
+    Amazon Simple Queue Service (Amazon SQS), also discussed here, offers a reliable, highly scalable, hosted queue for storing messages.
+    The types of messages supported by Amazon SQS include&mdash;but aren't limited to&mdash;the notification messages sent from Amazon SNS.  
+    </p>
+
+    <p>
+    Together, Amazon SNS and Amazon SQS enable developers to create applications that can message large numbers of users in multiple formats quickly and easily.  
+    </p>
+    
+    
+    <p>
+    The sample application described here demostrates how mobile applications can message their users through Amazon SNS and Amazon SQS.  
+    The sample demonstrates how to use Amazon SNS to create a topic, subscribe users to that topic, and publish notifications to the topic.  
+    Subscribers to the topic can receive their notifications via email, SMS, or an Amazon SQS queue.  
+    Amazon SQS and Amazon SNS can also be used to create other types of communication systems not shown here.
+    </p>
+    
+   
+    <p>
+    This article shows sample code for both the iOS and Android platforms. The complete sample code and project files are included in the AWS 
+    SDKs for these mobile platforms. Links to the SDKs are available at the end of this article. 
+    <p/>
+   
+    <p>
+    To use the AWS SDK for iOS or the AWS SDK for Android, you will need AWS credentials, that is, an Access Key ID and Secret Access Key. 
+    If you haven't already signed up for <a href="http://aws.amazon.com/">Amazon Web Services</a> (AWS), you will need to do that first to get your credentials. 
+    You can sign up for AWS <a href="https://aws-portal.amazon.com/gp/aws/developer/registration/index.html">here</a>. 
+    After you sign up, you can retrieve your credentials at <a href="https://aws-portal.amazon.com/gp/aws/developer/account?ie=UTF8&amp;action=access-key">this page</a>.
+    </p>
+
+    
+    <h2>Creating Amazon SQS and Amazon SNS Clients</h2>
+    <p>Making requests to Amazon SNS and Amazon SQS requires creating a <i>client</i> for each service.  The code below shows how to create clients for both services on both the iOS and Android platforms.
+    
+    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+AmazonSNSClient snsClient = [[AmazonSNSClient alloc] initWithAccessKey:ACCESS_KEY_ID withSecretKey:SECRET_KEY];            
+AmazonSQSClient sqsClient = [[AmazonSQSClient alloc] initWithAccessKey:ACCESS_KEY_ID withSecretKey:SECRET_KEY];            
+</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+AWSCredentials credentials = new BasicAWSCredentials( Constants.ACCESS_KEY_ID, Constants.SECRET_KEY );		
+AmazonSNSClient snsClient = new AmazonSNSClient( credentials );
+AmazonSQSClient sqsClient = new AmazonSQSClient( credentials );
+</pre></td></tr>
+                </table>
+            </p>
+    </p>
+
+
+
+    <h2>Topic Creation</h2>
+    <p>Amazon SNS uses <i>topics</i> to route notifications from <i>publishers</i> to <i>subscribers</i>. 
+    The term publisher refers to an application that sends notifications; the term subscriber refers to an entity, such as a user, that receives notifications. 
+    Topics provide a junction point for publishers and subscribers to communicate with each other.
+    Once a topic is created, subscribers can be added to the topic and receive notifications/messages.
+    The <i>DisplayName</i> attribute is added to a topic to allow notifications to be sent via SMS.  
+    
+        <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SNSCreateTopicRequest *ctr = [[[SNSCreateTopicRequest alloc] initWithName:TOPIC_NAME] autorelease];
+SNSCreateTopicResponse *response = [snsClient createTopic:ctr];    
+
+SNSSetTopicAttributesRequest* st = [[[SNSSetTopicAttributesRequest alloc] initWithTopicArn:response.topicArn andAttributeName:@"DisplayName" andAttributeValue:TOPIC_NAME] autorelease];
+[snsClient setTopicAttributes:st];        
+</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+CreateTopicRequest ctr = new CreateTopicRequest( Constants.TOPIC_NAME );
+CreateTopicResult result = snsClient.createTopic( ctr );
+	        
+SetTopicAttributesRequest tar = new SetTopicAttributesRequest( result.getTopicArn(), "DisplayName", "MessageBoard" );
+this.snsClient.setTopicAttributes( tar );  
+</pre></td></tr>
+                </table>
+            </p>
+
+    </p>
+
+
+
+    <h2>Subscribing to Topics</h2>
+    <p>In order for notifications sent to a topic to be received, you have to subscribe an <i>endpoint</i> to that topic. The endpoint corresponds to a recipient.
+    An endpoint is an email address, SMS number, web server, or Amazon SQS queue. If you are using an Amazon SQS queue, it needs to be configured to receive notification messages from Amazon SNS. 
+    Once you subscribe an endpoint to a topic and the <b>subscription is confirmed</b>, the endpoint will receive all messages published to that topic.
+    
+        <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SNSSubscribeRequest *sr = [[[SNSSubscribeRequest alloc] initWithTopicArn:topicARN andProtocol:@"email" andEndpoint:emailAddress] autorelease];
+[snsClient subscribe:sr];        
+</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SubscribeRequest sr = new SubscribeRequest( this.topicARN, "email", email );
+this.snsClient.subscribe( sr );
+</pre></td></tr>
+                </table>
+            </p>
+
+    </p>
+
+
+    <h2>Listing a Topic's Subscribers</h2>
+    <p>Listing the subscribers for a topic provides the endpoint and corresponding protocol for each subscriber who receives notification via that topic. 
+   The protocol for an endpoint depends on the type of endpoint. For example, endpoints that are email addresses have a protocol of SMTP. 
+    
+        <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SNSListSubscriptionsByTopicRequest *ls = [[[SNSListSubscriptionsByTopicRequest alloc] initWithTopicArn:topicARN] autorelease];
+SNSListSubscriptionsByTopicResponse *response = [snsClient listSubscriptionsByTopic:ls];
+return response.subscriptions;
+                    </pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+ListSubscriptionsByTopicRequest ls = new ListSubscriptionsByTopicRequest( this.topicARN );
+ListSubscriptionsByTopicResult response = this.snsClient.listSubscriptionsByTopic( ls );
+return response.getSubscriptions();
+</pre></td></tr>
+                </table>
+            </p>
+
+    </p>
+
+
+
+    <h2>Publishing Notifications</h2>
+    <p>Publishers send notifications to topics. Once a new notification is published, Amazon SNS attempts to deliver that notification to every endpoint that is subscribed to the topic.
+    
+        <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SNSPublishRequest *pr = [[[SNSPublishRequest alloc] initWithTopicArn:topicARN andMessage:theMessage] autorelease];
+[snsClient publish:pr];
+</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+PublishRequest pr = new PublishRequest( this.topicARN, message );
+this.snsClient.publish( pr );	
+</pre></td></tr>
+                </table>
+            </p>
+
+    </p>
+
+
+    <h2>Unsubscribing from Topics</h2>
+    <p>Unsubscribing removes the endpoint from the topic and stops notifications from being received.
+    
+        <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SNSUnsubscribeRequest *unsubscribeRequest = [[[SNSUnsubscribeRequest alloc] initWithSubscriptionArn:subscriptionArn] autorelease];
+[snsClient unsubscribe:unsubscribeRequest];
+</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+UnsubscribeRequest unsubscribeRequest = new UnsubscribeRequest( subscriptionArn );
+this.snsClient.unsubscribe( unsubscribeRequest );
+</pre></td></tr>
+                </table>
+            </p>
+
+    </p>
+
+
+
+
+    <h2>Creating a Queue</h2>
+    <p>The first task in using Amazon SQS is to create a queue.  Once a queue is created it can be subscribed as an endpoint to an Amazon SNS topic.
+    
+        <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SQSCreateQueueRequest *cqr = [[[SQSCreateQueueRequest alloc] initWithQueueName:QUEUE_NAME] autorelease];
+SQSCreateQueueResponse *response = [sqsClient createQueue:cqr];
+
+return response.queueUrl
+</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+CreateQueueRequest cqr = new CreateQueueRequest( Constants.QUEUE_NAME );
+CreateQueueResult result = this.sqsClient.createQueue( cqr );
+return result.getQueueUrl();
+</pre></td></tr>
+                </table>
+            </p>
+
+    </p>
+
+
+
+    <h2>Subscribing a Queue to a Topic</h2>
+    <p>Here's how to subscribe a queue to a topic.  
+    However, for the queue to receive messages, you must also add a policy to the queue. See below.
+    
+        <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+NSString *queueArn = [self createMessageQueue];
+		
+SNSSubscribeRequest *request = [[[SNSSubscribeRequest alloc] init] autorelease];
+request.endpoint = queueArn;
+request.protocol = @"sqs";
+request.topicArn = topicARN;
+		
+[snsClient subscribe:request];
+</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+String queueArn = this.createMessageQueue();
+		
+SubscribeRequest request = new SubscribeRequest();
+request.withEndpoint( queueArn ).withProtocol( "sqs" ).withTopicArn( this.topicARN );
+		
+this.snsClient.subscribe( request );
+</pre></td></tr>
+                </table>
+            </p>
+
+    </p>
+
+
+
+    <h2>Adding a policy to a Queue</h2>
+    <p>
+    In order for a queue to receive messages from a topic, the queue must have a policy object that specifies that the topic has <b>sqs:SendMessage</b> permission for the queue.  
+    For further details see the <a href="http://aws.amazon.com/sns/faqs/#26">Amazon SNS FAQ</a>.   
+    For more information about queue policies see the <a href="http://docs.amazonwebservices.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/SQSExamples.html">Amazon SQS documentation</a>.
+    Once the policy object is created it can be attached to the queue as follows:
+    
+        <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+NSMutableDictionary *attributes = [[[NSMutableDictionary alloc] init] autorelease];
+[attributes setValue:[self generateSqsPolicyForTopic:queueArn] forKey:@"Policy"];
+        
+SQSSetQueueAttributesRequest *request = [[[SQSSetQueueAttributesRequest alloc] initWithQueueUrl:theQueueUrl andAttributes:attributes] autorelease];    
+[sqsClient setQueueAttributes:request];
+</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+HashMap<String, String> attributes = new HashMap<String, String>();
+attributes.put("Policy", generateSqsPolicyForTopic( queueArn, this.topicARN ) );
+this.sqsClient.setQueueAttributes(new SetQueueAttributesRequest( queueUrl, attributes ) );
+</pre></td></tr>
+                </table>
+            </p>
+
+    </p>
+
+
+
+    <h2>Receiving Messages from a Queue</h2>
+    <p>Now that a message is in the queue, you can receive it, which requires getting it from the queue. When requesting to get a 
+    message from the queue, you can't specify which message to get. Instead, you simply specify the maximum number of messages 
+    you want to get (up to 10), and Amazon SQS returns up to that maximum number. Because Amazon SQS is a distributed system and 
+    the particular queue we're working with here has very few messages in it, the response to the receive request 
+    might be empty. Therefore, you should rerun the sample until you get the message. You should design your own 
+    application so that it continues to poll the queue until it gets one or more messages.
+    
+        <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SQSReceiveMessageRequest *rmr = [[[SQSReceiveMessageRequest alloc] initWithQueueUrl:queueUrl] autorelease];
+rmr.maxNumberOfMessages = [NSNumber numberWithInt:10];
+rmr.visibilityTimeout = [NSNumber numberWithInt:30];
+        
+SQSReceiveMessageResponse *response = [sqsClient receiveMessage:rmr];
+</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+ReceiveMessageRequest rmr = new ReceiveMessageRequest( this.queueUrl );
+rmr.setMaxNumberOfMessages( 10 );
+rmr.setVisibilityTimeout( 30 );
+
+ReceiveMessageResult result = this.sqsClient.receiveMessage( rmr );
+</pre></td></tr>
+                </table>
+            </p>
+
+    </p>
+
+
+    <h2>Delete Messages from a Queue</h2>
+    <p>Amazon SQS doesn't automatically delete a message after returning it to the application. 
+    By default, it keeps the message to protect against the case where the receiving application fails or loses its connection. 
+    In these cases, a different application&mdash;or perhaps a new instance of the same application&mdash; might attempt to get the message.</p> 
+    
+    <p>To delete the message, you must send a separate request. You specify which message to delete by providing the receipt handle that Amazon SQS returned when you received the message. 
+    You can delete only one message per call. Deleting the message acknowledges that you've successfully received and processed it.
+    
+    
+        <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SQSDeleteMessageRequest *request = [[[SQSDeleteMessageRequest alloc] initWithQueueUrl:queueUrl andReceiptHandle:message.receiptHandle] autorelease];
+[sqsClient deleteMessage:request];
+</pre></td></tr>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+DeleteMessageRequest request = new DeleteMessageRequest( this.queueUrl, message.getReceiptHandle() );
+this.sqsClient.deleteMessage( request );
+</pre></td></tr>
+                </table>
+            </p>
+
+    </p>
+
+
+
+    <h2>References</h2>
+    <p>A sample app that includes this code is provided with both mobile SDKs. The download links can be found on the following pages:</p>
+
+
+    <ul>
+        <li><a href="http://aws.amazon.com/sdkforios">AWS SDK for iOS</a></li>
+        <li><a href="http://aws.amazon.com/sdkforandroid">AWS SDK for Android</a></li>
+    </ul>
+
+    <p>For more information about using AWS credentials with mobile applications see the following article:</p>
+    <ul>
+        <li><a href="http://aws.amazon.com/articles/SDKs/Android/4611615499399490">Authenticating Users of AWS Mobile Applications with a Token Vending Machine</a></li>    
+    </ul>
+    
+    <h2>Questions?</h2>
+    <p>Please feel free to ask questions or provide comments in the <a href="https://forums.aws.amazon.com/forum.jspa?forumID=88">Mobile Development Forum</a>.</p>
+</body>
+</html>

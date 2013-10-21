@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	<TextView 
+		android:id="@+id/login_intro_text" 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingBottom="10sp"
+        />
+	
+	    <Button 
+		    android:id="@+id/fb_login_button"
+		    android:text="Facebook"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    />
+	    <Button
+    		android:id="@+id/sign_in_button"
+    		android:text="Google"
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content" />
+	    <Button 
+		    android:id="@+id/lwa_login_button"
+		    android:text="Amazon"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    />       
+		
+</LinearLayout>

@@ -1,0 +1,263 @@
+<html>
+<head>
+    <title>Web Identity Federation with Mobile Applications</title>
+    <style type="text/css">
+        table.sample {
+	        border-width: 2px;
+	        border-spacing: 5px;
+	        border-style: dashed;
+	        border-color: cornflowerblue;
+        }
+        table.sample td {
+	        padding: 5px;
+        }        
+        table.sample tr {
+	        padding: 5px;
+        }        
+    </style>    
+</head>
+<body style="padding: 10px">
+    <h1>Introducing Web Identity Federation</h1>
+    <p>
+        <a href="http://docs.amazonwebservices.com/STS/latest/APIReference/Welcome.html?r=7687">AWS Security Token Service (STS)</a> now offers <a href="http://docs.amazonwebservices.com/STS/latest/UsingSTS/CreatingWIF.html">Web Identity Federation</a> (WIF).  This allows a developer to federate their application from Facebook, Google, or Amazon with their AWS account, allowing their end users to authenticate with one of these Identity Providers (IdP) and receive temporary AWS credentials.  In combination with <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/PolicyVariables.htm">Policy Variables</a>, WIF allows the developer to restrict end users' access to a subset of AWS resources within their account.</p>
+     <p>To help you understand how web identity federation works, you can use the <a href="https://web-identity-federation-playground.s3.amazonaws.com/index.html">Web Identity Federation Playground</a>. This interactive website lets you walk through the process of authenticating via Login with Amazon, Facebook, or Google, getting temporary security credentials, and then using those credentials to make a request to AWS.</p>
+     <p>This article shows how WIF can be used to give many users a "Personal File Store" all housed within a single Amazon S3 bucket <b>without the need for any backend infrastructure</b>.  It is adapted from a <a href="http://aws.amazon.com/code/4598681430241367">previous article</a> which used a custom Token Vending Machine hosted in AWS Elastic Beanstalk.
+    </p>     
+    <h3>Policies</h3>
+    <p>
+        Policies are used to specify permissions for temporary credentials, an IAM user, or IAM role.  For Web Identity Federation, there are actually two policies, one which specifies who can assume the role (the trusted entity, or principal), and one policy to specify the actual AWS actions and resources that the user will have access to (the access policy).  When creating your WIF Role via the <a href="https://console.aws.amazon.com/iam/home">AWS Management Console</a>, the Role Creation Wizard will walk you through the process of creating the trusted entity policy, but you will need to supply the access policy by hand.  Below is the policy that should be used with the sample for Facebook login.
+    <p>
+
+<pre>
+{
+ "Version":"2012-10-17",
+ "Statement":[{
+   "Effect":"Allow",
+   "Action":["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+   "Resource": "arn:aws:s3:::__MY_APPS_BUCKET_NAME__/${graph.facebook.com:id}/*"
+  },
+  {
+   "Effect":"Allow",
+   "Action":"s3:ListBucket",
+   "Resource":["arn:aws:s3:::__MY_APPS_BUCKET_NAME__"],
+   "Condition":
+     {"StringLike":
+       {"s3:prefix":"${graph.facebook.com:id}/"}
+     }
+  }
+ ]
+}
+</pre>
+
+       
+        <p>
+            The developer should replace the string __MY_APPS_BUCKET_NAME__ with the appropriate value.  In the above policy, each statement has a specific effect:
+            <ul>
+	      <li>The first statement allows each application user to get, put and delete objects in the specified Amazon S3 bucket, but requires that the object name be prefixed with their Facebook user id. This has the effect of "partitioning" the users into separate "folders" of the Amazon S3 bucket.</li>
+              <li>The second statement allows users to list only their object's contents by enforcing the prefix condition on the specified bucket.</li>
+	    </ul>
+	</p>
+
+<h1>The Amazon S3 Personal File Store Sample Application</h1>
+
+<h2>Connecting with the Identity Provider</h2>
+
+    <p>Web Identity Federation and this sample application support three Identity Providers, <a href="http://www.facebook.com">Facebook</a>, <a href="http://plus.google.com">Google</a>, and <a href="http://amazon.com/">Amazon</a>.  By default, only Facebook login is enabled in the sample and this article will discuss how it is integrated.  Please refer to the README HTML files included with the sample to see how to enable login with Google and Amazon.  This sample includes version 3.2.1 of the <a href="https://developers.facebook.com/ios/">Facebook SDK for iOS</a> and version 3.0.1 of the <a href="https://developers.facebook.com/android/">Facebook SDK for Android</a>. Using newer versions of the Facebook SDK may require modifications of the sample for compatability.</p>
+
+    <p>After successfully authenticating with Facebook, your application will be able to access a Facebook <code>Session</code> (<code>FBSession</code> on iOS).  This session will include an <code>access_token</code> which it will need to send to AWS STS along with some additional information.
+	    <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+SecurityTokenServiceAssumeRoleWithWebIdentityRequest *request = [[[SecurityTokenServiceAssumeRoleWithWebIdentityRequest alloc] init] autorelease];
+request.webIdentityToken = session.accesToken;
+request.providerId = @"graph.facebook.com";
+request.roleArn = ROLE_ARN;
+request.roleSessionName = @"wifSession";
+
+SecurityTokenServiceAssumeRoleWithWebIdentityResponse *response = [sts assumeRoleWithWebIdentity:request];
+
+NSString *subjectFromWIF = response.subjectFromWebIdentityToken;
+AmazonCredentials *credentials = [[[AmazonCredentials alloc] initWithAccessKey:response.credentials.accessKeyId
+                                                                 withSecretKey:response.credentials.secretAccessKey
+                                                             withSecurityToken:response.credentials.sessionToken] autorelease];
+
+s3 = [[AmazonS3Client alloc] autorelease];
+[s3 initWithCredentials:credentials];
+</pre>
+                </table>
+            </p>
+            <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+AssumeRoleWithWebIdentityRequest request = new AssumeRoleWithWebIdentityRequest()
+                                                .withWebIdentityToken(session.getAccessToken())
+                                                .withProviderId("graph.facebook.com")
+                                                .withRoleArn(ROLE_ARN)
+                                                .withRoleSessionName("wifSession");
+
+AssumeRoleWithWebIdentityResult result = sts.assumeRoleWithWebIdentity(request);
+
+Credentials stsCredentials = result.getCredentials();
+String subjectFromWIF = result.getSubjectFromWebIdentityToken();
+BasicSessionCredentials credentials = new BasicSessionCredentials(stsCredentials.getAccessKeyId(),
+                                                                  stsCredentials.getSecretAccessKey(),
+                                                                  stsCredentials.getSessionToken());
+
+s3Client = new AmazonS3Client(credentials);
+</pre>
+                </table>
+            </p>
+
+    <p>The required additional information which we need to supply to the request is:
+		<ul>
+		  <li><code>ProviderId</code> - the name of the IdP.  The supported values are <b>graph.facebook.com</b>, <b>www.amazon.com</b>, and <b>googleapis.com</b>.</li>
+		  <li><code>RoleArn</code> - the Amazon Resource Name of the Role the user will assume.  Will be of the format <b>arn:aws:iam::123456789:role/myWebIdentityRole</b>.</li>
+		  <li><code>RoleSessionName</code> - the name to give to this session.  Will be used to identify the session.</li>
+		</ul>
+
+	It is also possible to control the duration of the session token generated, though the same restrictions exist for WIF calls as other AWS STS calls. Refer to the <a href="http://docs.aws.amazon.com/STS/latest/APIReference/">AWS STS API</a> guide for more details.</p>
+
+    <p>If we call AWS STS as above, we still need to extract the credentials and the user identifier from the identity provider from the response object and pass them to our individual service clients. Our application would also need to call <code>AssumeRoleWithWebIndentity</code> each time our AWS credentials expire.  To help with managing WIF credentials, both the iOS and Android SDKs offer a credentials provider which wraps the calls to <code>AssumeRoleWithWebIdentity</code>.
+
+		<ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+AmazonWIFCredentialsProvider *wif = [[AmazonWIFCredentialsProvider alloc] initWithRole:FB_ROLE_ARN
+                                                                   andWebIdentityToken:self.session.accessTokenData.accessToken
+                                                                          fromProvider:@"graph.facebook.com"];
+
+NSString *subjectFromWIF = wif.subjectFromWIF;
+s3 = [[[AmazonS3Client alloc] autorelease] initWithCredentialsProvider:wif];
+</pre>
+                </table>
+            </p>
+            <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+WebIdentityFederationSessionCredentialsProvider wif =
+         new WebIdentityFederationSessionCredentialsProvider(fbSession.getAccessToken(),
+                                                             "graph.facebook.com",
+                                                             ROLE_ARN);
+String subjectFromWIF = wif.getSubjectFromWIF();
+s3 = new AmazonS3Client(wif);
+</pre>
+                </table>
+            </p>
+	On iOS, the credentials provider will handle refreshing the AWS credentials for you, on Android <code>refresh()</code> may need to be called manually.  Unfortunately, the Identity Provider's token (access_token for Facebook) also has an expiration.  On both iOS and Android, the provider will not manage the expiration of the Identity Provider's credentials. Please refer to the individual prodiver's documentation for how to manage expiration of credentials.</p>
+
+<h2>Accessing Partitioned S3</h2>
+		
+    <p>
+        The policy we applied to our WIF role requires the AWS Mobile SDKs to be used in a specific fashion in order to list, get, and put objects within the user's partition of Amazon S3.  In the following section, we show the relevant code snippets from the sample application.</p>
+
+            <h3>Put Object</h3>
+            <p>Putting objects into the application bucket requires that the user's username be a prefix followed by the forward slash ("/") character.</p>
+            <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+NSString *keyName = [NSString stringWithFormat:@"%@/%@", subjectFromWIF, objectName.text];
+        
+S3PutObjectRequest *por = [[[S3PutObjectRequest alloc] initWithKey:keyName inBucket:__MY_APPS_BUCKET_NAME__] autorelease];
+por.data = data;
+
+[s3Client putObject:por];
+</pre>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+ByteArrayInputStream bais = new ByteArrayInputStream( data.getBytes() );
+ObjectMetadata metadata = new ObjectMetadata();
+metadata.setContentLength( data.getBytes().length );
+
+String keyName = subjectFromWIF + "/" + objectName.getText().toString();
+s3Client.putObject(__MY_APPS_BUCKET_NAME__, keyName, bais, metadata );
+</pre>
+                </table>
+            </p>
+		
+        <h3>Listing Objects</h3>
+            <p>The only requirement to list objects in the application's bucket is to provide the prefix.  The prefix is the user's username followed by a forward slash ("/"), as required by the policy.</p>
+            <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+S3ListObjectsRequest  *listObjectsRequest = [[[S3ListObjectsRequest alloc] initWithName:__MY_APPS_BUCKET_NAME__] autorelease];
+listObjectRequest.prefix = [NSString stringWithFormat:@"%@/", subjectFromWIF];
+
+S3ListObjectsResponse *listObjectResponse = [s3Client listObjects:listObjectRequest];
+</pre>
+                </table>
+            </p>
+            <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+ListObjectsRequest req = new ListObjectsRequest();
+req.setBucketName( __MY_APPS_BUCKET_NAME__ );
+req.setPrefix( subjectFromWIF + "/" );
+		
+ObjectListing objects = s3Client.listObjects( req );
+</pre>
+                </table>
+            </p>
+            
+        <h3>Get Object</h3>
+        <p>
+            When listing the objects, the names returned contain the user-specific prefix as part of the name. Therefore, getting objects does not require additional logic.
+            <ul><li>iOS</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+S3GetObjectRequest  *getObjectRequest  = [[[S3GetObjectRequest alloc] initWithKey:__OBJECT_NAME__ 
+                                                                       withBucket:__MY_APPS_BUCKET_NAME__] autorelease];
+S3GetObjectResponse *getObjectResponse = [s3Client getObject:getObjectRequest];
+</pre>
+                </table>
+            </p>
+    <ul><li>Android</li></ul>
+            <p style="padding-left:2cm;">
+                <table class="sample"><tr><td align="left" >
+                    <pre>
+S3Object objectData = s3Client.getObject( __MY_APPS_BUCKET_NAME__, __OBJECT_NAME__ );                   
+</pre>
+                </table>
+            </p>
+
+        </p>
+    </p>
+
+    <h2>References</h2>
+    <p>The full sample code is included in the AWS Mobile SDKs.  Follow these links to download the AWS Mobile SDKs:</p>
+
+    <ul>
+        <li><a href="http://aws.amazon.com/sdkforios">AWS SDK for iOS</a></li>
+        <li><a href="http://aws.amazon.com/sdkforandroid">AWS SDK for Android</a></li>
+    </ul>
+    
+    <p>For more information about policies, read the following topics:</p>
+    <ul>
+        <li><a href="http://docs.amazonwebservices.com/IAM/latest/UserGuide/PoliciesOverview.html?r=3093">Overview of Policies</a></li>
+        <li><a href="http://docs.amazonwebservices.com/IAM/latest/UserGuide/ExampleIAMPolicies.html">Example Policies</a></li>
+        <li><a href="http://docs.amazonwebservices.com/IAM/latest/UserGuide/AccessPolicyLanguage_HowToWritePolicies.html">How to Write a Policy</a></li>
+        <li><a href="http://docs.amazonwebservices.com/IAM/latest/UserGuide/Using_SpecificProducts.html">Table of Links to Service Specific Policy Documentation</a></li>
+        <li><a href="http://awspolicygen.s3.amazonaws.com/policygen.html">Policy Generator</a></li>
+    </ul>
+    
+    <p>For more information about the AWS Security Token Service, follow this link<p>
+    <ul>
+        <li><a href="http://docs.amazonwebservices.com/STS/latest/APIReference/Welcome.html?r=829">AWS Security Token Service</a></li>
+    </ul>
+    
+    <h2>Questions?</h2>
+    <p>Please feel free to ask questions or post comments in the <a href="https://forums.aws.amazon.com/forum.jspa?forumID=88">Mobile Development Forum</a>.</p>
+    
+</body>
+</html>
