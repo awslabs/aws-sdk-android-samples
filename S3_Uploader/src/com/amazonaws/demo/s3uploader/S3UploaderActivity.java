@@ -17,28 +17,28 @@ package com.amazonaws.demo.s3uploader;
 import java.net.URL;
 import java.util.Date;
 
-import com.amazonaws.demo.s3uploader.R;
-
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.view.View;
 import android.widget.Button;
+
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 
 public class S3UploaderActivity extends Activity {
 
@@ -156,26 +156,45 @@ public class S3UploaderActivity extends Activity {
 			// The file location of the image selected.
 			Uri selectedImage = uris[0];
 
-			String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-			Cursor cursor = getContentResolver().query(selectedImage,
-					filePathColumn, null, null, null);
-			cursor.moveToFirst();
+            ContentResolver resolver = getContentResolver();
+            String fileSizeColumn[] = {OpenableColumns.SIZE}; 
+            
+			Cursor cursor = resolver.query(selectedImage,
+                    fileSizeColumn, null, null, null);
+			
+            cursor.moveToFirst();
 
-			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-			String filePath = cursor.getString(columnIndex);
+            int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+            // If the size is unknown, the value stored is null.  But since an int can't be
+            // null in java, the behavior is implementation-specific, which is just a fancy
+            // term for "unpredictable".  So as a rule, check if it's null before assigning
+            // to an int.  This will happen often:  The storage API allows for remote
+            // files, whose size might not be locally known.
+            String size = null;
+            if (!cursor.isNull(sizeIndex)) {
+                // Technically the column stores an int, but cursor.getString will do the
+                // conversion automatically.
+                size = cursor.getString(sizeIndex);
+            } 
+            
 			cursor.close();
 
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentType(resolver.getType(selectedImage));
+			if(size != null){
+			    metadata.setContentLength(Long.parseLong(size));
+			}
+			
 			S3TaskResult result = new S3TaskResult();
 
 			// Put the image data into S3.
 			try {
 				s3Client.createBucket(Constants.getPictureBucket());
 
-				// Content type is determined by file extension.
 				PutObjectRequest por = new PutObjectRequest(
 						Constants.getPictureBucket(), Constants.PICTURE_NAME,
-						new java.io.File(filePath));
+						resolver.openInputStream(selectedImage),metadata);
 				s3Client.putObject(por);
 			} catch (Exception exception) {
 
