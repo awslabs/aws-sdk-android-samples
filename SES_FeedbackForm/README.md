@@ -9,6 +9,8 @@ This sample demonstrates how Android can interact with Amazon SES to record user
    * Select the projects you want to import
    * Click Finish.
 
+2. Copy the AWS SDK for Android jar (aws-android-sdk-X.X.X-debug.jar) into the libs directory for the project. 
+
 2. Update your App configuration:
    * Open the AwsCredential.properties file located in src/com/amazon/aws/demo/feedback.
    * Edit the file and provide your AWS Credentials.

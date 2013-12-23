@@ -9,6 +9,8 @@ This sample demonstrates how Android can interact with Amazon SimpleDB to store 
    * Select the projects you want to import
    * Click Finish.
 
+2. Copy the AWS SDK for Android jar (aws-android-sdk-X.X.X-debug.jar) into the libs directory for the project. 
+
 2. Update your App configuration:
    * Open the Constants.java file located in src/com/amazonaws/demo/highscores.
    * Edit the file and provide your AWS Credentials.
