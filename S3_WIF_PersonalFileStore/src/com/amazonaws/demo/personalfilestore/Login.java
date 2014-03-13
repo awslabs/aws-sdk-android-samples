@@ -56,13 +56,11 @@ public class Login extends AlertActivity {
 
 
 
-    public void wireButtons() {
-        /* FB_LOGIN BEGIN 
+    public void wireButtons() { 
         fbButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { startActivityForResult(new Intent(Login.this, FacebookLogin.class), FB_LOGIN); }
         });
-         FB_LOGIN END */
 
         /* AMZN_LOGIN BEGIN
     	amznButton.setOnClickListener(new View.OnClickListener() {

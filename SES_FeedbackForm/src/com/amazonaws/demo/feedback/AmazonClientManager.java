@@ -16,6 +16,8 @@ package com.amazonaws.demo.feedback;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
 
 import android.util.Log;
@@ -47,6 +49,8 @@ public class AmazonClientManager {
         
             AWSCredentials credentials = new BasicAWSCredentials( PropertyLoader.getInstance().getAccessKey(), PropertyLoader.getInstance().getSecretKey() );
 		    sesClient = new AmazonSimpleEmailServiceClient( credentials );
+		    //Set the region to US_WEST_2 as the default region
+		    sesClient.setRegion(Region.getRegion(Regions.US_WEST_2));
         }
     }
     

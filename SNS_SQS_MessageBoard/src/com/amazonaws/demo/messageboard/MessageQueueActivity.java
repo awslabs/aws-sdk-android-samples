@@ -15,11 +15,15 @@
 
 package com.amazonaws.demo.messageboard;
 
+import java.util.List;
+
 import com.amazonaws.demo.messageboard.R;
 import com.amazonaws.services.sqs.model.Message;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -94,19 +98,35 @@ public class MessageQueueActivity extends Activity {
 			messageQueue = (ListView) findViewById(R.id.queueList);
 			adapter = new MessageQueueAdapter(MessageQueueActivity.this,
 					R.layout.messageitem);
-			adapter.getMessages().addAll(
-					MessageBoard.instance().getMessageQueue());
-
+			List<Message> messages = MessageBoard.instance().getMessageQueue();
+			if(!messages.isEmpty()){
+				adapter.getMessages().addAll(messages);
+			}
 			return null;
 		}
 
 		protected void onPostExecute(Void result) {
-
-			messageQueue.setAdapter(adapter);
-			registerForContextMenu(messageQueue);
-
+			if(adapter.getMessages().isEmpty()){
+				displayViewMessageErrorAlert();
+			}else{
+				messageQueue.setAdapter(adapter);
+				registerForContextMenu(messageQueue);
+			}
 			dialog.dismiss();
 		}
+	}
+	
+	protected void displayViewMessageErrorAlert() {
+		AlertDialog.Builder confirm = new AlertDialog.Builder(this);
+		confirm.setTitle("No messages found");
+		confirm.setMessage("Either the queue does not have any messages or please try after "
+				+ MessageBoard.VISIBILITY_TIMEOUT + " seconds.");
+		confirm.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+		});
+		confirm.show();
 	}
 
 	private class DeleteMessageTask extends AsyncTask<Integer, Void, Void> {

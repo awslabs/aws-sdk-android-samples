@@ -44,6 +44,8 @@ import com.amazonaws.services.sns.model.Subscription;
 import com.amazonaws.services.sns.model.Topic;
 import com.amazonaws.services.sns.model.UnsubscribeRequest;
 import com.amazonaws.services.sqs.AmazonSQSClient;
+import com.amazonaws.services.sqs.model.ChangeMessageVisibilityBatchRequest;
+import com.amazonaws.services.sqs.model.ChangeMessageVisibilityBatchRequestEntry;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.CreateQueueResult;
 import com.amazonaws.services.sqs.model.DeleteMessageRequest;
@@ -59,7 +61,11 @@ import com.amazonaws.services.sqs.model.SetQueueAttributesRequest;
 // SNS Topic and Amazon SQS Queue used in this sample application.
 public class MessageBoard {
 
+	private static final int ZERO_VISIBILITY_TIMEOUT = 0;
+	private static final int WAIT_TIME = 1;
+	private static final int MAX_NUMBER_OF_MESSAGES = 10;
 	private static MessageBoard instance = null;
+	public static final int VISIBILITY_TIMEOUT = 30;
 	private AmazonSNSClient snsClient = null;
 	private AmazonSQSClient sqsClient = null;
 	private String topicARN;
@@ -178,31 +184,77 @@ public class MessageBoard {
 		}
 	}
 
-	public List<Message> getMessageQueue() {
-		try {
-			ReceiveMessageRequest rmr = new ReceiveMessageRequest(this.queueUrl);
-			rmr.setMaxNumberOfMessages(10);
-			rmr.setVisibilityTimeout(2);
+    public List<Message> getMessageQueue() {
+        try {
+            ReceiveMessageRequest rmr = new ReceiveMessageRequest(this.queueUrl);
+            rmr.setMaxNumberOfMessages(MAX_NUMBER_OF_MESSAGES);
+            // Three seconds are good considering mobile environment
+            rmr.setWaitTimeSeconds(WAIT_TIME);
+            rmr.setVisibilityTimeout(VISIBILITY_TIMEOUT);
+            List<Message> messages = null;
 
-			List<Message> messages = null;
-			ArrayList<Message> allMessages = new ArrayList<Message>(100);
-			do {
-				ReceiveMessageResult result = this.sqsClient
-						.receiveMessage(rmr);
-				messages = result.getMessages();
-				allMessages.addAll(messages);
-				try {
-					Thread.sleep(1 * 1000);
-				} catch (Exception exception) {
-				}
-			} while (!messages.isEmpty());
+            /*
+             * Create a list of ChangeMessageVisibilityBatchRequestEntry for all
+             * the messages received which later will be used to change the
+             * visibility timeout of all the messages in the queue.
+             */
+            ArrayList<Message> allMessages = new ArrayList<Message>(100);
 
-			return allMessages;
-		} catch (Exception exception) {
-			System.out.println("Exception  = " + exception);
-			return Collections.emptyList();
-		}
-	}
+            do {
+                ReceiveMessageResult result = this.sqsClient
+                        .receiveMessage(rmr);
+                messages = result.getMessages();
+                allMessages.addAll(messages);
+            } while (!messages.isEmpty());
+
+            /*
+             * After receiving all the messages change the visibility of the
+             * messages to 0 again so that they are available to other
+             * consumers, as well as if this operation is performed again it
+             * should give the correct results. The batch operation is used to
+             * change the visibility timeout. The batch operation has a limit of
+             * ten messages per request which the following code takes care of.
+             * Developers can also use the result of this operation to get a
+             * list of successful and failed messages. For more information
+             * please refer to the documentation at
+             * http://docs.aws.amazon.com/AWSSimpleQueueService
+             * /latest/APIReference/API_ChangeMessageVisibilityBatch.html
+             */
+
+            ArrayList<ChangeMessageVisibilityBatchRequestEntry> batchList = new ArrayList<ChangeMessageVisibilityBatchRequestEntry>();
+            ChangeMessageVisibilityBatchRequestEntry entry;
+            ChangeMessageVisibilityBatchRequest batchRequest = new ChangeMessageVisibilityBatchRequest();
+            batchRequest.setQueueUrl(this.queueUrl);
+
+            if (!allMessages.isEmpty()) {
+                int counter = 0;
+                int total = allMessages.size();
+
+                for (Message message : allMessages) {
+                    entry = new ChangeMessageVisibilityBatchRequestEntry();
+                    entry.setId(message.getMessageId());
+                    entry.setReceiptHandle(message.getReceiptHandle());
+                    entry.setVisibilityTimeout(ZERO_VISIBILITY_TIMEOUT);
+                    batchList.add(entry);
+                    counter++;
+                    total--;
+                    if (counter == 10 || total == 0) {
+                        counter = 0;
+                        batchRequest.setEntries(batchList);
+                        this.sqsClient
+                                .changeMessageVisibilityBatch(batchRequest);
+                        batchList = new ArrayList<ChangeMessageVisibilityBatchRequestEntry>();
+                    }
+                }
+                return allMessages;
+            } else
+                return Collections.emptyList();
+
+        } catch (Exception exception) {
+            System.out.println("Exception  = " + exception);
+            return Collections.emptyList();
+        }
+    }
 
 	protected void subscribeQueue() {
 		try {
@@ -364,4 +416,5 @@ public class MessageBoard {
 			System.out.println("Exception = " + exception);
 		}
 	}
+
 }

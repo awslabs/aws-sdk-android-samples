@@ -68,6 +68,7 @@ public class AddScoreActivity extends Activity {
 		protected Void doInBackground(HighScore... highScores) {
 
 			HighScoreList hs = new HighScoreList();
+			hs.createHighScoresDomain();
 			hs.addHighScore(highScores[0]);
 
 			return null;

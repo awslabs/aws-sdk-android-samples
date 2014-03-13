@@ -13,7 +13,8 @@ This sample demonstrates how Android can interact with Amazon DynamoDB to store 
 
 2. Update your App configuration:
    * Open the Strings.xml file located in res/values
-   * Edit the file and provide the following for each WIF provider:
+   * See the [README](../S3_WIF_PersonalFileStore/README.md) file under `/S3_WIF_PersonalFileStore/` for configuring the Web Identity Federation providers.
+   * Edit the file and provide the following for each Web Identity Federation provider:
      + "fb_app_id", "app_id" and "fb_role_arn" if using Facebook
      + "google_client_id" and "google_role_arn" if using Google+
      + "amzn_api_key" and "amzn_role_arn" if using Login With Amazon   
