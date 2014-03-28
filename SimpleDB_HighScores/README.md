@@ -13,7 +13,8 @@ This sample demonstrates how Android can interact with Amazon SimpleDB to store 
 
 2. Update your App configuration:
    * Open the Constants.java file located in src/com/amazonaws/demo/highscores.
-   * Edit the file and provide your AWS Credentials.
+   * Edit the file and provide your AWS Credentials.  
+	**DO NOT EMBED YOUR CREDENTIALS IN PRODUCTION APPS.**
 
 3. Run the project:
    * Go to Project ->  Clean.

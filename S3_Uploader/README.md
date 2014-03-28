@@ -13,7 +13,8 @@ This sample demonstrates how Android can interact with Amazon S3.  For a detaile
 
 2. Update your App configuration:
    * Open the Constants.java file located in src/com/amazonaws/demo/s3uploader.
-   * Edit the file and provide your AWS Credentials.
+   * Edit the file and provide your AWS Credentials.  
+	**DO NOT EMBED YOUR CREDENTIALS IN PRODUCTION APPS.**
    * In the Constants.java file is the name of the Amazon S3 bucket used to store the picture.
        You can change the bucket name to suit your purposes.
 

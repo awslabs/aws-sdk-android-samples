@@ -13,7 +13,8 @@ This sample demonstrates how Android can interact with Amazon SES to record user
 
 2. Update your App configuration:
    * Open the AwsCredential.properties file located in src/com/amazon/aws/demo/feedback.
-   * Edit the file and provide your AWS Credentials.
+   * Edit the file and provide your AWS Credentials.  
+	**DO NOT EMBED YOUR CREDENTIALS IN PRODUCTION APPS.**
 
 3. Run the project:
    * Go to Project ->  Clean.

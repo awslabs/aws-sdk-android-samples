@@ -13,7 +13,8 @@ This sample demonstrates how Android can interact with Amazon AWS.
 
 3. Update your App configuration:
    * Open the AwsCredential.properties file located in src/com/amazonaws/demo.
-   * Edit the file and provide your AWS Credentials.
+   * Edit the file and provide your AWS Credentials.  
+	**DO NOT EMBED YOUR CREDENTIALS IN PRODUCTION APPS.**
 
 4. Run the project:
    * Go to Project ->  Clean.
