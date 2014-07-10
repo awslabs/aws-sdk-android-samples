@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:text="Cognito Sync Demo"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/btnLoginFacebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="29dp"
+        android:text="Facebook login" />
+
+    <Button
+        android:id="@+id/btnLoginLWA"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnLoginFacebook"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:text="Login with Amazon"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnListDatasets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnLoginLWA"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:text="Browse your data" />
+
+    <Button
+        android:id="@+id/btnWipedata"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnListDatasets"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:text="Wipe Data" />
+
+</RelativeLayout>
