@@ -18,5 +18,11 @@ Please refer to README file in each folder for more specific instructions.
     * AWS Services involved:
       + Amazon S3
       + Amazon Cognito
+      
+#### [DynamoDBMapper](DynamoDBMapper_UserPreference_Cognito/README.md)
+* This is a sample mobile application that demonstrates how to use Amazon DynamoDB Object Mapper.
+    * AWS Services involved:
+      + Amazon Cognito Identity
+      + Amazon DynamoDB
      
 
