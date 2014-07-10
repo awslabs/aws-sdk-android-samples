@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textViewUserName"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:gravity="center" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:text="@string/auto_login"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_weight="0.7" />
+
+        <CheckBox
+            android:id="@+id/checkBoxAutoLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right|center_vertical" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:text="@string/color_theme"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_weight="0.7" />
+
+        <Spinner
+            android:id="@+id/spinnerColorTheme"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/color_theme" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:text="@string/vibrate"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_weight="0.7" />
+        
+        <CheckBox
+            android:id="@+id/checkBoxVibrate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:text="@string/silent"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_weight="0.7" />
+        
+        <CheckBox
+            android:id="@+id/checkBoxSilent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>

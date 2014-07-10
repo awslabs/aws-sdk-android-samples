@@ -1,0 +1,356 @@
+<html>
+<head>
+    <title>Using Amazon DynamoDB Object Mapping (OM) with the AWS SDK for Android</title>
+    <style type="text/css">
+        table.sample {
+	        border-width: 2px;
+	        border-spacing: 5px;
+	        border-style: dashed;
+	        border-color: cornflowerblue;
+        }
+        table.sample td {
+	        padding: 5px;
+        }        
+        table.sample tr {
+	        padding: 5px;
+        }        
+    </style>    
+</head>
+<body style="padding: 10px">
+    <h1>Using Amazon DynamoDB Object Mapping (OM) with the AWS SDK for Android</h1>
+    <p>
+    <a href="http://aws.amazon.com/dynamodb/">Amazon DynamoDB</a> is a fast, highly scalable, highly available, cost-effective, non-relational database service. Amazon DynamoDB removes traditional scalability limitations on data storage while maintaining low latency and predictable performance.</p>
+    
+    <p>The AWS SDK for Android supports Amazon DynamoDB, and this article discusses a new AWS SDK
+            for Android add-on library that enables you to map your client-side classes to the
+            Amazon DynamoDB tables. The individual object instances map to items in a table, and
+            they enable you to perform various create, read, update, and delete (CRUD) operations on
+            items, and to execute queries. Please review the <a
+                href="https://aws.amazon.com/articles/7439603059327617">User Preferences</a> sample
+            app to familiarize youreslf with using Amazon DynamoDB and Cognito Identity Broker(CIB)
+            with the AWS SDK for Android.</p>
+    
+    <p>The complete sample code and project files are included in the AWS SDK for Android. A link to
+            the SDK is available at the end of this article. </p>
+    
+    <h2>Overview</h2>
+    <p>In Amazon DynamoDB, a database is a collection of tables. A table is a collection of items,
+            and each item is a collection of attributes. For this app, each item in the table
+            represents an individual user. Each item has multiple attributes, which include the
+            user's name and preferences. Each item also has a hash key&mdash;in this case,
+                <code>userNo</code>&mdash;which is the primary key for the table. This item in
+            Amazon DynamoDB will be mapped to a <code>UserPreference</code> Java object, and developers can
+            directly manipulate the item through the <code>UserPreference</code> instance.</p>
+    
+    <p>The app demonstrates how to add, modify, and remove users, and retrieve their preference data using Amazon DynamoDB OM. The Amazon DynamoDB object model (OM) does not provide APIs to create, update, or delete tables. Only the low-level APIs enable you to perform these operations. The <a href="https://aws.amazon.com/articles/7439603059327617">User Preferences</a> article discusses how to use the low-level APIs with the AWS SDK for Android.</p>
+    
+    <h2>Creating an Amazon DynamoDB Client and Mapper</h2>
+    <p>To make low-level service requests to Amazon DynamoDB, you need to instantiate an Amazon DynamoDB <i>client</i>. In order to use the Amazon DynamoDB OM, you need to instantiate a DynamoDB Mapper object with the Amazon DynamoDB client. The code below shows how to create an Amazon DynamoDB OM using CIB.</p>
+	<table class="sample"><tr><td align="left">
+                    <pre>
+CognitoCredentialsProvider credentials = new CognitoCredentialsProvider(
+        context,
+        loader.getAccessKeyID(),
+        loader.getIdentityPoolId(),
+        loader.getUnauthRoleArn(),
+        null);
+
+AmazonDynamoDBClient ddb = new AmazonDynamoDBClient(credentials);
+DynamoDBMapper mapper = new DynamoDBMapper(ddb);</pre></td></tr>
+	</table>
+
+		
+    <h2>Defining Mapping Class</h2>
+    <p>You can map a class in your client app to the TestUserPreference table as shown in the
+            following code example. The code snippet defines a <code>UserPreference</code> class and
+            uses the annotations that are defined by Amazon DynamoDB to establish the mapping.</p>
+    <ul>
+        <li><code>@DynamoDBTable</code> identifies the target table in Amazon DynamoDB.</li>
+        <li><code>@DynamoDBHashKey</code> maps a class property to the hash attribute of the table.</li>
+        <li><code>@DynamoDBAttribute</code> maps a property to an item attribute.</li>
+    </ul>
+    <p><span style="font-weight:bold;">NOTE:</span> The DynamoDB OM provides the <code>@DynamoDBVersionAttribute</code> annotation type that you can use to enable optimistic locking that ensures that the client-side item that you are updating (or deleting) is the same as the item on the server-side. For more information on how to use optimistic locking with the DynamoDB OM, please read this <a href="http://docs.amazonwebservices.com/amazondynamodb/latest/developerguide/JavaVersionSupportHLAPI.html">Developer Guide</a>. For a complete list of the annotations that the DynamoDB OM offers for you to map your classes and properties to tables and attributes, go to <a href="http://docs.amazonwebservices.com/amazondynamodb/latest/developerguide/JavaSDKHighLevel.html#JavaDeclarativeTagsList">this topic</a>.</p>
+    <table class="sample">
+	<tr>
+	    <td><pre>@DynamoDBTable(tableName = "TestUserPreference")
+public static class UserPreference {
+    private int userNo;
+    private String firstName;
+    private String lastName;
+    private Boolean autoLogin;
+    private Boolean vibrate;
+    private Boolean silent;
+    private String colorTheme;
+
+    @DynamoDBHashKey(attributeName = "userNo")
+    public int getUserNo() {
+        return userNo;
+    }
+
+    public void setUserNo(int userNo) {
+        this.userNo = userNo;
+    }
+
+    @DynamoDBAttribute(attributeName = "firstName")
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @DynamoDBAttribute(attributeName = "lastName")
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @DynamoDBAttribute(attributeName = "autoLogin")
+    public Boolean isAutoLogin() {
+        return autoLogin;
+    }
+
+    public void setAutoLogin(Boolean autoLogin) {
+        this.autoLogin = autoLogin;
+    }
+
+    @DynamoDBAttribute(attributeName = "vibrate")
+    public Boolean isVibrate() {
+        return vibrate;
+    }
+
+    public void setVibrate(Boolean vibrate) {
+        this.vibrate = vibrate;
+    }
+
+    @DynamoDBAttribute(attributeName = "silent")
+    public Boolean isSilent() {
+        return silent;
+    }
+
+    public void setSilent(Boolean silent) {
+        this.silent = silent;
+    }
+
+    @DynamoDBAttribute(attributeName = "colorTheme")
+    public String getColorTheme() {
+        return colorTheme;
+    }
+
+    public void setColorTheme(String colorTheme) {
+        this.colorTheme = colorTheme;
+    }
+}</pre>
+                </td>
+	</tr>
+    </table>
+    <p><span style="font-weight:bold;">NOTE:</span> Please note that <code>userNo</code> is primitive, and <code>autoLogin</code>, <code>vibrate</code>, and <code>silent</code> have nullable types. Primitives and nullable types behave differently with the DynamoDB OM. Nullable types that haven't been set will not be sent to the Amazon DynamoDB on a <code>save()</code>; on the other hand, primitives that haven't been set will be sent to the Amazon DynamoDB as their default values. Also, the version attributes must use nullable types. For this example app, <code>userNo</code> is a hash key that always has a value, so it's defined as a primitive value. <code>autoLogin</code>, <code>vibrate</code>, and <code>silent</code> are defined as nullable types so that it's easier to change their default values in the future. In general, using nullable types is recommended.</p>
+    
+    <h2>Creating Users (Item Creation)</h2>
+    <p>For each user, we'll create an item in the table. An item is a collection of attribute/value pairs. For each item, we'll have three attributes: <code>userNo</code>, <code>firstName</code>, and <code>lastName</code>. With the low-level API, these are added to a <i>put item</i> request in order to create the item. With the Amazon DynamoDB OM, you instantiate a <code>UserPreference</code> object and set its attributes; then you can persist the object into the Amazon DynamoDB table by calling the <code>save</code> method on the DynamoDB Mapper. This simplifies the code and makes it more readable.</p>
+
+<table class="sample" rules="cols">
+    <tr style="text-align:center;font-weight:bold;">
+	<th>Low-level API</th>
+	<th>Amazon DynamoDB OM</th>
+    </tr>
+    <tr>
+	<td style="vertical-align: text-top;">
+                    <pre>HashMap&lt;String, AttributeValue&gt; item =
+        new HashMap&lt;String, AttributeValue&gt;();
+
+AttributeValue userNo = new AttributeValue()
+        .withN(String.valueOf(i));
+item.put("userNo", userNo);
+
+AttributeValue firstName = new AttributeValue()
+        .withS(Constants.getRandomName());
+item.put("firstName", firstName);
+
+AttributeValue lastName = new AttributeValue()
+        .withS(Constants.getRandomName());
+item.put("lastName", lastName);
+
+PutItemRequest request = new PutItemRequest()
+        .withTableName(PropertyLoader
+                .getInstance()
+                .getTestTableName())
+        .withItem(item);
+
+ddb.putItem(request);</pre>
+                </td>
+	<td style="vertical-align: text-top;">
+                    <pre>UserPreference userPreference = new UserPreference();
+userPreference.setUserNo(i);
+userPreference.setFirstName(Constants.getRandomName());
+userPreference.setLastName(Constants.getRandomName());
+
+mapper.save(userPreference);</pre>
+                </td>
+    </tr>
+</table>
+
+    <h2>Deleting Users (Item Deletion)</h2>
+    <p>Removing a user from the list means deleting the corresponding item from the table. With the low-level API, we specify the item we want to delete using the hash key for the item. With the Amazon DynamoDB OM, you can simply call a <code>delete</code> method and pass a <code>UserPreference</code> object to the DynamoDB Mapper object.</p>
+    
+<table class="sample" rules="cols">
+    <tr style="text-align:center;font-weight:bold;">
+	<th>Low-level API</th>
+	<th>Amazon DynamoDB OM</th>
+    </tr>
+    <tr>
+	<td style="vertical-align: text-top;">
+                    <pre>
+HashMap&lt;String, AttributeValue&gt; keyMap =
+        new HashMap&lt;String, AttributeValue&gt;();
+keyMap.put("userNo", targetValue);
+Key primaryKey = new Key().withHashKeyElement(targetValue);
+DeleteItemRequest request = new DeleteItemRequest()
+        .withTableName(PropertyLoader
+                .getInstance()
+                .getTestTableName())
+        .withKey(keyMap);
+        
+ddb.deleteItem(request);</pre>
+	</td>
+	<td style="vertical-align: text-top;">
+	    <pre>
+mapper.delete(deleteUserPreference);</pre>
+	</td>
+    </tr>
+</table>
+    
+    <h2>Listing Users (Table Scan)</h2>
+    <p>We can retrieve a collection of users with a <i>scan request</i>. A scan request simply scans the table and returns the results in an undetermined order.</p>
+    <p>The list returned with the Amazon DynamoDB OM is lazily loaded when possible, so calls to DynamoDB will be made only as needed. When you need to download all of the dataset in advance, you can call a <code>size()</code> method on the list to fetch the entire list.</p>
+    <p>Although the List returned in the low-level API is modifiable, the returned list in the Amazon DynamoDB OM is unmodifiable, and any attempts to modify the list will result in an exception. You may need to create a modifiable List object and move all of the data in order to use the result as a data source for a modifiable user interface component such as an editable <code>ListActivity</code>.</p>
+    
+    <p>Scan is an expensive operation and should be used with care to avoid disrupting your higher priority production traffic on the table.  See the <i>Amazon DynamoDB Developer Guide</i> for more recommendations for safely using the Scan operation.
+    </p>
+
+<table class="sample" rules="cols">
+    <tr style="text-align:center;font-weight:bold;">
+	<th>Low-level API</th>
+	<th>Amazon DynamoDB OM</th>
+    </tr>
+    <tr>
+	<td style="vertical-align: text-top;">
+                    <pre>
+ScanRequest request = new ScanRequest();
+request.setTableName(PropertyLoader
+            .getInstance()
+            .getTestTableName());
+ScanResult result = ddb.scan(request);
+
+List&lt;Map&lt;String, AttributeValue&gt;&gt; users = result.getItems();
+</pre>
+	</td>
+	<td style="vertical-align: text-top;">
+                    <pre>
+DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+PaginatedScanList&lt;UserPreference&gt; result = mapper.scan(
+        UserPreference.class,
+        scanExpression);</pre>
+	</td>
+    </tr>
+</table>
+
+    <h2>Retrieving a User's Preferences (Item Retrieval)</h2>
+    <p>Knowing a user's <code>userNo</code>, the hash key of the table, it is easy to find the item for the user. 
+    This next snippet shows how to get all the attributes for an item using the hash key.</p>
+
+<table class="sample" rules="cols">
+    <tr style="text-align:center;font-weight:bold;">
+	<th>Low-level API</th>
+	<th>Amazon DynamoDB OM</th>
+    </tr>
+    <tr>
+	<td style="vertical-align: text-top;">
+                    <pre>
+AttributeValue userNoAttr = new AttributeValue().withN(String
+        .valueOf(userNo));
+HashMap&lt;String, AttributeValue&gt; keyMap =
+        new HashMap&lt;String, AttributeValue&gt;();
+keyMap.put("userNo", userNoAttr);
+GetItemRequest request = new GetItemRequest()
+        .withTableName(PropertyLoader
+                .getInstance()
+                .getTestTableName())
+        .withKey(keyMap);
+
+GetItemResult result = ddb.getItem(request);
+
+Map&lt;String, AttributeValue&gt; userPreferences = result.getItem();
+</pre>
+	</td>
+	<td style="vertical-align: text-top;">
+                    <pre>
+UserPreference userPreference = mapper.load(UserPreference.class, userNo);</pre>
+	</td>
+    </tr>
+</table>
+    
+    <h2>Modifying User Preferences (Item Update)</h2>
+    <p>With the low-level API, a collection of attribute/value pairs are added to an <i>update item</i> request. With the DynamoDB Amazon DynamoDB OM, you update attributes on a <code>UserPreference</code> object, and then you can simply call the <code>save</code> method on the DynamoDB Mapper.</p>
+<table class="sample" rules="cols">
+    <tr style="text-align:center;font-weight:bold;">
+	<th>Low-level API</th>
+	<th>Amazon DynamoDB OM</th>
+    </tr>
+    <tr>
+	<td style="vertical-align: text-top;"><pre>
+AttributeValue av = new AttributeValue().withS(value);
+AttributeValueUpdate avu = new AttributeValueUpdate()
+        .withValue(av)
+        .withAction(AttributeAction.PUT);
+HashMap&lt;String, AttributeValue&gt; keyMap =
+        new HashMap&lt;String, AttributeValue&gt;();
+keyMap.put("userNo", targetValue);
+HashMap&lt;String, AttributeValueUpdate&gt; updates =
+        new HashMap&lt;String, AttributeValueUpdate&gt;();
+updates.put(key, avu);
+
+UpdateItemRequest request = new UpdateItemRequest()
+        .withTableName(PropertyLoader
+                .getInstance()
+                .getTestTableName())
+        .withKey(keyMap)
+        .withAttributeUpdates(updates);
+
+ddb.updateItem(request);</pre>
+	</td>
+	<td style="vertical-align: text-top;"><pre>
+updateUserPreference.setAutoLogin(isAutoLogin);
+updateUserPreference.setVibrate(isVibrate);
+updateUserPreference.setSilent(isSilent);
+updateUserPreference.setColorTheme(colorTheme);
+
+mapper.save(updateUserPreference);</pre>
+	</td>
+    </tr>
+</table>
+
+    <h2>Conclusion and Additional Resources</h2>
+    <p>The code in this article demonstrates how to use the Amazon DynamoDB OM to perform various operations on items in Amazon DynamoDB tables. You can find more information about Amazon DynamoDB <a href="http://aws.amazon.com/dynamodb/">here</a>. Sample apps that include the code from this article are provided with the SDK. You can download the SDK using the following link:</p>
+
+    <ul>
+        <li><a href="http://aws.amazon.com/sdkforandroid">AWS SDK for Android</a></li>
+    </ul>
+    <p>The Amazon DynamoDB OM is supported for the Android platforms with API level 10 and higher (Android 2.3 and higher).</p>
+    <p>For more information about using Amazon DynamoDB OM, see the following article:</p>
+    <ul>
+	<li><a href="http://docs.amazonwebservices.com/amazondynamodb/latest/developerguide/JavaSDKHighLevel.html">Using the Object Persistence Model with Amazon DynamoDB</a></li>
+    </ul>
+    <p>For recommendations about Amazon DynamoDB scan API, see the following FAQ:</p>
+    <ul>
+	<li><a href="http://aws.amazon.com/dynamodb/faqs/#Can_I_make_a_query_based_on_a_non-primary_key_attribute">Amazon DynamoDB FAQs</a></li>
+    </ul>
+    
+    <h2>Questions?</h2>
+    <p>Please feel free to ask questions or provide comments in the <a href="https://forums.aws.amazon.com/forum.jspa?forumID=88">Mobile Development Forum</a>.</p>
+</body>
+</html>

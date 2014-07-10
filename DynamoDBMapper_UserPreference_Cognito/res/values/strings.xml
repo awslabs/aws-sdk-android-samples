@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">UserPreferenceDemo</string>
+    <string name="step1">1. Create Table</string>
+    <string name="step2">2. Insert Users</string>
+    <string name="step3">3. List Users</string>
+    <string name="step4">4. Delete Table</string>
+    <string name="color_theme">Color Theme</string>
+    <string name="auto_login">Auto Login</string>
+    <string name="vibrate">Vibrate</string>
+    <string name="silent">Silent</string>
+
+    <string-array name="color_theme">
+        <item>Black</item>
+        <item>Blue</item>
+        <item>Green</item>
+        <item>Red</item>
+        <item>Yellow</item>
+    </string-array>
+    
+</resources>
