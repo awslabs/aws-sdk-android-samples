@@ -74,7 +74,8 @@ build the project from command line, run the command
 
     android update project -p <path_to_project> -t android-10
 
-assuming android is already in your path.
+assuming android is already in your path. If not, you can find it in
+"<path_to_sdk>/tools".
 
 ###Changing Constants
 Before you try to compile the app, you'll first need to change the values in

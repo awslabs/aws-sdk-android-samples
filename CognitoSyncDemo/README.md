@@ -13,7 +13,9 @@ This sample demonstrates how to use Cognito Sync client library on Android. It s
    * aws-android-sdk-X.X.X-core.debug.jar
    * extras/aws-android-sdk-X.X.X-cognito.debug.jar
 
-3. Update your App configuration for Cognito:
+3. Update the path to the FaceobokSDK in project.properties. By default it points to the one included in the repo so if you just cloned the project and didn't move any of the directories this should not be necessary. (While Facebook Login is required to run the app, the SDK is still required to build)
+
+4. Update your App configuration for Cognito:
    * Make sure you have an identity pool created and configured at https://console.aws.amazon.com/cognito/ and you downloaded the starter code at the last step of the wizard.
    * Open CognitoSyncClientManager.java
    * Update "AWS_ACCOUNT_ID", "IDENTITY_POOL_ID", "UNAUTH_ROLE_ARN", and "AUTH_ROLE_ARN" with the values from the starter code.
@@ -23,7 +25,7 @@ This sample demonstrates how to use Cognito Sync client library on Android. It s
      + Go to Run -> Run.
    * To support Facebook Login and Login with Amazon, continue with step 4 and step 5.
 
-4. To add support for Facebook Login (Optional)
+5. To add support for Facebook Login (Optional)
    * Follow the instructions at https://developers.facebook.com/docs/android/getting-started/ to create a Facebook app
      + For "Package Name", enter com.amazonaws.cognito.sync.demo
      + For "Class Name", enter com.amazonaws.cognito.sync.demo.MainActivity
@@ -35,7 +37,7 @@ This sample demonstrates how to use Cognito Sync client library on Android. It s
      + Open project properties and under Android remove the placeholder Facebook library "path/to/facebook/sdk" and add "FacebookSDK"
    * At this point you can run the sample with Facebook Login.
 
-5. To add support for Login with Amazon. (Optional)
+6. To add support for Login with Amazon. (Optional)
    * Follow the instructions at https://login.amazon.com/android to register a new application
      + For "Label", enter Cognito sync demo
      + For "Package Name", enter com.amazonaws.cognito.sync.demo
