@@ -13,7 +13,7 @@ This sample demonstrates how to use Cognito Sync client library on Android. It s
    * aws-android-sdk-X.X.X-core.debug.jar
    * extras/aws-android-sdk-X.X.X-cognito.debug.jar
 
-3. Update the path to the FaceobokSDK in project.properties. By default it points to the one included in the repo so if you just cloned the project and didn't move any of the directories this should not be necessary. (While Facebook Login is required to run the app, the SDK is still required to build)
+3. Update the path to the FacebookSDK in project.properties. By default it points to the one included in the repo so if you just cloned the project and didn't move any of the directories this should not be necessary. (While Facebook Login is not required to run the app, the SDK is still required to build)
 
 4. Update your App configuration for Cognito:
    * Make sure you have an identity pool created and configured at https://console.aws.amazon.com/cognito/ and you downloaded the starter code at the last step of the wizard.
