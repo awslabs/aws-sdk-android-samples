@@ -18,7 +18,6 @@ use a custom policy)
 7. Fill in a name of your choosing for "Policy Name", and then enter this into
 the "Policy Document" (Replacing YOUR_BUCKET with your unique bucket's name)
 ```
-<pre>
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -37,7 +36,6 @@ the "Policy Document" (Replacing YOUR_BUCKET with your unique bucket's name)
     }
   ]
 }
-</pre>
 ```
 8. Select "Create Role"
 9. Finally, select the role you just made and go to the "Trust Relationships"
@@ -45,7 +43,6 @@ tab
 10. Click "Edit Trust Relationship"
 11. Replace the "Policy Document" with the following
 ```
-<pre>
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -59,7 +56,6 @@ tab
     }
   ]
 }
-</pre>
 ```
 12. Select "Update Policy" to apply the changes
 13. Take note of the "Role ARN" under the "Summary" tab; we'll need this later
