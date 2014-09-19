@@ -15,10 +15,6 @@
 
 package com.amazonaws.demo.userpreferencesom;
 
-import java.util.ArrayList;
-
-import com.amazonaws.demo.userpreferencesom.DynamoDBManager.UserPreference;
-
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
@@ -32,110 +28,114 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.amazonaws.demo.userpreferencesom.DynamoDBManager.UserPreference;
+
+import java.util.ArrayList;
+
 public class UserListActivity extends ListActivity {
 
-	private ArrayList<UserPreference> items = null;
-	private ArrayList<String> labels = null;
-	private int currentPosition = 0;
-	private ArrayAdapter<String> arrayAdapter = null;
+    private ArrayList<UserPreference> items = null;
+    private ArrayList<String> labels = null;
+    private int currentPosition = 0;
+    private ArrayAdapter<String> arrayAdapter = null;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		new GetUserListTask().execute();
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
+        new GetUserListTask().execute();
+    }
 
-		Intent intent = new Intent(UserListActivity.this, UserActivity.class);
-		intent.putExtra("USER_NO", items.get(position).getUserNo() + "");
-		startActivity(intent);
-	}
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
 
-	protected boolean onLongListItemClick(View v, int position, long id) {
+        Intent intent = new Intent(UserListActivity.this, UserActivity.class);
+        intent.putExtra("USER_NO", items.get(position).getUserNo() + "");
+        startActivity(intent);
+    }
 
-		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+    protected boolean onLongListItemClick(View v, int position, long id) {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				switch (which) {
-				case DialogInterface.BUTTON_POSITIVE:
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 
-					new DeleteUserTask().execute();
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
 
-					break;
+                        new DeleteUserTask().execute();
 
-				case DialogInterface.BUTTON_NEGATIVE:
-					// Do nothing
-					break;
-				}
-			}
-		};
+                        break;
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Do you want to delete this user?")
-				.setPositiveButton("Yes", dialogClickListener)
-				.setNegativeButton("No", dialogClickListener).show();
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        // Do nothing
+                        break;
+                }
+            }
+        };
 
-		currentPosition = position;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to delete this user?")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
 
-		return true;
-	}
+        currentPosition = position;
 
-	private class GetUserListTask extends AsyncTask<Void, Void, Void> {
+        return true;
+    }
 
-		protected Void doInBackground(Void... inputs) {
+    private class GetUserListTask extends AsyncTask<Void, Void, Void> {
 
-			labels = new ArrayList<String>();
+        protected Void doInBackground(Void... inputs) {
 
-			items = DynamoDBManager.getUserList();
+            labels = new ArrayList<String>();
 
-			for (UserPreference up : items) {
-				labels.add(up.getFirstName() + " " + up.getLastName());
-			}
+            items = DynamoDBManager.getUserList();
 
-			return null;
-		}
+            for (UserPreference up : items) {
+                labels.add(up.getFirstName() + " " + up.getLastName());
+            }
 
-		protected void onPostExecute(Void result) {
+            return null;
+        }
 
-			arrayAdapter = new ArrayAdapter<String>(UserListActivity.this,
-					R.layout.user_list_item, labels);
-			setListAdapter(arrayAdapter);
+        protected void onPostExecute(Void result) {
 
-			ListView lv = getListView();
-			lv.setOnItemLongClickListener(new OnItemLongClickListener() {
+            arrayAdapter = new ArrayAdapter<String>(UserListActivity.this,
+                    R.layout.user_list_item, labels);
+            setListAdapter(arrayAdapter);
 
-				@Override
-				public boolean onItemLongClick(AdapterView<?> av, View v,
-						int pos, long id) {
-					return onLongListItemClick(v, pos, id);
-				}
-			});
+            ListView lv = getListView();
+            lv.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-			Toast toast = Toast.makeText(UserListActivity.this,
-					"Tap and hold to delete users", Toast.LENGTH_LONG);
-			toast.show();
-		}
-	}
+                @Override
+                public boolean onItemLongClick(AdapterView<?> av, View v,
+                        int pos, long id) {
+                    return onLongListItemClick(v, pos, id);
+                }
+            });
 
-	private class DeleteUserTask extends AsyncTask<Void, Void, Void> {
+            Toast toast = Toast.makeText(UserListActivity.this,
+                    "Tap and hold to delete users", Toast.LENGTH_LONG);
+            toast.show();
+        }
+    }
 
-		protected Void doInBackground(Void... types) {
+    private class DeleteUserTask extends AsyncTask<Void, Void, Void> {
 
-			DynamoDBManager.deleteUser(items.get(currentPosition));
-			items.remove(currentPosition);
-			labels.remove(currentPosition);
+        protected Void doInBackground(Void... types) {
 
-			return null;
-		}
+            DynamoDBManager.deleteUser(items.get(currentPosition));
+            items.remove(currentPosition);
+            labels.remove(currentPosition);
 
-		protected void onPostExecute(Void result) {
+            return null;
+        }
 
-			arrayAdapter.notifyDataSetChanged();
+        protected void onPostExecute(Void result) {
 
-		}
-	}
+            arrayAdapter.notifyDataSetChanged();
+
+        }
+    }
 }

@@ -24,4 +24,8 @@
 -dontwarn org.joda.convert.**
 -dontwarn org.w3c.dom.bootstrap.**
 
+#SDK split into multiple jars so certain classes may be referenced but not used
+-dontwarn com.amazonaws.services.s3.**
+-dontwarn com.amazonaws.services.sqs.**
+
 -dontnote com.amazonaws.services.sqs.QueueUrlHandler

@@ -12,6 +12,7 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
 package com.amazonaws.demo.s3_transfer_manager.network;
 
 import android.content.Context;
@@ -19,7 +20,6 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.amazonaws.demo.s3_transfer_manager.models.TransferModel;
-
 
 /*
  * This class is a bridge to the NetworkService, making it easy to have the service

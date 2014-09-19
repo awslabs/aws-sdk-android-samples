@@ -12,14 +12,19 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
 package com.amazonaws.demo.s3_transfer_manager;
 
 public class Constants {
-    //You should replace these values with your own
+    // You should replace these values with your own
+    // See the readme for details on what to fill in
     public static final String AWS_ACCOUNT_ID = "YOUR_ACCOUNT_ID";
-    public static final String COGNITO_POOL_ID = 
+    public static final String COGNITO_POOL_ID =
             "YOUR_COGNITO_POOL_ID";
-    public static final String COGNITO_ROLE_UNAUTH = 
+    public static final String COGNITO_ROLE_UNAUTH =
             "YOUR_COGNITO_UNAUTH_ROLE";
+    // Note, the bucket will be created in all lower case letters
+    // If you don't enter an all lower case title, any references you add
+    // will need to be sanitized
     public static final String BUCKET_NAME = "YOUR_BUCKET_NAME";
 }

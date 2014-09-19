@@ -15,18 +15,16 @@
 
 package com.amazonaws.demo.userpreferencesom;
 
-import java.util.ArrayList;
-
 import android.util.Log;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBAttribute;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBHashKey;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBScanExpression;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBTable;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.DeleteTableRequest;
@@ -38,276 +36,275 @@ import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 
+import java.util.ArrayList;
+
 public class DynamoDBManager {
-    
+
     private static final String TAG = "DynamoDBManager";
 
-	/*
-	 * Creates a table with the following attributes:
-	 * 
-	 * Table name: testTableName Hash key: userNo type N Read Capacity Units: 10
-	 * Write Capacity Units: 5
-	 */
-	public static void createTable() {
-	    
-	    Log.d(TAG,"Create table called");
+    /*
+     * Creates a table with the following attributes: Table name: testTableName
+     * Hash key: userNo type N Read Capacity Units: 10 Write Capacity Units: 5
+     */
+    public static void createTable() {
 
-		AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
-				.ddb();
+        Log.d(TAG, "Create table called");
 
-		KeySchemaElement kse = new KeySchemaElement().withAttributeName(
-				"userNo").withKeyType(KeyType.HASH);
-		AttributeDefinition ad = new AttributeDefinition().withAttributeName(
-				"userNo").withAttributeType(ScalarAttributeType.N);
-		ProvisionedThroughput pt = new ProvisionedThroughput()
-				.withReadCapacityUnits(10l).withWriteCapacityUnits(5l);
+        AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
+                .ddb();
 
-		CreateTableRequest request = new CreateTableRequest()
-				.withTableName(Constants.TEST_TABLE_NAME)
-				.withKeySchema(kse).withAttributeDefinitions(ad)
-				.withProvisionedThroughput(pt);
+        KeySchemaElement kse = new KeySchemaElement().withAttributeName(
+                "userNo").withKeyType(KeyType.HASH);
+        AttributeDefinition ad = new AttributeDefinition().withAttributeName(
+                "userNo").withAttributeType(ScalarAttributeType.N);
+        ProvisionedThroughput pt = new ProvisionedThroughput()
+                .withReadCapacityUnits(10l).withWriteCapacityUnits(5l);
 
-		try {
-		    Log.d(TAG,"Sending Create table request");
-			ddb.createTable(request);
-			Log.d(TAG,"Create request response successfully recieved");
-		} catch (AmazonServiceException ex) {
-		    Log.e(TAG,"Error sending create table request",ex);
-			UserPreferenceDemoActivity.clientManager
-					.wipeCredentialsOnAuthError(ex);
-		}
-	}
+        CreateTableRequest request = new CreateTableRequest()
+                .withTableName(Constants.TEST_TABLE_NAME)
+                .withKeySchema(kse).withAttributeDefinitions(ad)
+                .withProvisionedThroughput(pt);
 
-	/*
-	 * Retrieves the table description and returns the table status as a string.
-	 */
-	public static String getTestTableStatus() {
+        try {
+            Log.d(TAG, "Sending Create table request");
+            ddb.createTable(request);
+            Log.d(TAG, "Create request response successfully recieved");
+        } catch (AmazonServiceException ex) {
+            Log.e(TAG, "Error sending create table request", ex);
+            UserPreferenceDemoActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
+    }
 
-		try {
-			AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
-					.ddb();
+    /*
+     * Retrieves the table description and returns the table status as a string.
+     */
+    public static String getTestTableStatus() {
 
-			DescribeTableRequest request = new DescribeTableRequest()
-					.withTableName(Constants.TEST_TABLE_NAME);
-			DescribeTableResult result = ddb.describeTable(request);
+        try {
+            AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
+                    .ddb();
 
-			String status = result.getTable().getTableStatus();
-			return status == null ? "" : status;
+            DescribeTableRequest request = new DescribeTableRequest()
+                    .withTableName(Constants.TEST_TABLE_NAME);
+            DescribeTableResult result = ddb.describeTable(request);
 
-		} catch (ResourceNotFoundException e) {
-		} catch (AmazonServiceException ex) {
-			UserPreferenceDemoActivity.clientManager
-					.wipeCredentialsOnAuthError(ex);
-		}
+            String status = result.getTable().getTableStatus();
+            return status == null ? "" : status;
 
-		return "";
-	}
+        } catch (ResourceNotFoundException e) {
+        } catch (AmazonServiceException ex) {
+            UserPreferenceDemoActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
 
-	/*
-	 * Inserts ten users with userNo from 1 to 10 and random names.
-	 */
-	public static void insertUsers() {
-		AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
-				.ddb();
-		DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+        return "";
+    }
 
-		try {
-			for (int i = 1; i <= 10; i++) {
-				UserPreference userPreference = new UserPreference();
-				userPreference.setUserNo(i);
-				userPreference.setFirstName(Constants.getRandomName());
-				userPreference.setLastName(Constants.getRandomName());
+    /*
+     * Inserts ten users with userNo from 1 to 10 and random names.
+     */
+    public static void insertUsers() {
+        AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
 
-				Log.d(TAG,"Inserting users");
-				mapper.save(userPreference);
-				Log.d(TAG,"Users inserted");
-			}
-		} catch (AmazonServiceException ex) {
-		    Log.e(TAG,"Error inserting users");
-			UserPreferenceDemoActivity.clientManager
-					.wipeCredentialsOnAuthError(ex);
-		}
-	}
+        try {
+            for (int i = 1; i <= 10; i++) {
+                UserPreference userPreference = new UserPreference();
+                userPreference.setUserNo(i);
+                userPreference.setFirstName(Constants.getRandomName());
+                userPreference.setLastName(Constants.getRandomName());
 
-	/*
-	 * Scans the table and returns the list of users.
-	 */
-	public static ArrayList<UserPreference> getUserList() {
+                Log.d(TAG, "Inserting users");
+                mapper.save(userPreference);
+                Log.d(TAG, "Users inserted");
+            }
+        } catch (AmazonServiceException ex) {
+            Log.e(TAG, "Error inserting users");
+            UserPreferenceDemoActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
+    }
 
-		AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
-				.ddb();
-		DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+    /*
+     * Scans the table and returns the list of users.
+     */
+    public static ArrayList<UserPreference> getUserList() {
 
-		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
-		try {
-			PaginatedScanList<UserPreference> result = mapper.scan(
-					UserPreference.class, scanExpression);
+        AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
 
-			ArrayList<UserPreference> resultList = new ArrayList<UserPreference>();
-			for (UserPreference up : result) {
-				resultList.add(up);
-			}
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        try {
+            PaginatedScanList<UserPreference> result = mapper.scan(
+                    UserPreference.class, scanExpression);
 
-			return resultList;
+            ArrayList<UserPreference> resultList = new ArrayList<UserPreference>();
+            for (UserPreference up : result) {
+                resultList.add(up);
+            }
+            return resultList;
 
-		} catch (AmazonServiceException ex) {
-			UserPreferenceDemoActivity.clientManager
-					.wipeCredentialsOnAuthError(ex);
-		}
+        } catch (AmazonServiceException ex) {
+            UserPreferenceDemoActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/*
-	 * Retrieves all of the attribute/value pairs for the specified user.
-	 */
-	public static UserPreference getUserPreference(int userNo) {
+    /*
+     * Retrieves all of the attribute/value pairs for the specified user.
+     */
+    public static UserPreference getUserPreference(int userNo) {
 
-		AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
-				.ddb();
-		DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+        AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
 
-		try {
-			UserPreference userPreference = mapper.load(UserPreference.class,
-					userNo);
+        try {
+            UserPreference userPreference = mapper.load(UserPreference.class,
+                    userNo);
 
-			return userPreference;
+            return userPreference;
 
-		} catch (AmazonServiceException ex) {
-			UserPreferenceDemoActivity.clientManager
-					.wipeCredentialsOnAuthError(ex);
-		}
+        } catch (AmazonServiceException ex) {
+            UserPreferenceDemoActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/*
-	 * Updates one attribute/value pair for the specified user.
-	 */
-	public static void updateUserPreference(UserPreference updateUserPreference) {
+    /*
+     * Updates one attribute/value pair for the specified user.
+     */
+    public static void updateUserPreference(UserPreference updateUserPreference) {
 
-		AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
-				.ddb();
-		DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+        AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
 
-		try {
-			mapper.save(updateUserPreference);
+        try {
+            mapper.save(updateUserPreference);
 
-		} catch (AmazonServiceException ex) {
-			UserPreferenceDemoActivity.clientManager
-					.wipeCredentialsOnAuthError(ex);
-		}
-	}
+        } catch (AmazonServiceException ex) {
+            UserPreferenceDemoActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
+    }
 
-	/*
-	 * Deletes the specified user and all of its attribute/value pairs.
-	 */
-	public static void deleteUser(UserPreference deleteUserPreference) {
+    /*
+     * Deletes the specified user and all of its attribute/value pairs.
+     */
+    public static void deleteUser(UserPreference deleteUserPreference) {
 
-		AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
-				.ddb();
-		DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+        AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
 
-		try {
-			mapper.delete(deleteUserPreference);
+        try {
+            mapper.delete(deleteUserPreference);
 
-		} catch (AmazonServiceException ex) {
-			UserPreferenceDemoActivity.clientManager
-					.wipeCredentialsOnAuthError(ex);
-		}
-	}
+        } catch (AmazonServiceException ex) {
+            UserPreferenceDemoActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
+    }
 
-	/*
-	 * Deletes the test table and all of its users and their attribute/value
-	 * pairs.
-	 */
-	public static void cleanUp() {
+    /*
+     * Deletes the test table and all of its users and their attribute/value
+     * pairs.
+     */
+    public static void cleanUp() {
 
-		AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
-				.ddb();
+        AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
+                .ddb();
 
-		DeleteTableRequest request = new DeleteTableRequest()
-				.withTableName(Constants.TEST_TABLE_NAME);
-		try {
-			ddb.deleteTable(request);
-			
-		} catch (AmazonServiceException ex) {
-			UserPreferenceDemoActivity.clientManager
-					.wipeCredentialsOnAuthError(ex);
-		}
-	}
+        DeleteTableRequest request = new DeleteTableRequest()
+                .withTableName(Constants.TEST_TABLE_NAME);
+        try {
+            ddb.deleteTable(request);
 
-	@DynamoDBTable(tableName = "TestUserPreference")
-	public static class UserPreference {
-		private int userNo;
-		private String firstName;
-		private String lastName;
-		private Boolean autoLogin;
-		private Boolean vibrate;
-		private Boolean silent;
-		private String colorTheme;
+        } catch (AmazonServiceException ex) {
+            UserPreferenceDemoActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
+    }
 
-		@DynamoDBHashKey(attributeName = "userNo")
-		public int getUserNo() {
-			return userNo;
-		}
+    @DynamoDBTable(tableName = Constants.TEST_TABLE_NAME)
+    public static class UserPreference {
+        private int userNo;
+        private String firstName;
+        private String lastName;
+        private Boolean autoLogin;
+        private Boolean vibrate;
+        private Boolean silent;
+        private String colorTheme;
 
-		public void setUserNo(int userNo) {
-			this.userNo = userNo;
-		}
+        @DynamoDBHashKey(attributeName = "userNo")
+        public int getUserNo() {
+            return userNo;
+        }
 
-		@DynamoDBAttribute(attributeName = "firstName")
-		public String getFirstName() {
-			return firstName;
-		}
+        public void setUserNo(int userNo) {
+            this.userNo = userNo;
+        }
 
-		public void setFirstName(String firstName) {
-			this.firstName = firstName;
-		}
+        @DynamoDBAttribute(attributeName = "firstName")
+        public String getFirstName() {
+            return firstName;
+        }
 
-		@DynamoDBAttribute(attributeName = "lastName")
-		public String getLastName() {
-			return lastName;
-		}
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
 
-		public void setLastName(String lastName) {
-			this.lastName = lastName;
-		}
+        @DynamoDBAttribute(attributeName = "lastName")
+        public String getLastName() {
+            return lastName;
+        }
 
-		@DynamoDBAttribute(attributeName = "autoLogin")
-		public Boolean isAutoLogin() {
-			return autoLogin;
-		}
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
+        }
 
-		public void setAutoLogin(Boolean autoLogin) {
-			this.autoLogin = autoLogin;
-		}
+        @DynamoDBAttribute(attributeName = "autoLogin")
+        public Boolean isAutoLogin() {
+            return autoLogin;
+        }
 
-		@DynamoDBAttribute(attributeName = "vibrate")
-		public Boolean isVibrate() {
-			return vibrate;
-		}
+        public void setAutoLogin(Boolean autoLogin) {
+            this.autoLogin = autoLogin;
+        }
 
-		public void setVibrate(Boolean vibrate) {
-			this.vibrate = vibrate;
-		}
+        @DynamoDBAttribute(attributeName = "vibrate")
+        public Boolean isVibrate() {
+            return vibrate;
+        }
 
-		@DynamoDBAttribute(attributeName = "silent")
-		public Boolean isSilent() {
-			return silent;
-		}
+        public void setVibrate(Boolean vibrate) {
+            this.vibrate = vibrate;
+        }
 
-		public void setSilent(Boolean silent) {
-			this.silent = silent;
-		}
+        @DynamoDBAttribute(attributeName = "silent")
+        public Boolean isSilent() {
+            return silent;
+        }
 
-		@DynamoDBAttribute(attributeName = "colorTheme")
-		public String getColorTheme() {
-			return colorTheme;
-		}
+        public void setSilent(Boolean silent) {
+            this.silent = silent;
+        }
 
-		public void setColorTheme(String colorTheme) {
-			this.colorTheme = colorTheme;
-		}
-	}
+        @DynamoDBAttribute(attributeName = "colorTheme")
+        public String getColorTheme() {
+            return colorTheme;
+        }
+
+        public void setColorTheme(String colorTheme) {
+            this.colorTheme = colorTheme;
+        }
+    }
 }

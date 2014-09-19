@@ -12,6 +12,7 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
 package com.amazonaws.demo.s3_transfer_manager.models;
 
 import android.content.Context;
@@ -21,17 +22,17 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.amazonaws.demo.s3_transfer_manager.Constants;
-import com.amazonaws.demo.s3_transfer_manager.models.TransferModel.Status;
 import com.amazonaws.services.s3.model.ProgressEvent;
 import com.amazonaws.services.s3.model.ProgressListener;
-import com.amazonaws.services.s3.transfer.PersistableDownload;
-import com.amazonaws.services.s3.transfer.Download;
-import com.amazonaws.services.s3.transfer.Transfer;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.exception.PauseException;
+import com.amazonaws.mobileconnectors.s3.transfermanager.Download;
+import com.amazonaws.mobileconnectors.s3.transfermanager.PersistableDownload;
+import com.amazonaws.mobileconnectors.s3.transfermanager.Transfer;
+import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
+import com.amazonaws.mobileconnectors.s3.transfermanager.exception.PauseException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 /*
  * Class that encapsulates downloads, handling all the interaction with the
@@ -48,42 +49,48 @@ public class DownloadModel extends TransferModel {
     private Uri mUri;
 
     public DownloadModel(Context context, String key, TransferManager manager) {
-       super(context, Uri.parse(key),  manager);
-       mKey = key;
-       mStatus = Status.IN_PROGRESS;
-       mListener = new ProgressListener() {
-           @Override
-           public void progressChanged(ProgressEvent event) {
-               if(event.getEventCode() == ProgressEvent.COMPLETED_EVENT_CODE) {
+        super(context, Uri.parse(key), manager);
+        mKey = key;
+        mStatus = Status.IN_PROGRESS;
+        mListener = new ProgressListener() {
+            @Override
+            public void progressChanged(ProgressEvent event) {
+                if (event.getEventCode() == ProgressEvent.COMPLETED_EVENT_CODE) {
 
-                   Intent mediaScanIntent = new Intent(
-                           Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                   mediaScanIntent.setData(mUri);
-                   getContext().sendBroadcast(mediaScanIntent);
-                   
-                   mStatus = Status.COMPLETED;
+                    Intent mediaScanIntent = new Intent(
+                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    mediaScanIntent.setData(mUri);
+                    getContext().sendBroadcast(mediaScanIntent);
 
-               }
-           }
-       };
+                    mStatus = Status.COMPLETED;
+
+                }
+            }
+        };
     }
 
     @Override
-    public Status getStatus() { return mStatus; }
+    public Status getStatus() {
+        return mStatus;
+    }
 
     @Override
-    public Transfer getTransfer() { return mDownload; }
+    public Transfer getTransfer() {
+        return mDownload;
+    }
 
     @Override
-    public Uri getUri() { return mUri; }
+    public Uri getUri() {
+        return mUri;
+    }
 
     @Override
     public void abort() {
-        if(mDownload != null) {
+        if (mDownload != null) {
             mStatus = Status.CANCELED;
             try {
                 mDownload.abort();
-            } catch(IOException e) {
+            } catch (IOException e) {
                 Log.e(TAG, "", e);
             }
         }
@@ -93,41 +100,41 @@ public class DownloadModel extends TransferModel {
         mStatus = Status.IN_PROGRESS;
         File file = new File(
                 Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), 
+                        Environment.DIRECTORY_PICTURES),
                 getFileName());
         mUri = Uri.fromFile(file);
 
         mDownload = getTransferManager().download(
-                Constants.BUCKET_NAME, mKey, file);
-        if(mListener != null) {
+                Constants.BUCKET_NAME.toLowerCase(Locale.US), mKey, file);
+        if (mListener != null) {
             mDownload.addProgressListener(mListener);
         }
     }
 
     @Override
-    public void pause() { 
-        if(mStatus == Status.IN_PROGRESS) {
+    public void pause() {
+        if (mStatus == Status.IN_PROGRESS) {
             mStatus = Status.PAUSED;
             try {
                 mPersistableDownload = mDownload.pause();
-            } catch(PauseException e) {
+            } catch (PauseException e) {
                 Log.d(TAG, "", e);
             }
         }
     }
 
     @Override
-    public void resume() { 
-        if(mStatus == Status.PAUSED) {
+    public void resume() {
+        if (mStatus == Status.PAUSED) {
             mStatus = Status.IN_PROGRESS;
-            if(mPersistableDownload != null) {
+            if (mPersistableDownload != null) {
                 mDownload = getTransferManager().resumeDownload(
                         mPersistableDownload);
                 mDownload.addProgressListener(mListener);
                 mPersistableDownload = null;
             } else {
                 download();
-            } 
+            }
         }
     }
 }

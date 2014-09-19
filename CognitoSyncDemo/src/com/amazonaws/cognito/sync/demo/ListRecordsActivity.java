@@ -15,6 +15,11 @@
 
 package com.amazonaws.cognito.sync.demo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -36,16 +41,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.android.cognito.Dataset;
-import com.amazonaws.android.cognito.Dataset.SyncCallback;
-import com.amazonaws.android.cognito.Record;
-import com.amazonaws.android.cognito.SyncConflict;
-import com.amazonaws.android.cognito.exceptions.DataStorageException;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.amazonaws.mobileconnectors.cognito.Dataset;
+import com.amazonaws.mobileconnectors.cognito.Dataset.SyncCallback;
+import com.amazonaws.mobileconnectors.cognito.Record;
+import com.amazonaws.mobileconnectors.cognito.SyncConflict;
+import com.amazonaws.mobileconnectors.cognito.exceptions.DataStorageException;
 
 public class ListRecordsActivity extends ListActivity {
 

@@ -22,8 +22,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.amazonaws.android.cognito.Dataset;
+import com.amazonaws.mobileconnectors.cognito.Dataset;
 
 public class EditRecordActivity extends Activity {
 
@@ -69,8 +70,14 @@ public class EditRecordActivity extends Activity {
                 setResult(RESULT_OK);
                 key = etKey.getText().toString();
                 value = etValue.getText().toString();
-                dataset.put(key, value);
-                finish();
+                if (key.length() > 0) {
+                    dataset.put(key, value);
+                    finish();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "The key field cannot be empty",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

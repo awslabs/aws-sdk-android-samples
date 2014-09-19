@@ -17,4 +17,6 @@
     <string name="open">Open</string>
     <string name="upload_video">Upload A Video</string>
     <string name="upload_image">Upload An Image</string>
+    <string name="create_bucket">Create bucket</string>
+    <string name="delete_bucket">Delete bucket</string>
 </resources>

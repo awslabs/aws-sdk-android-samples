@@ -12,13 +12,28 @@
         android:layout_weight="1" >
         <LinearLayout android:id="@+id/transfers_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="match_parent" 
             android:orientation="vertical" />
     </ScrollView>
-    <Button android:id="@+id/download"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/download" />
+        android:orientation="horizontal">
+	    <Button android:id="@+id/create_bucket"
+	        android:layout_width="0dip"
+	        android:layout_weight="1"
+	        android:layout_height="wrap_content"
+	        android:text="@string/create_bucket"/>
+	    <Button android:id="@+id/delete_bucket"
+	        android:layout_width="0dip"
+	        android:layout_weight="1"
+	        android:layout_height="wrap_content"
+	        android:text="@string/delete_bucket" />
+	</LinearLayout>
+	<Button android:id="@+id/download"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/download" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

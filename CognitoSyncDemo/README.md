@@ -29,6 +29,7 @@ This sample demonstrates how to use Cognito Sync client library on Android. It s
    * Follow the instructions at https://developers.facebook.com/docs/android/getting-started/ to create a Facebook app
      + For "Package Name", enter com.amazonaws.cognito.sync.demo
      + For "Class Name", enter com.amazonaws.cognito.sync.demo.MainActivity
+     + You may also need to include a key hash
    * Make sure your identity pool is configured to support Facebook login by entering the Facebook app ID at https://console.aws.amazon.com/cognito/ from the previous step.
    * Import the Facebook SDK into Eclipse following https://developers.facebook.com/docs/android/getting-started/
    * Link to the Facebook SDK project and configure the Facebook app ID

@@ -15,6 +15,10 @@
 
 package com.amazonaws.cognito.sync.demo;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -34,21 +38,19 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.amazonaws.android.cognito.CognitoSyncClient;
-import com.amazonaws.android.cognito.DatasetMetadata;
-import com.amazonaws.android.cognito.exceptions.DataStorageException;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.List;
+import com.amazonaws.mobileconnectors.cognito.CognitoSyncManager;
+import com.amazonaws.mobileconnectors.cognito.DatasetMetadata;
+import com.amazonaws.mobileconnectors.cognito.exceptions.DataStorageException;
+import com.amazonaws.services.cognitoidentity.model.NotAuthorizedException;
 
 public class ListDatasetsActivity extends ListActivity {
 
     private static final String TAG = "ListDatasetsActivity";
 
     private DatasetsAdapter adapter;
-    private CognitoSyncClient client;
+    private CognitoSyncManager client;
     private TextView tvTitle;
 
     @Override
@@ -104,7 +106,17 @@ public class ListDatasetsActivity extends ListActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 String datasetName = input.getText().toString();
-                                if (datasetName != null && !datasetName.trim().isEmpty()) {
+                                if (datasetName.equals("")) {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Please enter a data set name", Toast.LENGTH_SHORT)
+                                            .show();
+                                }
+                                else if (datasetName.indexOf(" ") != -1) {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Please enter a data set name without spaces",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                                else if (datasetName != null && !datasetName.trim().isEmpty()) {
                                     client.openOrCreateDataset(datasetName);
                                     refreshListData();
                                 }
@@ -119,7 +131,6 @@ public class ListDatasetsActivity extends ListActivity {
                         .show();
             }
         });
-
         refreshDatasetMetadata();
     }
 
@@ -146,6 +157,7 @@ public class ListDatasetsActivity extends ListActivity {
 
     private class RefreshDatasetMetadataTask extends AsyncTask<Void, Void, Void> {
         ProgressDialog dialog;
+        boolean authError;
 
         @Override
         protected void onPreExecute() {
@@ -158,7 +170,10 @@ public class ListDatasetsActivity extends ListActivity {
             try {
                 client.refreshDatasetMetadata();
             } catch (DataStorageException dse) {
-                Log.e(TAG, "failed to fresh dataset metadata", dse);
+                Log.e(TAG, "failed to refresh dataset metadata", dse);
+            } catch (NotAuthorizedException e) {
+                Log.e(TAG, "failed to refresh dataset metadata", e);
+                authError = true;
             }
             return null;
         }
@@ -166,7 +181,28 @@ public class ListDatasetsActivity extends ListActivity {
         @Override
         protected void onPostExecute(Void result) {
             dialog.dismiss();
-            refreshListData();
+            if (!authError) {
+                refreshListData();
+            }
+            else {
+                // Probably an authentication (or lackthereof) error
+                new AlertDialog.Builder(ListDatasetsActivity.this)
+                        .setTitle("There was an error")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setMessage(
+                                "You must be logged in or have allowed access to unauthorized users to browse your data")
+                        .setPositiveButton("Back", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                Intent intent = new Intent(ListDatasetsActivity.this,
+                                        MainActivity.class);
+                                startActivity(intent);
+                            }
+                        })
+                        .setCancelable(false)
+                        .show();
+            }
         }
     }
 

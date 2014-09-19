@@ -10,10 +10,17 @@ This sample demonstrates how Android can interact with Amazon DynamoDB to store 
    * Click Finish.
 
 2. Update your App configuration:
+   * Make sure you have an identity pool created and configured at https://console.aws.amazon.com/cognito/ and you downloaded the starter code at the last step of the wizard.
    * Update the ACCOUNT_ID, IDENTITY_POOL_ID, TEST_TABLE_NAME, and UNAUTH_ROLE_ID fields in
 Constants.java which you can find in src/com/amazonaws/demo/userpreferencesom
+   * Note that you do not need to create this table online. The app will create the table, so enter any name.
+   * You will need to update the permissions for the role you will use here. 
+      * Go to [IAM](https://console.aws.amazon.com/iam/home), select the region in which your role was created, and select roles.
+      * Select the appropriate role, then under the permissions tab, select attach role policy, and select Amazon DynamoDB Full Access.
 
 For information on setting up Amazon Cognito for authentication please visit our [Getting started guide](http://docs.aws.amazon.com/mobile/sdkforandroid/developerguide/cognito-auth.html).
+
+Note, the default region for this table (in AmazonClientManager) is US West 2, which is Oregon. If you wish to view this table visit the [DynamoDB console](https://console.aws.amazon.com/dynamodb/home?region=us-west-2#gs:)
 
 3. Run the project:
    * Go to Project ->  Clean.

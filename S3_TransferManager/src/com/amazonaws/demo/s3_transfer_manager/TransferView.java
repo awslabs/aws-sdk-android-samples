@@ -12,6 +12,7 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
 package com.amazonaws.demo.s3_transfer_manager;
 
 import android.content.ActivityNotFoundException;
@@ -20,7 +21,6 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -50,17 +50,17 @@ public class TransferView extends LinearLayout {
     public TransferView(Context context, TransferModel model) {
         super(context);
         LayoutInflater.from(context).inflate(
-                R.layout.transfer_view, 
-                this, 
+                R.layout.transfer_view,
+                this,
                 true);
 
         mContext = context;
         mModel = model;
 
-        mText = ((TextView)findViewById(R.id.text));
-        mPause = (ImageButton)findViewById(R.id.left_button);
-        mAbort = (ImageButton)findViewById(R.id.right_button);
-        mProgress = ((ProgressBar)findViewById(R.id.progress));
+        mText = ((TextView) findViewById(R.id.text));
+        mPause = (ImageButton) findViewById(R.id.left_button);
+        mAbort = (ImageButton) findViewById(R.id.right_button);
+        mProgress = ((ProgressBar) findViewById(R.id.progress));
 
         mAbort.setImageResource(R.drawable.x);
 
@@ -85,14 +85,14 @@ public class TransferView extends LinearLayout {
         refresh(mModel.getStatus());
     }
 
-    /* 
-     * We use this method within the class so that we can have the UI update 
+    /*
+     * We use this method within the class so that we can have the UI update
      * quickly when the user selects something
-     */ 
+     */
     private void refresh(Status status) {
         int leftRes = 0;
         int progress = 0;
-        switch(status) {
+        switch (status) {
             case IN_PROGRESS:
                 leftRes = R.drawable.pause;
                 progress = mModel.getProgress();
@@ -106,7 +106,7 @@ public class TransferView extends LinearLayout {
                 progress = 0;
                 mPause.setVisibility(View.GONE);
                 mAbort.setVisibility(View.GONE);
-                ((TextView)findViewById(R.id.canceled)).setVisibility(View.VISIBLE);
+                ((TextView) findViewById(R.id.canceled)).setVisibility(View.VISIBLE);
                 break;
             case COMPLETED:
                 leftRes = R.drawable.play;
@@ -114,31 +114,32 @@ public class TransferView extends LinearLayout {
                 mPause.setVisibility(View.GONE);
                 mAbort.setVisibility(View.GONE);
 
-                if(mModel instanceof DownloadModel) {
-                    //if download completed, show option to open file
-                    Button button = (Button)findViewById(R.id.open);
+                if (mModel instanceof DownloadModel) {
+                    // if download completed, show option to open file
+                    Button button = (Button) findViewById(R.id.open);
                     button.setOnClickListener(new OnClickListener() {
                         @Override
-                        public void onClick(View v){ 
-                            //get the file extension
+                        public void onClick(View v) {
+                            // get the file extension
                             MimeTypeMap m = MimeTypeMap.getSingleton();
                             String mimeType = m.getMimeTypeFromExtension(
-                                MimeTypeMap.getFileExtensionFromUrl(
-                                    mModel.getUri().toString()));
+                                    MimeTypeMap.getFileExtensionFromUrl(
+                                            mModel.getUri().toString()));
 
                             try {
-                                //try opening activity to open file
+                                // try opening activity to open file
                                 Intent intent = new Intent(
-                                    Intent.ACTION_GET_CONTENT);
+                                        Intent.ACTION_GET_CONTENT);
                                 intent.setDataAndType(mModel.getUri(), mimeType);
                                 mContext.startActivity(intent);
-                            } catch(ActivityNotFoundException e) {
+                            } catch (ActivityNotFoundException e) {
                                 Log.d(TAG, "", e);
-                                //if file fails to be opened, show error message
+                                // if file fails to be opened, show error
+                                // message
                                 Toast.makeText(
-                                    mContext, 
-                                    R.string.nothing_found_to_open_file, 
-                                    Toast.LENGTH_SHORT).show();
+                                        mContext,
+                                        R.string.nothing_found_to_open_file,
+                                        Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -155,7 +156,7 @@ public class TransferView extends LinearLayout {
 
     /* What to do when user presses pause button */
     private void onPause() {
-        if(mModel.getStatus() == Status.IN_PROGRESS) {
+        if (mModel.getStatus() == Status.IN_PROGRESS) {
             TransferController.pause(mContext, mModel);
             refresh(Status.PAUSED);
         } else {

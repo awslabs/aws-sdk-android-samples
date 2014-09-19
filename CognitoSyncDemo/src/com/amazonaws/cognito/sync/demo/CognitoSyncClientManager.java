@@ -15,30 +15,32 @@
 
 package com.amazonaws.cognito.sync.demo;
 
-import android.content.Context;
-
-import com.amazonaws.android.auth.CognitoCredentialsProvider;
-import com.amazonaws.android.cognito.CognitoSyncClient;
-import com.amazonaws.android.cognito.DefaultCognitoSyncClient;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
+
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.cognito.CognitoSyncManager;
+import com.amazonaws.regions.Regions;
+
 public class CognitoSyncClientManager {
     /**
-     * account id and pool id associated with the app
+     * account id and pool id associated with the app see the readme for details
+     * on what to fill these fields in with
      */
     private static final String AWS_ACCOUNT_ID = "AWS_ACCOUNT_ID";
     private static final String IDENTITY_POOL_ID = "IDENTITY_POOL_ID";
+
     /**
      * the role arn to be assumed. You can provide a role arn for unauthorized
      * user and one for authorized.
      */
     private static final String UNAUTH_ROLE_ARN = "";
     private static final String AUTH_ROLE_ARN = "";
-
-    private static CognitoSyncClient client;
-    private static CognitoCredentialsProvider provider;
+    
+    private static CognitoSyncManager client;
+    private static CognitoCachingCredentialsProvider provider;
 
     /**
      * Initializes the CognitoClient. This must be called before getInstance().
@@ -46,11 +48,10 @@ public class CognitoSyncClientManager {
      * @param context a context of the app
      */
     public static void init(Context context) {
-        // TODO: let customer specify region
-        provider = new CognitoCredentialsProvider(context,
-                AWS_ACCOUNT_ID, IDENTITY_POOL_ID, UNAUTH_ROLE_ARN, AUTH_ROLE_ARN);
+        provider = new CognitoCachingCredentialsProvider(context,
+                AWS_ACCOUNT_ID, IDENTITY_POOL_ID, UNAUTH_ROLE_ARN, AUTH_ROLE_ARN,Regions.US_EAST_1);
 
-        client = new DefaultCognitoSyncClient(context, IDENTITY_POOL_ID, provider);
+        client = new CognitoSyncManager(context, IDENTITY_POOL_ID, Regions.US_EAST_1, provider);
     }
 
     /**
@@ -79,7 +80,7 @@ public class CognitoSyncClientManager {
      * 
      * @return an instance of CognitoClient
      */
-    public static CognitoSyncClient getInstance() {
+    public static CognitoSyncManager getInstance() {
         if (client == null) {
             throw new IllegalStateException("client not initialized yet");
         }

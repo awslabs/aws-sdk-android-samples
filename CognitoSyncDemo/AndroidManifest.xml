@@ -5,7 +5,7 @@
 
     <uses-sdk
         android:minSdkVersion="10"
-        android:targetSdkVersion="10" />
+        android:targetSdkVersion="20" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -22,11 +22,14 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>   
         </activity>
-        <activity android:name="ListDatasetsActivity" />
-        <activity android:name="ListRecordsActivity" />
-        <activity android:name="EditRecordActivity" />
+        <activity android:name="ListDatasetsActivity" 
+            android:configChanges="orientation|keyboardHidden"/>
+        <activity android:name="ListRecordsActivity" 
+           android:configChanges="orientation|keyboardHidden"/>
+        <activity android:name="EditRecordActivity" 
+            android:configChanges="orientation|keyboardHidden"/>
         <activity
             android:name="com.facebook.LoginActivity"
             android:label="@string/app_name" />

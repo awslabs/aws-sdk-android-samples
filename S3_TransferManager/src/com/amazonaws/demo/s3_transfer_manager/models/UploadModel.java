@@ -12,6 +12,7 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
 package com.amazonaws.demo.s3_transfer_manager.models;
 
 import android.content.ContentResolver;
@@ -22,19 +23,19 @@ import android.webkit.MimeTypeMap;
 
 import com.amazonaws.demo.s3_transfer_manager.Constants;
 import com.amazonaws.demo.s3_transfer_manager.Util;
-import com.amazonaws.demo.s3_transfer_manager.models.TransferModel.Status;
 import com.amazonaws.services.s3.model.ProgressEvent;
 import com.amazonaws.services.s3.model.ProgressListener;
-import com.amazonaws.services.s3.transfer.PersistableUpload;
-import com.amazonaws.services.s3.transfer.Transfer;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
-import com.amazonaws.services.s3.transfer.exception.PauseException;
+import com.amazonaws.mobileconnectors.s3.transfermanager.PersistableUpload;
+import com.amazonaws.mobileconnectors.s3.transfermanager.Transfer;
+import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
+import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
+import com.amazonaws.mobileconnectors.s3.transfermanager.exception.PauseException;
 
-import java.io.FileOutputStream;
 import java.io.File;
-import java.io.InputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Locale;
 
 /* UploadModel handles the interaction between the Upload and TransferManager.
  * This also makes sure that the file that is uploaded has the same file extension
@@ -60,13 +61,14 @@ public class UploadModel extends TransferModel {
         super(context, uri, manager);
         mStatus = Status.IN_PROGRESS;
         mExtension = MimeTypeMap.getSingleton().getExtensionFromMimeType(
-                context.getContentResolver().getType(uri));;
+                context.getContentResolver().getType(uri));
+        ;
         mListener = new ProgressListener() {
             @Override
-            public void progressChanged(ProgressEvent event) { 
-                if(event.getEventCode() == ProgressEvent.COMPLETED_EVENT_CODE) {
+            public void progressChanged(ProgressEvent event) {
+                if (event.getEventCode() == ProgressEvent.COMPLETED_EVENT_CODE) {
                     mStatus = Status.COMPLETED;
-                    if(mFile != null) {
+                    if (mFile != null) {
                         mFile.delete();
                     }
                 }
@@ -85,28 +87,33 @@ public class UploadModel extends TransferModel {
 
     @Override
     public void abort() {
-        if(mUpload != null) {
+        if (mUpload != null) {
             mStatus = Status.CANCELED;
             mUpload.abort();
-            if(mFile != null) {
+            if (mFile != null) {
                 mFile.delete();
             }
         }
     }
 
     @Override
-    public Status getStatus() { return mStatus; }
+    public Status getStatus() {
+        return mStatus;
+    }
+
     @Override
-    public Transfer getTransfer() { return mUpload; }
+    public Transfer getTransfer() {
+        return mUpload;
+    }
 
     @Override
     public void pause() {
-        if(mStatus == Status.IN_PROGRESS) {
-            if(mUpload != null) {
+        if (mStatus == Status.IN_PROGRESS) {
+            if (mUpload != null) {
                 mStatus = Status.PAUSED;
                 try {
                     mPersistableUpload = mUpload.pause();
-                } catch(PauseException e) { 
+                } catch (PauseException e) {
                     Log.d(TAG, "", e);
                 }
             }
@@ -115,33 +122,33 @@ public class UploadModel extends TransferModel {
 
     @Override
     public void resume() {
-        if(mStatus == Status.PAUSED) {
+        if (mStatus == Status.PAUSED) {
             mStatus = Status.IN_PROGRESS;
-            if(mPersistableUpload != null) {
-                //if it paused fine, resume
+            if (mPersistableUpload != null) {
+                // if it paused fine, resume
                 mUpload = getTransferManager().resumeUpload(mPersistableUpload);
                 mUpload.addProgressListener(mListener);
                 mPersistableUpload = null;
             } else {
-                //if it was actually aborted, start a new one
+                // if it was actually aborted, start a new one
                 upload();
             }
         }
     }
 
     public void upload() {
-        if(mFile == null) {
+        if (mFile == null) {
             saveTempFile();
         }
-        if(mFile != null) {
+        if (mFile != null) {
             try {
                 mUpload = getTransferManager().upload(
-                        Constants.BUCKET_NAME,
+                        Constants.BUCKET_NAME.toLowerCase(Locale.US),
                         Util.getPrefix(getContext()) + super.getFileName() + "."
-                            + mExtension,
+                                + mExtension,
                         mFile);
                 mUpload.addProgressListener(mListener);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 Log.e(TAG, "", e);
             }
         }
@@ -156,23 +163,31 @@ public class UploadModel extends TransferModel {
             in = resolver.openInputStream(getUri());
             mFile = File.createTempFile(
                     "s3_demo_file_" + getId(),
-                    mExtension, 
+                    mExtension,
                     getContext().getCacheDir());
             out = new FileOutputStream(mFile, false);
             byte[] buffer = new byte[1024];
             int read;
-            while((read = in.read(buffer)) != -1) {
+            while ((read = in.read(buffer)) != -1) {
                 out.write(buffer, 0, read);
             }
             out.flush();
-        } catch(IOException e) {
+        } catch (IOException e) {
             Log.e(TAG, "", e);
         } finally {
-            if(in != null) {
-                try { in.close(); } catch(IOException e) { Log.e(TAG, "", e); }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "", e);
+                }
             }
-            if(out != null) {
-                try { out.close(); } catch(IOException e) { Log.e(TAG, "", e); }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "", e);
+                }
             }
         }
     }

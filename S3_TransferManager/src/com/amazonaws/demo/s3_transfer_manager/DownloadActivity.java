@@ -12,6 +12,7 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
 package com.amazonaws.demo.s3_transfer_manager;
 
 import android.app.Activity;
@@ -35,8 +36,9 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 
 /*
  * Activity where user can see the items in the S3 bucket and download stuff
@@ -46,9 +48,9 @@ public class DownloadActivity extends Activity {
     private ListView mList;
     private AmazonS3Client mClient;
     private ObjectAdapter mAdapter;
-    //keeps track of the objects the user has selected
-    private HashSet<S3ObjectSummary> mSelectedObjects = 
-        new HashSet<S3ObjectSummary>();
+    // keeps track of the objects the user has selected
+    private HashSet<S3ObjectSummary> mSelectedObjects =
+            new HashSet<S3ObjectSummary>();
     private Button mRefreshButton;
 
     /** Called when the activity is first created. */
@@ -57,24 +59,24 @@ public class DownloadActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
 
-        //initialize the client
+        // initialize the client
         mClient = Util.getS3Client(DownloadActivity.this);
 
-        mList = (ListView)findViewById(R.id.list);
+        mList = (ListView) findViewById(R.id.list);
 
         mAdapter = new ObjectAdapter(this);
         mList.setOnItemClickListener(new ItemClickListener());
         mList.setAdapter(mAdapter);
 
-        mRefreshButton = (Button)findViewById(R.id.refresh);
+        mRefreshButton = (Button) findViewById(R.id.refresh);
 
         findViewById(R.id.download).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //download all the objects that were selected
+                // download all the objects that were selected
                 String[] keys = new String[mSelectedObjects.size()];
                 int i = 0;
-                for(S3ObjectSummary obj : mSelectedObjects) {
+                for (S3ObjectSummary obj : mSelectedObjects) {
                     keys[i] = obj.getKey();
                     i++;
                 }
@@ -102,37 +104,39 @@ public class DownloadActivity extends Activity {
 
         @Override
         protected List<S3ObjectSummary> doInBackground(Void... params) {
-            //get all the objects in bucket
-            return mClient.listObjects(Constants.BUCKET_NAME, Util.getPrefix(
-                        DownloadActivity.this)).getObjectSummaries();
+            // get all the objects in bucket
+            return mClient.listObjects(Constants.BUCKET_NAME.toLowerCase(Locale.US),
+                    Util.getPrefix(
+                            DownloadActivity.this)).getObjectSummaries();
         }
 
         @Override
         protected void onPostExecute(List<S3ObjectSummary> objects) {
-            //now that we have all the keys, add them all to the adapter
+            // now that we have all the keys, add them all to the adapter
             mAdapter.clear();
             mAdapter.addAll(objects);
+            mSelectedObjects.clear();
             mRefreshButton.setEnabled(true);
             mRefreshButton.setText(R.string.refresh);
         }
     }
 
-    /* 
-     * This lets the user click on anywhere in the row instead of just the checkbox
-     * to select the files to download
+    /*
+     * This lets the user click on anywhere in the row instead of just the
+     * checkbox to select the files to download
      */
     private class ItemClickListener implements OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int pos, 
+        public void onItemClick(AdapterView<?> parent, View view, int pos,
                 long id) {
             S3ObjectSummary item = mAdapter.getItem(pos);
             boolean checked = false;
-            //try removing, if it wasn't there add
-            if(!mSelectedObjects.remove(item)) {
+            // try removing, if it wasn't there add
+            if (!mSelectedObjects.remove(item)) {
                 mSelectedObjects.add(item);
                 checked = true;
             }
-            ((ObjectAdapter.ViewHolder)view.getTag()).checkbox.setChecked(
+            ((ObjectAdapter.ViewHolder) view.getTag()).checkbox.setChecked(
                     checked);
         }
     }
@@ -146,13 +150,13 @@ public class DownloadActivity extends Activity {
         @Override
         public View getView(int pos, View convertView, ViewGroup parent) {
             ViewHolder holder;
-            if(convertView == null) {
+            if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(
                         R.layout.bucket_row, null);
                 holder = new ViewHolder(convertView);
                 convertView.setTag(holder);
             } else {
-                holder = (ViewHolder)convertView.getTag();
+                holder = (ViewHolder) convertView.getTag();
             }
             S3ObjectSummary summary = getItem(pos);
             holder.checkbox.setChecked(mSelectedObjects.contains(summary));
@@ -162,11 +166,11 @@ public class DownloadActivity extends Activity {
         }
 
         public void addAll(Collection<? extends S3ObjectSummary> collection) {
-            for(S3ObjectSummary obj : collection) {
-                //if statement removes the "folder" from showing up
-                if(! obj.getKey().equals(Util.getPrefix(DownloadActivity.this)))
+            for (S3ObjectSummary obj : collection) {
+                // if statement removes the "folder" from showing up
+                if (!obj.getKey().equals(Util.getPrefix(DownloadActivity.this)))
                 {
-                add(obj);
+                    add(obj);
                 }
             }
         }
@@ -177,9 +181,9 @@ public class DownloadActivity extends Activity {
             private TextView size;
 
             private ViewHolder(View view) {
-                checkbox = (CheckBox)view.findViewById(R.id.checkbox);
-                key = (TextView)view.findViewById(R.id.key);
-                size = (TextView)view.findViewById(R.id.size);
+                checkbox = (CheckBox) view.findViewById(R.id.checkbox);
+                key = (TextView) view.findViewById(R.id.key);
+                size = (TextView) view.findViewById(R.id.size);
             }
         }
     }

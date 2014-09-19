@@ -12,15 +12,15 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
 package com.amazonaws.demo.s3_transfer_manager.models;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import com.amazonaws.demo.s3_transfer_manager.Util;
-import com.amazonaws.services.s3.transfer.Transfer;
-import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.mobileconnectors.s3.transfermanager.Transfer;
+import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
 
 import java.util.LinkedHashMap;
 
@@ -30,11 +30,14 @@ import java.util.LinkedHashMap;
  */
 public abstract class TransferModel {
     private static final String TAG = "TransferModel";
-    public static enum Status { IN_PROGRESS, PAUSED, CANCELED, COMPLETED };
 
-    //all TransferModels have associated id which is their key to sModels
-    private static LinkedHashMap<Integer, TransferModel> sModels = 
-        new LinkedHashMap<Integer, TransferModel>();
+    public static enum Status {
+        IN_PROGRESS, PAUSED, CANCELED, COMPLETED
+    };
+
+    // all TransferModels have associated id which is their key to sModels
+    private static LinkedHashMap<Integer, TransferModel> sModels =
+            new LinkedHashMap<Integer, TransferModel>();
     private static int sNextId = 1;
 
     private String mFileName;
@@ -62,23 +65,29 @@ public abstract class TransferModel {
         sModels.put(mId, this);
     }
 
-    public String getFileName() { return mFileName; }
+    public String getFileName() {
+        return mFileName;
+    }
 
-    public int getId() { return mId; }
+    public int getId() {
+        return mId;
+    }
 
     public int getProgress() {
         Transfer transfer = getTransfer();
-        if(transfer != null) {
-            int ret = (int)transfer.getProgress().getPercentTransferred();
+        if (transfer != null) {
+            int ret = (int) transfer.getProgress().getPercentTransferred();
             return ret;
         }
         return 0;
     }
 
-    public Uri getUri() { return mUri; }
+    public Uri getUri() {
+        return mUri;
+    }
 
     public abstract void abort();
-    
+
     public abstract Status getStatus();
 
     public abstract Transfer getTransfer();
@@ -87,7 +96,11 @@ public abstract class TransferModel {
 
     public abstract void resume();
 
-    protected Context getContext() { return mContext; }
+    protected Context getContext() {
+        return mContext;
+    }
 
-    protected TransferManager getTransferManager() { return mManager; }
+    protected TransferManager getTransferManager() {
+        return mManager;
+    }
 }
