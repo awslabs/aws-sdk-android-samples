@@ -25,7 +25,6 @@
 -dontwarn org.w3c.dom.bootstrap.**
 
 #SDK split into multiple jars so certain classes may be referenced but not used
--dontwarn com.amazonaws.mobileconnectors.s3.**
 -dontwarn com.amazonaws.services.s3.**
 -dontwarn com.amazonaws.services.sqs.**
 
