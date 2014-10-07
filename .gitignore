@@ -20,3 +20,4 @@ target
 .settings
 local.properties
 lint.xml
+project.properties
