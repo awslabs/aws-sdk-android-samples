@@ -51,13 +51,15 @@ public class EditRecordActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_activity);
 
-        Bundle bundle = savedInstanceState == null ? getIntent().getExtras() : savedInstanceState;
+        Bundle bundle = savedInstanceState == null ? getIntent().getExtras()
+                : savedInstanceState;
         action = bundle.getString(KEY_ACTION);
         datasetName = bundle.getString(KEY_DATASET_NAME);
         key = bundle.getString(KEY_RECORD_KEY);
         value = bundle.getString(KEY_RECORD_VALUE);
 
-        dataset = CognitoSyncClientManager.getInstance().openOrCreateDataset(datasetName);
+        dataset = CognitoSyncClientManager.getInstance().openOrCreateDataset(
+                datasetName);
 
         tvTitle = (TextView) findViewById(R.id.tvEditTitle);
         etKey = (EditText) findViewById(R.id.etKey);
@@ -73,10 +75,10 @@ public class EditRecordActivity extends Activity {
                 if (key.length() > 0) {
                     dataset.put(key, value);
                     finish();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), "The key field cannot be empty",
-                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "The key field cannot be empty", Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
         });

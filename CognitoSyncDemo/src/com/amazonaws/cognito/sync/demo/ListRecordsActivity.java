@@ -15,11 +15,6 @@
 
 package com.amazonaws.cognito.sync.demo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -41,11 +36,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.cognito.CognitoSyncManager;
 import com.amazonaws.mobileconnectors.cognito.Dataset;
 import com.amazonaws.mobileconnectors.cognito.Dataset.SyncCallback;
 import com.amazonaws.mobileconnectors.cognito.Record;
 import com.amazonaws.mobileconnectors.cognito.SyncConflict;
 import com.amazonaws.mobileconnectors.cognito.exceptions.DataStorageException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ListRecordsActivity extends ListActivity {
 
@@ -56,6 +57,8 @@ public class ListRecordsActivity extends ListActivity {
     private RecordsAdapter adapter;
     private String datasetName;
     private TextView tvTitle;
+    boolean mergeInProgress = false;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,24 +73,29 @@ public class ListRecordsActivity extends ListActivity {
             datasetName = "dataset";
         }
 
-        dataset = CognitoSyncClientManager.getInstance().openOrCreateDataset(datasetName);
+        dataset = CognitoSyncClientManager.getInstance().openOrCreateDataset(
+                datasetName);
 
         // add header
-        View header = getLayoutInflater()
-                .inflate(R.layout.record_list_item, getListView(), false);
+        View header = getLayoutInflater().inflate(R.layout.record_list_item,
+                getListView(), false);
         getListView().addHeaderView(header, null, false);
 
         adapter = new RecordsAdapter(this, R.layout.record_list_item);
         setListAdapter(adapter);
         getListView().setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view,
+                    int position, long id) {
                 // offset by 1 due to header
                 Record record = adapter.getItem(position - 1);
-                Intent intent = new Intent(ListRecordsActivity.this, EditRecordActivity.class);
+                Intent intent = new Intent(ListRecordsActivity.this,
+                        EditRecordActivity.class);
                 intent.putExtra(EditRecordActivity.KEY_ACTION, "edit");
-                intent.putExtra(EditRecordActivity.KEY_DATASET_NAME, datasetName);
-                intent.putExtra(EditRecordActivity.KEY_RECORD_KEY, record.getKey());
+                intent.putExtra(EditRecordActivity.KEY_DATASET_NAME,
+                        datasetName);
+                intent.putExtra(EditRecordActivity.KEY_RECORD_KEY,
+                        record.getKey());
                 startActivityForResult(intent, 0);
             }
         });
@@ -105,9 +113,11 @@ public class ListRecordsActivity extends ListActivity {
         findViewById(R.id.btnAdd).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ListRecordsActivity.this, EditRecordActivity.class);
+                Intent intent = new Intent(ListRecordsActivity.this,
+                        EditRecordActivity.class);
                 intent.putExtra(EditRecordActivity.KEY_ACTION, "new");
-                intent.putExtra(EditRecordActivity.KEY_DATASET_NAME, datasetName);
+                intent.putExtra(EditRecordActivity.KEY_DATASET_NAME,
+                        datasetName);
                 startActivityForResult(intent, 0);
             }
         });
@@ -144,49 +154,56 @@ public class ListRecordsActivity extends ListActivity {
                         .setMessage(
                                 "All records will be deleted and can't be undone. "
                                         + "Do you want to proceed?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dataset.delete();
-                                dialog.dismiss();
-                                synchronize(true);
-                            }
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                        .setCancelable(true)
-                        .show();
+                        .setPositiveButton("Yes",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                            int which) {
+                                        dataset.delete();
+                                        dialog.dismiss();
+                                        synchronize(true);
+                                    }
+                                })
+                        .setNegativeButton("No",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                            int which) {
+                                        dialog.cancel();
+                                    }
+                                }).setCancelable(true).show();
             }
         });
 
         synchronize(false);
     }
 
+    private void refreshGuiWithData(final List<Record> newRecords) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                dialog.dismiss();
+                refreshListData();
+                Log.i("Sync", String.format("%d records synced", newRecords.size()));
+                Toast.makeText(ListRecordsActivity.this,
+                        "Successful!", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     private void synchronize(final boolean finish) {
-        final ProgressDialog dialog = ProgressDialog.show(ListRecordsActivity.this,
-                "Syncing", "Please wait");
+        dialog = ProgressDialog.show(ListRecordsActivity.this, "Syncing", "Please wait");
         Log.i("Sync", "synchronize: " + finish);
         dataset.synchronize(new SyncCallback() {
             @Override
             public void onSuccess(Dataset dataset, final List<Record> newRecords) {
                 Log.i("Sync", "success");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog.dismiss();
-                        if (finish) {
-                            finish();
-                        }
-                        refreshListData();
-                        Log.i("Sync", String.format("%d records synced", newRecords.size()));
-                        Toast.makeText(ListRecordsActivity.this,
-                                "Successful!", Toast.LENGTH_LONG).show();
-                    }
-                });
+                if (mergeInProgress) return;
+                if (finish) {
+                    finish();
+                } else {
+                    refreshGuiWithData(newRecords);
+                }
             }
 
             @Override
@@ -198,8 +215,8 @@ public class ListRecordsActivity extends ListActivity {
                         dialog.dismiss();
                         Log.e("Sync", "failed: " + dse);
                         Toast.makeText(ListRecordsActivity.this,
-                                "Failed due to\n" + dse.getMessage(), Toast.LENGTH_LONG)
-                                .show();
+                                "Failed due to\n" + dse.getMessage(),
+                                Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -212,16 +229,16 @@ public class ListRecordsActivity extends ListActivity {
                     @Override
                     public void run() {
                         dialog.dismiss();
-                        Log.i(TAG,
-                                String.format("%s records in conflict", conflicts.size()));
+                        Log.i(TAG, String.format("%s records in conflict",
+                                conflicts.size()));
                         List<Record> resolvedRecords = new ArrayList<Record>();
                         for (SyncConflict conflict : conflicts) {
-                            Log.i(TAG,
-                                    String.format("remote: %s; local: %s",
-                                            conflict.getRemoteRecord(),
-                                            conflict.getLocalRecord()));
+                            Log.i(TAG, String.format("remote: %s; local: %s",
+                                    conflict.getRemoteRecord(),
+                                    conflict.getLocalRecord()));
                             /* resolve by taking remote records */
-                            resolvedRecords.add(conflict.resolveWithRemoteRecord());
+                            resolvedRecords.add(conflict
+                                    .resolveWithRemoteRecord());
 
                             /* resolve by taking local records */
                             // resolvedRecords.add(conflict.resolveWithLocalRecord());
@@ -241,8 +258,8 @@ public class ListRecordsActivity extends ListActivity {
                                 ListRecordsActivity.this,
                                 String.format(
                                         "%s records in conflict. Resolve by taking remote records",
-                                        conflicts.size()),
-                                Toast.LENGTH_LONG).show();
+                                        conflicts.size()), Toast.LENGTH_LONG)
+                                .show();
                     }
                 });
                 return true;
@@ -255,9 +272,179 @@ public class ListRecordsActivity extends ListActivity {
             }
 
             @Override
-            public boolean onDatasetsMerged(Dataset dataset, List<String> datasetNames) {
-                Log.i("Sync", "merge: " + datasetNames);
-                return false;
+            public boolean onDatasetsMerged(Dataset dataset, List<String> mergedDatasetNames) {
+
+                mergeInProgress = true;
+                Log.i("Sync", "merge: " + dataset.getDatasetMetadata().getDatasetName());
+
+                CognitoSyncManager client = CognitoSyncClientManager.getInstance();
+                for (final String name : mergedDatasetNames) {
+                    Log.i("Merge", "syncing merged: " + name);
+                    final Dataset d = client.openOrCreateDataset(name);
+                    d.synchronize(new SyncCallback() {
+                        @Override
+                        public void onSuccess(Dataset dataset, List<Record> records) {
+
+                            //This is the actual merge code, in this sample we will just join fields in both datasets into a single one
+                            Log.i("Merge", "joining records");
+                            ListRecordsActivity.this.dataset.putAll(dataset.getAll());
+
+                            //To finish and resolve the merge, we have to delete the merged dataset
+                            Log.e("Merge", "deleting merged: " + name);
+                            dataset.delete();
+                            dataset.synchronize(new SyncCallback() {
+                                @Override
+                                public void onSuccess(Dataset dataset, List<Record> records) {
+                                    Log.i("Merge", "merged dataset deleted");
+
+                                    //And finally we should sync back the new merged dataset
+                                    Log.i("Merge", "now syncing the resulting new dataset");
+                                    ListRecordsActivity.this.dataset.synchronize(new SyncCallback() {
+                                        @Override
+                                        public void onSuccess(Dataset dataset, List<Record> newRecords) {
+                                            Log.i("Merge", "merge completed");
+                                            mergeInProgress = false;
+                                            if (finish) {
+                                                finish();
+                                            } else {
+                                                refreshGuiWithData(newRecords);
+                                            }
+                                        }
+
+                                        @Override
+                                        public boolean onConflict(Dataset dataset, List<SyncConflict> syncConflicts) {
+                                            Log.e("Merge", "Unhandled onConflict");
+                                            return false;
+                                        }
+                                        @Override
+                                        public boolean onDatasetDeleted(Dataset dataset, String s) {
+                                            Log.e("Merge", "Unhandled onDatasetDeleted");
+                                            return false;
+                                        }
+                                        @Override
+                                        public boolean onDatasetsMerged(Dataset dataset, List<String> strings) {
+                                            Log.e("Merge", "Unhandled onDatasetMerged");
+                                            return false;
+                                        }
+                                        @Override
+                                        public void onFailure(DataStorageException e) {
+                                            e.printStackTrace();
+                                            Log.e("Merge", "Exception");
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public boolean onConflict(Dataset dataset, List<SyncConflict> syncConflicts) {
+                                    Log.e("Merge", "Unhandled onConflict");
+                                    return false;
+                                }
+                                @Override
+                                public boolean onDatasetDeleted(Dataset dataset, String s) {
+                                    Log.e("Merge", "Unhandled onDatasetDeleted");
+                                    return false;
+                                }
+                                @Override
+                                public boolean onDatasetsMerged(Dataset dataset, List<String> strings) {
+                                    Log.e("Merge", "Unhandled onDatasetMerged");
+                                    return false;
+                                }
+                                @Override
+                                public void onFailure(DataStorageException e) {
+                                    e.printStackTrace();
+                                    Log.e("Merge", "Exception");
+                                }
+                            });
+                        }
+                        @Override
+                        public boolean onDatasetDeleted(Dataset dataset, String s) {
+
+                            //This will trigger in the scenario were we had a local dataset that was not present on the identity we are merging
+
+                            Log.i("Merge", "onDatasetDeleted");
+                            final Dataset previous = dataset;
+
+                            //Sync the local dataset
+                            ListRecordsActivity.this.dataset.synchronize(new SyncCallback() {
+                                @Override
+                                public void onSuccess(Dataset dataset, final List<Record> newRecords) {
+
+                                    // Delete the local dataset from the old identity, now it's merged into the new one
+                                    Log.i("Merge", "local dataset synced to the new identity");
+                                    previous.delete();
+                                    previous.synchronize(new SyncCallback() {
+                                        @Override
+                                        public void onSuccess(Dataset dataset, List<Record> deletedRecords) {
+                                            mergeInProgress = false;
+                                            if (finish) {
+                                                finish();
+                                            } else {
+                                                refreshGuiWithData(newRecords);
+                                            }
+                                        }
+                                        @Override
+                                        public boolean onConflict(Dataset dataset, List<SyncConflict> syncConflicts) {
+                                            Log.e("Merge", "Unhandled onConflict");
+                                            return false;
+                                        }
+                                        @Override
+                                        public boolean onDatasetDeleted(Dataset dataset, String s) {
+                                            Log.e("Merge", "Unhandled onDatasetDeleted");
+                                            return false;
+                                        }
+                                        @Override
+                                        public boolean onDatasetsMerged(Dataset dataset, List<String> strings) {
+                                            Log.e("Merge", "Unhandled onDatasetMerged");
+                                            return false;
+                                        }
+                                        @Override
+                                        public void onFailure(DataStorageException e) {
+                                            e.printStackTrace();
+                                            Log.e("Merge", "Exception");
+                                        }
+                                    });
+                                }
+                                @Override
+                                public boolean onConflict(Dataset dataset, List<SyncConflict> syncConflicts) {
+                                    Log.e("Merge", "Unhandled onConflict");
+                                    return false;
+                                }
+                                @Override
+                                public boolean onDatasetDeleted(Dataset dataset, String s) {
+                                    Log.e("Merge", "Unhandled onDatasetDeleted");
+                                    return false;
+                                }
+                                @Override
+                                public boolean onDatasetsMerged(Dataset dataset, List<String> strings) {
+                                    Log.e("Merge", "Unhandled onDatasetMerged");
+                                    return false;
+                                }
+                                @Override
+                                public void onFailure(DataStorageException e) {
+                                    e.printStackTrace();
+                                    Log.e("Merge", "Exception");
+                                }
+                            });
+                            return false;
+                        }
+                        @Override
+                        public boolean onConflict(Dataset dataset, List<SyncConflict> syncConflicts) {
+                            Log.e("Merge", "Unhandled onConflict");
+                            return false;
+                        }
+                        @Override
+                        public boolean onDatasetsMerged(Dataset dataset, List<String> strings) {
+                            Log.e("Merge", "Unhandled onDatasetMerged");
+                            return false;
+                        }
+                        @Override
+                        public void onFailure(DataStorageException e) {
+                            e.printStackTrace();
+                            Log.e("Merge", "Exception");
+                        }
+                    });
+                }
+                return true;
             }
         });
     }
@@ -296,8 +483,8 @@ public class ListRecordsActivity extends ListActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.record_list_item,
-                        parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(
+                        R.layout.record_list_item, parent, false);
                 holder = new ViewHolder(convertView);
                 convertView.setTag(holder);
             } else {
@@ -308,7 +495,8 @@ public class ListRecordsActivity extends ListActivity {
             // record key
             holder.tvKey.setText(record.getKey());
             // if the record is modified, mark it blue
-            holder.tvKey.setTextColor(record.isModified() ? Color.BLUE : Color.BLACK);
+            holder.tvKey.setTextColor(record.isModified() ? Color.BLUE
+                    : Color.BLACK);
             // if the record is deleted, put a strike
             if (record.isDeleted()) {
                 holder.tvKey.setPaintFlags(holder.tvKey.getPaintFlags()
@@ -318,7 +506,8 @@ public class ListRecordsActivity extends ListActivity {
                         & ~Paint.STRIKE_THRU_TEXT_FLAG);
             }
             // record value
-            holder.tvValue.setText(record.getValue() == null ? "" : record.getValue());
+            holder.tvValue.setText(record.getValue() == null ? "" : record
+                    .getValue());
             // record sync count
             holder.tvSyncCount.setText(String.valueOf(record.getSyncCount()));
 

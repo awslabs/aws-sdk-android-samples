@@ -17,13 +17,16 @@ package com.amazonaws.cognito.sync.demo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazon.identity.auth.device.AuthError;
@@ -31,6 +34,7 @@ import com.amazon.identity.auth.device.authorization.api.AmazonAuthorizationMana
 import com.amazon.identity.auth.device.authorization.api.AuthorizationListener;
 import com.amazon.identity.auth.device.authorization.api.AuthzConstants;
 import com.amazon.identity.auth.device.shared.APIListener;
+import com.amazonaws.cognito.sync.devauth.client.AmazonSharedPreferencesWrapper;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -47,6 +51,7 @@ public class MainActivity extends Activity implements Session.StatusCallback {
 
     private Button btnLoginFacebook;
     private Button btnLoginLWA;
+    private Button btnLoginDevAuth;
     private Button btnWipedata;
     private AmazonAuthorizationManager mAuthManager;
 
@@ -66,10 +71,12 @@ public class MainActivity extends Activity implements Session.StatusCallback {
             @Override
             public void onClick(View v) {
                 // start Facebook Login
-                Session.openActiveSession(MainActivity.this, true, MainActivity.this);
+                Session.openActiveSession(MainActivity.this, true,
+                        MainActivity.this);
             }
         });
-        final Session session = Session.openActiveSessionFromCache(MainActivity.this);
+        final Session session = Session
+                .openActiveSessionFromCache(MainActivity.this);
         if (session != null) {
             setFacebookSession(session);
         }
@@ -77,7 +84,8 @@ public class MainActivity extends Activity implements Session.StatusCallback {
         try {
             mAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
         } catch (IllegalArgumentException e) {
-            Toast.makeText(this, "Login with Amazon is disabled.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Login with Amazon is disabled.",
+                    Toast.LENGTH_LONG).show();
             Log.w(TAG, "Login with Amazon isn't configured correctly. "
                     + "Thus it's disabled in this demo.", e);
         }
@@ -86,7 +94,8 @@ public class MainActivity extends Activity implements Session.StatusCallback {
         btnLoginLWA.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAuthManager.authorize(APP_SCOPES, Bundle.EMPTY, new AuthorizeListener());
+                mAuthManager.authorize(APP_SCOPES, Bundle.EMPTY,
+                        new AuthorizeListener());
             }
         });
         btnLoginLWA.setEnabled(mAuthManager != null);
@@ -100,38 +109,115 @@ public class MainActivity extends Activity implements Session.StatusCallback {
                         .setMessage(
                                 "This will log off your current session and wipe all user data. "
                                         + "Any data not synchronized will be lost.")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // clear login status
-                                if (session != null) {
-                                    session.closeAndClearTokenInformation();
-                                }
-                                btnLoginFacebook.setVisibility(View.VISIBLE);
-                                if (mAuthManager != null) {
-                                    mAuthManager.clearAuthorizationState(null);
-                                }
-                                btnLoginLWA.setVisibility(View.VISIBLE);
-                                // wipe data
-                                CognitoSyncClientManager.getInstance().wipeData();
-                            }
+                        .setPositiveButton("Yes",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                            int which) {
+                                        // clear login status
+                                        if (session != null) {
+                                            session.closeAndClearTokenInformation();
+                                        }
+                                        btnLoginFacebook
+                                                .setVisibility(View.VISIBLE);
+                                        if (mAuthManager != null) {
+                                            mAuthManager
+                                                    .clearAuthorizationState(null);
+                                        }
+                                        btnLoginLWA.setVisibility(View.VISIBLE);
+                                        // wipe data
+                                        CognitoSyncClientManager.getInstance()
+                                                .wipeData();
 
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                        .show();
+                                        // Wipe shared preferences
+                                        AmazonSharedPreferencesWrapper.wipe(PreferenceManager
+                                                .getDefaultSharedPreferences(MainActivity.this));
+                                    }
+
+                                })
+                        .setNegativeButton("No",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                            int which) {
+                                        dialog.cancel();
+                                    }
+                                }).show();
             }
         });
 
-        findViewById(R.id.btnListDatasets).setOnClickListener(new OnClickListener() {
+        findViewById(R.id.btnListDatasets).setOnClickListener(
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MainActivity.this,
+                                ListDatasetsActivity.class);
+                        startActivity(intent);
+                    }
+                });
+
+        btnLoginDevAuth = (Button) findViewById(R.id.btnLoginDevAuth);
+        if ((CognitoSyncClientManager.credentialsProvider.getIdentityProvider()) instanceof DeveloperAuthenticationProvider) {
+            btnLoginDevAuth.setEnabled(true);
+            Log.w(TAG, "Developer authentication feature configured correctly. ");
+        } else {
+            btnLoginDevAuth.setEnabled(false);
+            Toast.makeText(this, "Developer authentication feature is disabled.",
+                    Toast.LENGTH_LONG).show();
+            Log.w(TAG, "Developer authentication feature configured incorrectly. "
+                    + "Thus it's disabled in this demo.");
+        }
+        btnLoginDevAuth.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ListDatasetsActivity.class);
-                startActivity(intent);
+                // username and password dialog
+                final Dialog login = new Dialog(MainActivity.this);
+                login.setContentView(R.layout.login_dialog);
+                login.setTitle("Sample developer login");
+                final TextView txtUsername = (TextView) login
+                        .findViewById(R.id.txtUsername);
+                txtUsername.setHint("Username");
+                final TextView txtPassword = (TextView) login
+                        .findViewById(R.id.txtPassword);
+                txtPassword.setHint("Password");
+                Button btnLogin = (Button) login.findViewById(R.id.btnLogin);
+                Button btnCancel = (Button) login.findViewById(R.id.btnCancel);
+
+                btnCancel.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        login.dismiss();
+                    }
+                });
+
+                btnLogin.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Validate the username and password
+                        if (txtUsername.getText().toString().isEmpty()
+                                || txtPassword.getText().toString().isEmpty()) {
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Login error")
+                                    .setMessage(
+                                            "Username or password cannot be empty!!")
+                                    .show();
+                        } else {
+                            // Clear the existing credentials
+                            CognitoSyncClientManager.credentialsProvider
+                                    .clearCredentials();
+                            // Initiate user authentication against the
+                            // developer backend in this case the sample Cognito
+                            // developer authentication application.
+                            ((DeveloperAuthenticationProvider) CognitoSyncClientManager.credentialsProvider
+                                    .getIdentityProvider()).login(
+                                    txtUsername.getText().toString(),
+                                    txtPassword.getText().toString(),
+                                    MainActivity.this);
+                        }
+                        login.dismiss();
+                    }
+                });
+                login.show();
             }
         });
     }
@@ -139,7 +225,8 @@ public class MainActivity extends Activity implements Session.StatusCallback {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+        Session.getActiveSession().onActivityResult(this, requestCode,
+                resultCode, data);
     }
 
     @Override
@@ -153,8 +240,9 @@ public class MainActivity extends Activity implements Session.StatusCallback {
                 @Override
                 public void onCompleted(GraphUser user, Response response) {
                     if (user != null) {
-                        Toast.makeText(MainActivity.this, "Hello " + user.getName(),
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this,
+                                "Hello " + user.getName(), Toast.LENGTH_LONG)
+                                .show();
                     }
                 }
             }).executeAsync();
@@ -163,7 +251,8 @@ public class MainActivity extends Activity implements Session.StatusCallback {
 
     private void setFacebookSession(Session session) {
         Log.i(TAG, "facebook token: " + session.getAccessToken());
-        CognitoSyncClientManager.addLogins("graph.facebook.com", session.getAccessToken());
+        CognitoSyncClientManager.addLogins("graph.facebook.com",
+                session.getAccessToken());
         btnLoginFacebook.setVisibility(View.GONE);
     }
 
@@ -221,7 +310,8 @@ public class MainActivity extends Activity implements Session.StatusCallback {
 
         @Override
         public void onSuccess(Bundle response) {
-            final String token = response.getString(AuthzConstants.BUNDLE_KEY.TOKEN.val);
+            final String token = response
+                    .getString(AuthzConstants.BUNDLE_KEY.TOKEN.val);
             Log.i(TAG, "amazon token: " + token);
             CognitoSyncClientManager.addLogins("www.amazon.com", token);
         }

@@ -43,10 +43,19 @@
         android:text="Browse your data" />
 
     <Button
-        android:id="@+id/btnWipedata"
+        android:id="@+id/btnLoginDevAuth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnListDatasets"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:text="Developer Authenticated Login" />
+
+    <Button
+        android:id="@+id/btnWipedata"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnLoginDevAuth"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="18dp"
         android:text="Wipe Data" />

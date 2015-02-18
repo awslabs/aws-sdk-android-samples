@@ -15,75 +15,111 @@
 
 package com.amazonaws.cognito.sync.demo;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.Context;
+import android.util.Log;
 
+import com.amazonaws.auth.AWSAbstractCognitoIdentityProvider;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.auth.CognitoCredentialsProvider;
 import com.amazonaws.mobileconnectors.cognito.CognitoSyncManager;
 import com.amazonaws.regions.Regions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CognitoSyncClientManager {
+
+    private static final String TAG = "CognitoSyncClientManager";
+
     /**
-     * account id and pool id associated with the app see the readme for details
-     * on what to fill these fields in with
+     * Enter here the Identity Pool associated with your app and the AWS
+     * region where it belongs. Get this information from the AWS console.
      */
-    private static final String AWS_ACCOUNT_ID = "AWS_ACCOUNT_ID";
+
     private static final String IDENTITY_POOL_ID = "IDENTITY_POOL_ID";
+    private static final Regions REGION = Regions.US_EAST_1;
+
+    private static CognitoSyncManager syncClient;
+    protected static CognitoCachingCredentialsProvider credentialsProvider = null;
+    protected static AWSAbstractCognitoIdentityProvider developerIdentityProvider;
 
     /**
-     * the role arn to be assumed. You can provide a role arn for unauthorized
-     * user and one for authorized.
+     * Set this flag to true for using developer authenticated identities
      */
-    private static final String UNAUTH_ROLE_ARN = "";
-    private static final String AUTH_ROLE_ARN = "";
-    
-    private static CognitoSyncManager client;
-    private static CognitoCachingCredentialsProvider provider;
+    private static boolean useDeveloperAuthenticatedIdentities = false;
+
 
     /**
-     * Initializes the CognitoClient. This must be called before getInstance().
+     * Initializes the Cognito Identity and Sync clients. This must be called before getInstance().
      * 
      * @param context a context of the app
      */
     public static void init(Context context) {
-        provider = new CognitoCachingCredentialsProvider(context,
-                AWS_ACCOUNT_ID, IDENTITY_POOL_ID, UNAUTH_ROLE_ARN, AUTH_ROLE_ARN,Regions.US_EAST_1);
+        
+        if (syncClient != null) return;
+        
+        /*
+         * For using developer authenticated identities make sure you set the
+         * flag to true and configure all the constants in the
+         * DeveloperAuthenticationProvider class.
+         */
+        useDeveloperAuthenticatedIdentities = useDeveloperAuthenticatedIdentities
+                && DeveloperAuthenticationProvider.isDeveloperAuthenticatedAppConfigured();
 
-        client = new CognitoSyncManager(context, IDENTITY_POOL_ID, Regions.US_EAST_1, provider);
+        if (useDeveloperAuthenticatedIdentities) {
+            developerIdentityProvider = new DeveloperAuthenticationProvider(
+                    null, IDENTITY_POOL_ID, context, Regions.US_EAST_1);
+            credentialsProvider = new CognitoCachingCredentialsProvider(context, developerIdentityProvider,
+                    REGION);
+            Log.i(TAG, "Using developer authenticated identities");
+        } else {
+            credentialsProvider = new CognitoCachingCredentialsProvider(context, IDENTITY_POOL_ID,
+                    REGION);
+            Log.i(TAG, "Developer authenticated identities is not configured");
+        }
+
+        syncClient = new CognitoSyncManager(context, REGION, credentialsProvider);
     }
 
     /**
      * Sets the login so that you can use authorized identity. This requires a
-     * network request. Please call it in a background thread.
+     * network request, so you should call it in a background thread.
      * 
-     * @param providerName the name of 3rd identity provider
+     * @param providerName the name of the external identity provider
      * @param token openId token
      */
     public static void addLogins(String providerName, String token) {
-        if (client == null) {
-            throw new IllegalStateException("client not initialized yet");
+        if (syncClient == null) {
+            throw new IllegalStateException("CognitoSyncClientManager not initialized yet");
         }
 
-        Map<String, String> logins = provider.getLogins();
+        Map<String, String> logins = credentialsProvider.getLogins();
         if (logins == null) {
             logins = new HashMap<String, String>();
         }
         logins.put(providerName, token);
-        provider.setLogins(logins);
+        credentialsProvider.setLogins(logins);
     }
 
     /**
-     * Gets the singleton instance of the CognitoClient. init() must be call
+     * Gets the singleton instance of the CognitoClient. init() must be called
      * prior to this.
      * 
      * @return an instance of CognitoClient
      */
     public static CognitoSyncManager getInstance() {
-        if (client == null) {
-            throw new IllegalStateException("client not initialized yet");
+        if (syncClient == null) {
+            throw new IllegalStateException("CognitoSyncClientManager not initialized yet");
         }
-        return client;
+        return syncClient;
+    }
+
+    /**
+     * Returns a credentials provider object
+     * 
+     * @return
+     */
+    public CognitoCredentialsProvider getCredentialsProvider() {
+        return credentialsProvider;
     }
 }

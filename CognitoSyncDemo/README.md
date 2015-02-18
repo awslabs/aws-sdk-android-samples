@@ -1,6 +1,6 @@
 Running the CognitoSyncDemo Sample
 ============================================
-This sample demonstrates how to use Cognito Sync client library on Android. It supports Facebook Login, Login with Amazon as well as Unauthenticated Identities.
+This sample demonstrates how to use Cognito Sync client library on Android. It supports Facebook Login, Login with Amazon, developer authenticated identities as well as Unauthenticated Identities.
 
 1. Import the project CognitoSyncDemo into Eclipse
    * Go to File -> Import.  Import Wizard will open.
@@ -18,7 +18,7 @@ This sample demonstrates how to use Cognito Sync client library on Android. It s
 4. Update your App configuration for Cognito:
    * Make sure you have an identity pool created and configured at https://console.aws.amazon.com/cognito/ and you downloaded the starter code at the last step of the wizard.
    * Open CognitoSyncClientManager.java
-   * Update "AWS_ACCOUNT_ID", "IDENTITY_POOL_ID", "UNAUTH_ROLE_ARN", and "AUTH_ROLE_ARN" with the values from the starter code.
+   * Update "IDENTITY_POOL_ID", and "REGION" with the values from the starter code.
    * At this point you can run the sample if you have the support of unauthenticated identity configured in the identity pool.
      + Go to Project ->  Clean.
      + Go to Project ->  Build All.
@@ -45,3 +45,10 @@ This sample demonstrates how to use Cognito Sync client library on Android. It s
    * Make sure your identity pool is configured to support Login with Amazon by entering the Client ID at https://console.aws.amazon.com/cognito/ from the previous step.
    * Copy and paste the API key to assets/api_key.txt
    * If this isn't configured properly, the "Login with Amazon" button will be disabled in the sample app.
+   
+7. To add support for Developer authenticated identities using the Sample Cognito Developer Authentication application (Optional)
+	* Follow the ReadMe instructions in [the server side application](https://github.com/awslabs/amazon-cognito-developer-authentication-sample) and set up the server application.
+	* In the CognitoSyncClientManager class set the useDeveloperAuthenticatedIdentities boolean to 'true'. 
+	* In the DeveloperAuthenticationProvider class :
+		* Set the application endpoint received from the Amazon ElasticBeanStalk console.
+		* Set the developer provider name in the to the one you set in Amazon Cognito console for your identity pool.

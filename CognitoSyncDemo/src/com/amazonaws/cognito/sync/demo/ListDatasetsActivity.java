@@ -15,10 +15,6 @@
 
 package com.amazonaws.cognito.sync.demo;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -45,6 +41,10 @@ import com.amazonaws.mobileconnectors.cognito.DatasetMetadata;
 import com.amazonaws.mobileconnectors.cognito.exceptions.DataStorageException;
 import com.amazonaws.services.cognitoidentity.model.NotAuthorizedException;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 public class ListDatasetsActivity extends ListActivity {
 
     private static final String TAG = "ListDatasetsActivity";
@@ -61,22 +61,26 @@ public class ListDatasetsActivity extends ListActivity {
         client = CognitoSyncClientManager.getInstance();
 
         // add header
-        View header = getLayoutInflater()
-                .inflate(R.layout.record_list_item, getListView(), false);
+        View header = getLayoutInflater().inflate(R.layout.record_list_item,
+                getListView(), false);
         getListView().addHeaderView(header, null, false);
         ((TextView) header.findViewById(R.id.tvKey)).setText("name");
-        ((TextView) header.findViewById(R.id.tvValue)).setText("last modified date");
+        ((TextView) header.findViewById(R.id.tvValue))
+                .setText("last modified date");
         ((TextView) header.findViewById(R.id.tvSyncCount)).setText("count");
 
         adapter = new DatasetsAdapter(this, R.layout.record_list_item);
         setListAdapter(adapter);
         getListView().setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view,
+                    int position, long id) {
                 DatasetMetadata dataset = adapter.getItem(position - 1);
 
-                Intent intent = new Intent(ListDatasetsActivity.this, ListRecordsActivity.class);
-                intent.putExtra(ListRecordsActivity.KEY_DATASET_NAME, dataset.getDatasetName());
+                Intent intent = new Intent(ListDatasetsActivity.this,
+                        ListRecordsActivity.class);
+                intent.putExtra(ListRecordsActivity.KEY_DATASET_NAME,
+                        dataset.getDatasetName());
                 startActivity(intent);
             }
         });
@@ -102,33 +106,39 @@ public class ListDatasetsActivity extends ListActivity {
                         .setView(input)
 
                         // Set up the buttons
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String datasetName = input.getText().toString();
-                                if (datasetName.equals("")) {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Please enter a data set name", Toast.LENGTH_SHORT)
-                                            .show();
-                                }
-                                else if (datasetName.indexOf(" ") != -1) {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Please enter a data set name without spaces",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                                else if (datasetName != null && !datasetName.trim().isEmpty()) {
-                                    client.openOrCreateDataset(datasetName);
-                                    refreshListData();
-                                }
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                        .show();
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                            int which) {
+                                        String datasetName = input.getText()
+                                                .toString();
+                                        if (datasetName.equals("")) {
+                                            Toast.makeText(
+                                                    getApplicationContext(),
+                                                    "Please enter a data set name",
+                                                    Toast.LENGTH_SHORT).show();
+                                        } else if (datasetName.indexOf(" ") != -1) {
+                                            Toast.makeText(
+                                                    getApplicationContext(),
+                                                    "Please enter a data set name without spaces",
+                                                    Toast.LENGTH_SHORT).show();
+                                        } else if (datasetName != null
+                                                && !datasetName.trim()
+                                                        .isEmpty()) {
+                                            client.openOrCreateDataset(datasetName);
+                                            refreshListData();
+                                        }
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                            int which) {
+                                        dialog.cancel();
+                                    }
+                                }).show();
             }
         });
         refreshDatasetMetadata();
@@ -155,14 +165,15 @@ public class ListDatasetsActivity extends ListActivity {
         new RefreshDatasetMetadataTask().execute();
     }
 
-    private class RefreshDatasetMetadataTask extends AsyncTask<Void, Void, Void> {
+    private class RefreshDatasetMetadataTask extends
+            AsyncTask<Void, Void, Void> {
         ProgressDialog dialog;
         boolean authError;
 
         @Override
         protected void onPreExecute() {
-            dialog = ProgressDialog.show(ListDatasetsActivity.this,
-                    "Syncing", "Please wait");
+            dialog = ProgressDialog.show(ListDatasetsActivity.this, "Syncing",
+                    "Please wait");
         }
 
         @Override
@@ -183,25 +194,25 @@ public class ListDatasetsActivity extends ListActivity {
             dialog.dismiss();
             if (!authError) {
                 refreshListData();
-            }
-            else {
+            } else {
                 // Probably an authentication (or lackthereof) error
                 new AlertDialog.Builder(ListDatasetsActivity.this)
                         .setTitle("There was an error")
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setMessage(
                                 "You must be logged in or have allowed access to unauthorized users to browse your data")
-                        .setPositiveButton("Back", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                Intent intent = new Intent(ListDatasetsActivity.this,
-                                        MainActivity.class);
-                                startActivity(intent);
-                            }
-                        })
-                        .setCancelable(false)
-                        .show();
+                        .setPositiveButton("Back",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                            int which) {
+                                        dialog.dismiss();
+                                        Intent intent = new Intent(
+                                                ListDatasetsActivity.this,
+                                                MainActivity.class);
+                                        startActivity(intent);
+                                    }
+                                }).setCancelable(false).show();
             }
         }
     }
@@ -210,7 +221,8 @@ public class ListDatasetsActivity extends ListActivity {
      * A list adapter for datasets
      */
     private class DatasetsAdapter extends ArrayAdapter<DatasetMetadata> {
-        DateFormat df = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        DateFormat df = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT,
+                DateFormat.SHORT);
 
         public DatasetsAdapter(Context context, int resource) {
             super(context, resource);
@@ -220,8 +232,8 @@ public class ListDatasetsActivity extends ListActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.record_list_item,
-                        parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(
+                        R.layout.record_list_item, parent, false);
                 holder = new ViewHolder(convertView);
                 convertView.setTag(holder);
             } else {
@@ -236,7 +248,8 @@ public class ListDatasetsActivity extends ListActivity {
                     & ~Paint.STRIKE_THRU_TEXT_FLAG);
             // last modified
             holder.tvValue.setText(df.format(dataset.getLastModifiedDate()));
-            holder.tvSyncCount.setText(String.valueOf(dataset.getRecordCount()));
+            holder.tvSyncCount
+                    .setText(String.valueOf(dataset.getRecordCount()));
 
             return convertView;
         }
