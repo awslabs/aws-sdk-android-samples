@@ -4,3 +4,6 @@ gen
 *.swp
 .classpath
 *project.properties
+.gradle
+build
+local.properties
