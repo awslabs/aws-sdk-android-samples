@@ -1,23 +1,14 @@
-# OS generated files #
-######################
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-Icon?
-ehthumbs.db
-Thumbs.db
-
-# Patched code #
-######################
 *.bak
+*.swp
+aws-android-sdk*.jar
 
-# Build assets #
-######################
+# build artifact
 target
-*.jar
+lint.xml
+gen/
+bin/
+.classpath
 .settings
 local.properties
-lint.xml
-project.properties
+proguard-project.txt
+build.xml

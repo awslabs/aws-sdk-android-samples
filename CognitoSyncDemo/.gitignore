@@ -1,9 +1,0 @@
-bin
-gen
-*.bak
-*.swp
-.classpath
-*project.properties
-.gradle
-build
-local.properties

@@ -10,15 +10,15 @@ This sample demonstrates how to use Cognito Sync client library on Android. It s
       * Select the CognitoSyncDemo project to import.
       * Click Finish.
    - If you are using Android Studio:
-      * From the Welcome screen, click on "Import Non-Android Studio project".
+      * From the Welcome screen, click on "Open an existing Android Studio project".
       * Browse to the CognitoSyncDemo directory and press OK.
 	  * Accept the messages about adding Gradle to the project.
 	  * If the SDK reports some missing Android SDK packages (like Build Tools or the Android API package), follow the instructions to install them.
 	  
 2. Import the libraries :
    - If you use Eclipse, you will need to download the AWS SDK for Android (http://aws.amazon.com/mobile/sdk/) and extract and copy these jars into the 'libs' directory for the project:
-      * aws-android-sdk-X.X.X-core.debug.jar
-      * aws-android-sdk-X.X.X-cognito.debug.jar
+      * aws-android-sdk-core-X.X.X.jar
+      * aws-android-sdk-cognito-X.X.X.jar
    - If you use Android Studio, Gradle will take care of downloading these dependencies for you.
 
 3. Import the Facebook SDK into the project. Note that while Facebook Login is not required to run the app, the Facebook SDK is still required to build it.
