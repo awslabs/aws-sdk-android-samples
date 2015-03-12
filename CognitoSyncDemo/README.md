@@ -10,7 +10,7 @@ This sample demonstrates how to use Cognito Sync client library on Android. It s
       * Select the CognitoSyncDemo project to import.
       * Click Finish.
    - If you are using Android Studio:
-      * From the Welcome screen, click on "Open an existing Android Studio project".
+      * From the Welcome screen, click on "Import project".
       * Browse to the CognitoSyncDemo directory and press OK.
 	  * Accept the messages about adding Gradle to the project.
 	  * If the SDK reports some missing Android SDK packages (like Build Tools or the Android API package), follow the instructions to install them.
