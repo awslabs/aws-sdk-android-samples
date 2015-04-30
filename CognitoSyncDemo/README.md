@@ -56,7 +56,13 @@ This sample demonstrates how to use Cognito Sync client library on Android. It s
    * Copy and paste the API key to assets/api_key.txt
    * If this isn't configured properly, the "Login with Amazon" button will be disabled in the sample app.
    
-7. To add support for Developer authenticated identities using the Sample Cognito Developer Authentication application (Optional)
+7. To add support for Login with Twitter. (Optional)
+   * You need to have an app registered in https://apps.twitter.com/
+   * Your Twitter app has to be configured to use a callback. It can be any valid URL (eg: http://example.com) as it will be overriden by the Android app, but it won't work if left empty in the configuration.
+   * Open the strings.xml file in this project and set the 'twitter_consumer_key' and 'twitter_consumer_secret' to these in your Twitter app. You can also set twitter_callback_url to any string you want, as it will override the callback you set on the Twitter app.
+   * Make sure your identity pool is configured to support Twitter login by entering the same conusmer key and secret at https://console.aws.amazon.com/cognito/.
+      
+8. To add support for Developer authenticated identities using the Sample Cognito Developer Authentication application (Optional)
 	* Follow the ReadMe instructions in [the server side application](https://github.com/awslabs/amazon-cognito-developer-authentication-sample) and set up the server application.
 	* In the CognitoSyncClientManager class set the useDeveloperAuthenticatedIdentities boolean to 'true'. 
 	* In the DeveloperAuthenticationProvider class :

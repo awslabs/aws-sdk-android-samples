@@ -38,6 +38,6 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:3.20.+'
     compile 'com.google.android.gms:play-services:6.1.+'
     compile 'com.amazonaws:aws-android-sdk-core:2.2.+'
-	compile 'com.amazonaws:aws-android-sdk-cognito:2.2.+'
+    compile 'com.amazonaws:aws-android-sdk-cognito:2.2.+'
     compile fileTree(include: '*.jar', dir: 'libs')
 }

@@ -20,7 +20,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -41,6 +43,10 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
 
+import oauth.signpost.OAuthProvider;
+import oauth.signpost.basic.DefaultOAuthConsumer;
+import oauth.signpost.basic.DefaultOAuthProvider;
+
 public class MainActivity extends Activity implements Session.StatusCallback {
 
     private static final String TAG = "MainActivity";
@@ -52,14 +58,25 @@ public class MainActivity extends Activity implements Session.StatusCallback {
     private Button btnLoginFacebook;
     private Button btnLoginLWA;
     private Button btnLoginDevAuth;
-    private Button btnWipedata;
+
     private AmazonAuthorizationManager mAuthManager;
+
+    static OAuthProvider mOauthProvider = null;
+    static DefaultOAuthConsumer mOauthConsumer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.main_activity);
+
+        Log.i(TAG, "onCreate");
+
+        //Twitter
+        if (mOauthConsumer == null) {
+            mOauthProvider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token", "https://api.twitter.com/oauth/access_token", "https://api.twitter.com/oauth/authorize");
+            mOauthConsumer = new DefaultOAuthConsumer(getString(R.string.twitter_consumer_key), getString(R.string.twitter_consumer_secret));
+        }
+        retrieveTwitterCredentials(getIntent());
 
         /**
          * Initializes the sync client. This must be call before you can use it.
@@ -75,6 +92,8 @@ public class MainActivity extends Activity implements Session.StatusCallback {
                         MainActivity.this);
             }
         });
+        btnLoginFacebook.setEnabled(getString(R.string.facebook_app_id) != "facebook_app_id");
+
         final Session session = Session
                 .openActiveSessionFromCache(MainActivity.this);
         if (session != null) {
@@ -84,13 +103,10 @@ public class MainActivity extends Activity implements Session.StatusCallback {
         try {
             mAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
         } catch (IllegalArgumentException e) {
-            Toast.makeText(this, "Login with Amazon is disabled.",
-                    Toast.LENGTH_LONG).show();
-            Log.w(TAG, "Login with Amazon isn't configured correctly. "
-                    + "Thus it's disabled in this demo.", e);
+            Log.d(TAG, "Login with Amazon isn't configured correctly. "
+                    + "Thus it's disabled in this demo.");
         }
         btnLoginLWA = (Button) findViewById(R.id.btnLoginLWA);
-        btnLoginLWA.setVisibility(View.VISIBLE);
         btnLoginLWA.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,7 +116,7 @@ public class MainActivity extends Activity implements Session.StatusCallback {
         });
         btnLoginLWA.setEnabled(mAuthManager != null);
 
-        btnWipedata = (Button) findViewById(R.id.btnWipedata);
+        Button btnWipedata = (Button) findViewById(R.id.btnWipedata);
         btnWipedata.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,8 +178,6 @@ public class MainActivity extends Activity implements Session.StatusCallback {
             Log.w(TAG, "Developer authentication feature configured correctly. ");
         } else {
             btnLoginDevAuth.setEnabled(false);
-            Toast.makeText(this, "Developer authentication feature is disabled.",
-                    Toast.LENGTH_LONG).show();
             Log.w(TAG, "Developer authentication feature configured incorrectly. "
                     + "Thus it's disabled in this demo.");
         }
@@ -220,6 +234,33 @@ public class MainActivity extends Activity implements Session.StatusCallback {
                 login.show();
             }
         });
+
+        /**
+         * Button that leaves the app and launches the Twitter site to get an authorization.
+         * If the user grants permissions to our app, it will be redirected to us again through
+         * a callback.
+         */
+        Button btnLoginTwitter = (Button) findViewById(R.id.btnLoginTwitter);
+        btnLoginTwitter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String callbackUrl = "callback://" + getString(R.string.twitter_callback_url);
+                            String authUrl = mOauthProvider.retrieveRequestToken(mOauthConsumer, callbackUrl);
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            Log.w("oauth fail", e);
+                        }
+                    }
+                }).start();
+            }
+        });
+        btnLoginTwitter.setEnabled(getString(R.string.twitter_consumer_secret) != "twitter_consumer_secret");
+
     }
 
     @Override
@@ -254,6 +295,25 @@ public class MainActivity extends Activity implements Session.StatusCallback {
         CognitoSyncClientManager.addLogins("graph.facebook.com",
                 session.getAccessToken());
         btnLoginFacebook.setVisibility(View.GONE);
+    }
+
+    private void setTwitterSession(String token, String secret) {
+        Log.i(TAG, "Twitter token: " + TwitterLoginFromTokenAndSecret(token, secret));
+        CognitoSyncClientManager.addLogins("api.twitter.com", TwitterLoginFromTokenAndSecret(token, secret));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Button btnLoginTwitter = (Button) findViewById(R.id.btnLoginTwitter);
+                if (btnLoginTwitter != null) {
+                    btnLoginTwitter.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    private static String TwitterLoginFromTokenAndSecret(String key, String secret) {
+        // Concatenate token and secret using a semicolon as it's the format Amazon Cognito expects.
+        return key+";"+secret;
     }
 
     private class AuthorizeListener implements AuthorizationListener {
@@ -320,5 +380,45 @@ public class MainActivity extends Activity implements Session.StatusCallback {
         public void onError(AuthError ae) {
             Log.e(TAG, "Failed to get token", ae);
         }
+    }
+
+    /**
+     * If the app was launched via a Twitter callback, we read the auth token and secret here
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.i(TAG, "onNewIntent");
+        retrieveTwitterCredentials(intent);
+    }
+
+    void retrieveTwitterCredentials(Intent intent) {
+
+        final Uri uri = intent.getData();
+        String callbackUrl = "callback://" + getString(R.string.twitter_callback_url);
+        if (uri == null || !uri.toString().startsWith(callbackUrl)) {
+            Log.e(TAG, "This is not our Twitter callback");
+            return;
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Get token and secret
+                    String verifier = uri.getQueryParameter(oauth.signpost.OAuth.OAUTH_VERIFIER);
+                    mOauthProvider.retrieveAccessToken(mOauthConsumer, verifier);
+                    String token = mOauthConsumer.getToken();
+                    String tokenSecret = mOauthConsumer.getTokenSecret();
+
+                    setTwitterSession(token, tokenSecret);
+
+                } catch (Exception e) {
+                    Log.e("Exception", e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 }

@@ -1,63 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:paddingLeft="16dip"
+    android:paddingRight="16dip"
+    android:paddingTop="16dip"
+    android:paddingBottom="16dip"
+    >
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
+        android:layout_gravity="center_vertical"
         android:text="Cognito Sync Demo"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
         android:id="@+id/btnLoginFacebook"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvTitle"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="29dp"
-        android:text="Facebook login" />
+        android:layout_marginTop="18dp"
+        android:text="Login with Facebook" />
+
+    <Button
+        android:id="@+id/btnLoginTwitter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="Login with Twitter" />
 
     <Button
         android:id="@+id/btnLoginLWA"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnLoginFacebook"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="18dp"
-        android:text="Login with Amazon"
-        android:visibility="gone" />
-
-    <Button
-        android:id="@+id/btnListDatasets"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btnLoginLWA"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="18dp"
-        android:text="Browse your data" />
+        android:text="Login with Amazon" />
 
     <Button
         android:id="@+id/btnLoginDevAuth"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnListDatasets"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="18dp"
         android:text="Developer Authenticated Login" />
 
     <Button
-        android:id="@+id/btnWipedata"
-        android:layout_width="wrap_content"
+        android:id="@+id/btnListDatasets"
+        android:layout_width="match_parent"
+        android:layout_marginTop="18dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnLoginDevAuth"
-        android:layout_centerHorizontal="true"
+        android:text="Browse data" />
+
+    <Button
+        android:id="@+id/btnWipedata"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
         android:text="Wipe Data" />
 
-</RelativeLayout>
+
+</LinearLayout>
