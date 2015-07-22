@@ -47,8 +47,8 @@ private static CognitoCachingCredentialsProvider getCredProvider(Context context
     }
     return sCredProvider;
 }
-```java 3. Use a static method to retrieve the S3 client. 
-```
+``` 3. Use a static method to retrieve the S3 client. 
+```java
 /**
  * Gets an instance of a S3 client which is constructed using the given
  * Context.
@@ -62,7 +62,8 @@ public static AmazonS3Client getS3Client(Context context) {
     }
     return sS3Client;
 }
-```4. Use a static method to retrieve the Transfer Utility.	
+```
+4. Use a static method to retrieve the Transfer Utility.	
 ```java/**
  * Gets an instance of the TransferUtility which is constructed using the
  * given Context
