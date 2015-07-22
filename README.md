@@ -14,6 +14,12 @@ general issues and help, check the <a href="#help">help</a> section
       + Amazon Cognito Identity
       + Amazon Cognito Sync
 
+#### [CognitoPushSyncDemo](CognitoPushSyncDemo/README.md)
+* This is a sample mobile application that demonstrates how to use Amazon Cognito Push Synchronization.
+    * AWS Services involved:
+      + Amazon Cognito Identity
+      + Amazon Cognito Sync
+
 #### [S3_TransferManager](S3_TransferManager/README.md)
 * This is a sample mobile application that demonstrates how to use Amazon S3 Transfer Manager to download and upload files to Amazon S3 
     * AWS Services involved:

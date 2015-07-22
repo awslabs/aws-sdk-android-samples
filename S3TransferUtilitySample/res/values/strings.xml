@@ -1,0 +1,22 @@
+<resources>
+
+    <string name="app_name">S3TransferUtility</string>
+    <string name="upload_activity">UploadActivity</string>
+    <string name="download_activity">DownloadActivity</string>
+    <string name="download_selection_activity">Select a file from the bucket</string>
+    <string name="download">Download</string>
+    <string name="manage_download">Manage downloads</string>
+    <string name="upload">Upload</string>
+    <string name="manage_upload">Manage uploads</string>
+    <string name="upload_file">Upload a file</string>
+    <string name="upload_image">Upload an image</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="pause_all">Pause all</string>
+    <string name="cancel_all">Cancel all</string>
+    <string name="refreshing">Refreshing</string>
+    <string name="please_wait">Please wait</string>
+
+</resources>

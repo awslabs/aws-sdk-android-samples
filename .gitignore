@@ -12,3 +12,6 @@ bin/
 local.properties
 proguard-project.txt
 build.xml
+.gradle
+.idea
+build/
