@@ -17,16 +17,20 @@ package com.amazonaws.cognito.sync.demo;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.amazonaws.auth.AWSAbstractCognitoDeveloperIdentityProvider;
 import com.amazonaws.cognito.sync.devauth.client.AmazonCognitoSampleDeveloperAuthenticationClient;
 import com.amazonaws.cognito.sync.devauth.client.GetTokenResponse;
 import com.amazonaws.regions.Regions;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
- * A class used for communicating with developer backend, in this sample it is
- * used to communicate with the sample Cognito developer authentication
- * application.
+ * A class used for communicating with developer backend. This implementation
+ * is meant to communicate with the Cognito Developer Authentication sample
+ * service: https://github.com/awslabs/amazon-cognito-developer-authentication-sample
  */
 public class DeveloperAuthenticationProvider extends
         AWSAbstractCognitoDeveloperIdentityProvider {
@@ -40,18 +44,33 @@ public class DeveloperAuthenticationProvider extends
     public DeveloperAuthenticationProvider(String accountId,
             String identityPoolId, Context context, Regions region) {
         super(accountId, identityPoolId, region);
+
+        if (developerProvider == null || developerProvider.isEmpty()) {
+            Log.e("DeveloperAuthentication", "Error: developerProvider name not set!");
+            throw new RuntimeException("DeveloperAuthenticatedApp not configured.");
+        }
+
+        URL endpoint;
+        try {
+            if (cognitoSampleDeveloperAuthenticationAppEndpoint.contains("://")) {
+                endpoint = new URL(cognitoSampleDeveloperAuthenticationAppEndpoint);
+            } else {
+                endpoint = new URL("http://"+cognitoSampleDeveloperAuthenticationAppEndpoint);
+            }
+        } catch (MalformedURLException e) {
+            Log.e("DeveloperAuthentication", "Developer Authentication Endpoint is not a valid URL!", e);
+            throw new RuntimeException(e);
+        }
+
         /*
          * Initialize the client using which you will communicate with your
          * backend for user authentication. Here we initialize a client which
          * communicates with sample Cognito developer authentication
          * application.
          */
-        if (isDeveloperAuthenticatedAppConfigured()) {
-            devAuthClient = new AmazonCognitoSampleDeveloperAuthenticationClient(
-                    PreferenceManager.getDefaultSharedPreferences(context),
-                    cognitoSampleDeveloperAuthenticationAppEndpoint,
-                    cognitoSampleDeveloperAuthenticationAppName, false);
-        }
+        devAuthClient = new AmazonCognitoSampleDeveloperAuthenticationClient(
+                PreferenceManager.getDefaultSharedPreferences(context),
+                endpoint, cognitoSampleDeveloperAuthenticationAppName);
 
     }
 
@@ -148,21 +167,6 @@ public class DeveloperAuthenticationProvider extends
     public void login(String userName, String password, Context context) {
         new DeveloperAuthenticationTask(context).execute(new LoginCredentials(
                 userName, password));
-    }
-
-    /**
-     * This function checks if the app is configured for developer authenticated
-     * identities. It needs the app name, developer provider name and app
-     * endpoint to be configured for developer authenticated identities.
-     * 
-     * @return
-     */
-    public static boolean isDeveloperAuthenticatedAppConfigured() {
-        return (cognitoSampleDeveloperAuthenticationAppEndpoint != null
-                && !cognitoSampleDeveloperAuthenticationAppEndpoint.equals("")
-                && cognitoSampleDeveloperAuthenticationAppName != null
-                && !cognitoSampleDeveloperAuthenticationAppName
-                        .equals("") && developerProvider != null && !developerProvider.equals(""));
     }
 
     public static AmazonCognitoSampleDeveloperAuthenticationClient getDevAuthClientInstance() {

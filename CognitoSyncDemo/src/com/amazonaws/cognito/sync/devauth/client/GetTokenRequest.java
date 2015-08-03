@@ -17,6 +17,7 @@ package com.amazonaws.cognito.sync.devauth.client;
 
 import com.amazonaws.util.HttpUtils;
 
+import java.net.URL;
 import java.util.Map;
 
 /**
@@ -25,17 +26,16 @@ import java.util.Map;
  */
 public class GetTokenRequest extends Request {
 
-    private final String endpoint;
+    private final URL endpoint;
     private final String uid;
     private final String key;
-    private final boolean useSSL;
     private final Map<String, String> logins;
     private final String identityId;
 
-    public GetTokenRequest(final String endpoint, final boolean useSSL,
-            final String uid, final String key, Map<String, String> logins, String identityId) {
+
+    public GetTokenRequest(final URL endpoint, final String uid, final String key,
+                           Map<String, String> logins, String identityId) {
         this.endpoint = endpoint;
-        this.useSSL = useSSL;
         this.uid = uid;
         this.key = key;
         this.logins = logins;
@@ -51,10 +51,12 @@ public class GetTokenRequest extends Request {
      */
     @Override
     public String buildRequestUrl() {
-        StringBuilder builder = new StringBuilder((this.useSSL ? "https://"
-                : "http://"));
-        builder.append(this.endpoint);
-        builder.append("/");
+        String url = this.endpoint.toString();
+
+        StringBuilder builder = new StringBuilder(url);
+        if (!url.endsWith("/")) {
+            builder.append("/");
+        }
 
         String timestamp = Utilities.getTimestamp();
 

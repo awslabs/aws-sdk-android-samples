@@ -17,26 +17,25 @@ package com.amazonaws.cognito.sync.devauth.client;
 
 import com.amazonaws.util.HttpUtils;
 
+import java.net.URL;
+
 /**
  * This class is used to construct the Login request for communication with
  * sample Cognito developer authentication.
  */
 public class LoginRequest extends Request {
 
-    private final String endpoint;
+    private final URL endpoint;
     private final String uid;
     private final String username;
     private final String password;
     private final String appName;
-    private final boolean useSSL;
 
     private final String decryptionKey;
 
-    public LoginRequest(final String endpoint, final boolean useSSL,
-            final String appName, final String uid, final String username,
-            final String password) {
+    public LoginRequest(final URL endpoint, final String appName,
+            final String uid, final String username, final String password) {
         this.endpoint = endpoint;
-        this.useSSL = useSSL;
         this.appName = appName;
         this.uid = uid;
         this.username = username;
@@ -55,10 +54,12 @@ public class LoginRequest extends Request {
      */
     @Override
     public String buildRequestUrl() {
-        StringBuilder builder = new StringBuilder((this.useSSL ? "https://"
-                : "http://"));
-        builder.append(this.endpoint);
-        builder.append("/");
+        String url = this.endpoint.toString();
+
+        StringBuilder builder = new StringBuilder(url);
+        if (!url.endsWith("/")) {
+            builder.append("/");
+        }
 
         String timestamp = Utilities.getTimestamp();
         String signature = Utilities
@@ -78,7 +79,7 @@ public class LoginRequest extends Request {
      */
     protected String computeDecryptionKey() {
         try {
-            String salt = this.username + this.appName + this.endpoint;
+            String salt = this.username + this.appName + this.endpoint.getHost();
             return Utilities.getSignature(salt, this.password);
         } catch (Exception exception) {
             return null;

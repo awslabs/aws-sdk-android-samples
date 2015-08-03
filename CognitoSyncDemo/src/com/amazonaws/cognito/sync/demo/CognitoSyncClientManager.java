@@ -45,6 +45,7 @@ public class CognitoSyncClientManager {
 
     /**
      * Set this flag to true for using developer authenticated identities
+     * Make sure you configured it in DeveloperAuthenticationProvider.java.
      */
     private static boolean useDeveloperAuthenticatedIdentities = false;
 
@@ -55,16 +56,8 @@ public class CognitoSyncClientManager {
      * @param context a context of the app
      */
     public static void init(Context context) {
-        
+
         if (syncClient != null) return;
-        
-        /*
-         * For using developer authenticated identities make sure you set the
-         * flag to true and configure all the constants in the
-         * DeveloperAuthenticationProvider class.
-         */
-        useDeveloperAuthenticatedIdentities = useDeveloperAuthenticatedIdentities
-                && DeveloperAuthenticationProvider.isDeveloperAuthenticatedAppConfigured();
 
         if (useDeveloperAuthenticatedIdentities) {
             developerIdentityProvider = new DeveloperAuthenticationProvider(

@@ -20,6 +20,7 @@ import android.util.Log;
 
 import org.apache.commons.codec.binary.Hex;
 
+import java.net.URL;
 import java.security.SecureRandom;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class AmazonCognitoSampleDeveloperAuthenticationClient {
     /**
      * The endpoint for the sample Cognito developer authentication application.
      */
-    private final String endpoint;
+    private final URL endpoint;
 
     /**
      * The appName declared by the sample Cognito developer authentication
@@ -42,22 +43,15 @@ public class AmazonCognitoSampleDeveloperAuthenticationClient {
     private final String appName;
 
     /**
-     * Use SSL when making connections to the sample Cognito developer
-     * authentication application.
-     */
-    private final boolean useSSL;
-
-    /**
      * The shared preferences where user key is stored.
      */
     private final SharedPreferences sharedPreferences;
 
     public AmazonCognitoSampleDeveloperAuthenticationClient(
-            SharedPreferences sharedPreferences, String endpoint,
-            String appName, boolean useSSL) {
-        this.endpoint = this.getEndpointDomainName(endpoint.toLowerCase());
+            SharedPreferences sharedPreferences, URL endpoint,
+            String appName) {
+        this.endpoint = endpoint;
         this.appName = appName.toLowerCase();
-        this.useSSL = useSSL;
         this.sharedPreferences = sharedPreferences;
     }
 
@@ -72,7 +66,7 @@ public class AmazonCognitoSampleDeveloperAuthenticationClient {
                 .getKeyForDevice(this.sharedPreferences);
 
         Request getTokenRequest = new GetTokenRequest(this.endpoint,
-                this.useSSL, uid, key, logins, identityId);
+                uid, key, logins, identityId);
         ResponseHandler handler = new GetTokenResponseHandler(key);
 
         GetTokenResponse getTokenResponse = (GetTokenResponse) this
@@ -95,7 +89,7 @@ public class AmazonCognitoSampleDeveloperAuthenticationClient {
             String uid = AmazonCognitoSampleDeveloperAuthenticationClient
                     .generateRandomString();
             LoginRequest loginRequest = new LoginRequest(this.endpoint,
-                    this.useSSL, this.appName, uid, username, password);
+                    this.appName, uid, username, password);
             ResponseHandler handler = new LoginResponseHandler(
                     loginRequest.getDecryptionKey());
 
@@ -140,25 +134,6 @@ public class AmazonCognitoSampleDeveloperAuthenticationClient {
         byte[] randomBytes = random.generateSeed(16);
         String randomString = new String(Hex.encodeHex(randomBytes));
         return randomString;
-    }
-
-    private String getEndpointDomainName(String endpoint) {
-        int startIndex = 0;
-        int endIndex = 0;
-
-        if (endpoint.startsWith("http://") || endpoint.startsWith("https://")) {
-            startIndex = endpoint.indexOf("://") + 3;
-        } else {
-            startIndex = 0;
-        }
-
-        if (endpoint.charAt(endpoint.length() - 1) == '/') {
-            endIndex = endpoint.length() - 1;
-        } else {
-            endIndex = endpoint.length();
-        }
-
-        return endpoint.substring(startIndex, endIndex);
     }
 
 }
