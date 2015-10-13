@@ -22,7 +22,13 @@ For information on setting up Amazon Cognito for authentication please visit our
 
 Note, the default region for this table (in AmazonClientManager) is US West 2, which is Oregon. If you wish to view this table visit the [DynamoDB console](https://console.aws.amazon.com/dynamodb/home?region=us-west-2#gs:)
 
-3. Run the project:
+3. Import the AWS SDK for Android
+   * You can download the newest AWS Android SDK from http://aws.amazon.com/mobile/sdk/ and copy the jars into libs directory. Include the following jars
+      + aws-android-sdk-core-X.X.X.jar
+      + aws-android-sdk-ddb-X.X.X.jar
+      + aws-android-sdk-ddb-mapper-X.X.X.jar
+
+4. Run the project:
    * Go to Project ->  Clean.
    * Go to Project ->  Build All.
    * Go to Run -> Run.
