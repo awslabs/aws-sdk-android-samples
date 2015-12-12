@@ -18,11 +18,12 @@ package com.amazonaws.cognito.sync.demo;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -37,17 +38,26 @@ import com.amazon.identity.auth.device.authorization.api.AuthorizationListener;
 import com.amazon.identity.auth.device.authorization.api.AuthzConstants;
 import com.amazon.identity.auth.device.shared.APIListener;
 import com.amazonaws.cognito.sync.devauth.client.AmazonSharedPreferencesWrapper;
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.model.GraphUser;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
 
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthProvider;
 
-public class MainActivity extends Activity implements Session.StatusCallback {
+public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
 
@@ -59,6 +69,7 @@ public class MainActivity extends Activity implements Session.StatusCallback {
     private Button btnLoginLWA;
     private Button btnLoginDevAuth;
 
+    private CallbackManager callbackManager;
     private AmazonAuthorizationManager mAuthManager;
 
     static OAuthProvider mOauthProvider = null;
@@ -71,12 +82,25 @@ public class MainActivity extends Activity implements Session.StatusCallback {
 
         Log.i(TAG, "onCreate");
 
+        /**
+         * Initialize Facebook SDK
+         */
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+
         //Twitter
         if (mOauthConsumer == null) {
             mOauthProvider = new DefaultOAuthProvider("https://api.twitter.com/oauth/request_token", "https://api.twitter.com/oauth/access_token", "https://api.twitter.com/oauth/authorize");
             mOauthConsumer = new DefaultOAuthConsumer(getString(R.string.twitter_consumer_key), getString(R.string.twitter_consumer_secret));
         }
         retrieveTwitterCredentials(getIntent());
+
+        //If access token is already here, set fb session
+        final AccessToken fbAccessToken = AccessToken.getCurrentAccessToken();
+        if (fbAccessToken != null) {
+            setFacebookSession(fbAccessToken);
+            btnLoginFacebook.setVisibility(View.GONE);
+        }
 
         /**
          * Initializes the sync client. This must be call before you can use it.
@@ -88,17 +112,30 @@ public class MainActivity extends Activity implements Session.StatusCallback {
             @Override
             public void onClick(View v) {
                 // start Facebook Login
-                Session.openActiveSession(MainActivity.this, true,
-                        MainActivity.this);
+                LoginManager.getInstance().logInWithReadPermissions(MainActivity.this, Arrays.asList("public_profile"));
+                LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        btnLoginFacebook.setVisibility(View.GONE);
+                        new GetFbName(loginResult).execute();
+                        setFacebookSession(loginResult.getAccessToken());
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(MainActivity.this, "Facebook login cancelled",
+                                Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        Toast.makeText(MainActivity.this, "Error in Facebook login " +
+                                        error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
         btnLoginFacebook.setEnabled(getString(R.string.facebook_app_id) != "facebook_app_id");
-
-        final Session session = Session
-                .openActiveSessionFromCache(MainActivity.this);
-        if (session != null) {
-            setFacebookSession(session);
-        }
 
         try {
             mAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
@@ -131,8 +168,8 @@ public class MainActivity extends Activity implements Session.StatusCallback {
                                     public void onClick(DialogInterface dialog,
                                             int which) {
                                         // clear login status
-                                        if (session != null) {
-                                            session.closeAndClearTokenInformation();
+                                        if (fbAccessToken != null) {
+                                            LoginManager.getInstance().logOut();
                                         }
                                         btnLoginFacebook
                                                 .setVisibility(View.VISIBLE);
@@ -266,34 +303,13 @@ public class MainActivity extends Activity implements Session.StatusCallback {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Session.getActiveSession().onActivityResult(this, requestCode,
-                resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    public void call(Session session, SessionState state, Exception exception) {
-        if (session.isOpened()) {
-            setFacebookSession(session);
-            // make request to the /me API
-            Request.newMeRequest(session, new Request.GraphUserCallback() {
-
-                // callback after Graph API response with user object
-                @Override
-                public void onCompleted(GraphUser user, Response response) {
-                    if (user != null) {
-                        Toast.makeText(MainActivity.this,
-                                "Hello " + user.getName(), Toast.LENGTH_LONG)
-                                .show();
-                    }
-                }
-            }).executeAsync();
-        }
-    }
-
-    private void setFacebookSession(Session session) {
-        Log.i(TAG, "facebook token: " + session.getAccessToken());
+    private void setFacebookSession(AccessToken accessToken) {
+        Log.i(TAG, "facebook token: " + accessToken.getToken());
         CognitoSyncClientManager.addLogins("graph.facebook.com",
-                session.getAccessToken());
+                accessToken.getToken());
         btnLoginFacebook.setVisibility(View.GONE);
     }
 
@@ -420,5 +436,49 @@ public class MainActivity extends Activity implements Session.StatusCallback {
             }
         }).start();
 
+    }
+
+    private class GetFbName extends AsyncTask<Void, Void, String> {
+        private final LoginResult loginResult;
+        private ProgressDialog dialog;
+
+        public GetFbName(LoginResult loginResult) {
+            this.loginResult = loginResult;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog = ProgressDialog.show(MainActivity.this, "Wait", "Getting user name");
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            GraphRequest request = GraphRequest.newMeRequest(
+                    loginResult.getAccessToken(),
+                    new GraphRequest.GraphJSONObjectCallback() {
+                        @Override
+                        public void onCompleted(
+                                JSONObject object,
+                                GraphResponse response) {
+                            // Application code
+                            Log.v("LoginActivity", response.toString());
+                        }
+                    });
+            Bundle parameters = new Bundle();
+            parameters.putString("fields", "name");
+            request.setParameters(parameters);
+            GraphResponse graphResponse = request.executeAndWait();
+            try {
+                return graphResponse.getJSONObject().getString("name");
+            } catch (JSONException e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            dialog.dismiss();
+            Toast.makeText(MainActivity.this, "Hello " + response, Toast.LENGTH_LONG).show();
+        }
     }
 }
