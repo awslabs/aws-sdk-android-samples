@@ -19,6 +19,7 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -47,6 +48,7 @@ import java.util.List;
  * for managing the downloads.
  */
 public class DownloadActivity extends ListActivity {
+    private static final String TAG = "DownloadActivity";
 
     private static final int DOWNLOAD_SELECTION_REQUEST_CODE = 1;
 
@@ -97,6 +99,7 @@ public class DownloadActivity extends ListActivity {
         transferRecordMaps = new ArrayList<HashMap<String, Object>>();
         // Uses TransferUtility to get all previous download records.
         observers = transferUtility.getTransfersWithType(TransferType.DOWNLOAD);
+        TransferListener listener = new DownloadListener();
         for (TransferObserver observer : observers) {
             HashMap<String, Object> map = new HashMap<String, Object>();
             Util.fillMap(map, observer, false);
@@ -104,11 +107,9 @@ public class DownloadActivity extends ListActivity {
 
             // We only care about updates to transfers that are in a
             // non-terminal state
-            if (!TransferState.COMPLETED.equals(observer.getState())
-                    && !TransferState.FAILED.equals(observer.getState())
-                    && !TransferState.CANCELED.equals(observer.getState())) {
+            if (!TransferState.COMPLETED.equals(observer.getState())) {
                 // Adds a listener for every alive download.
-                observer.setTransferListener(new DownloadListener());
+                observer.setTransferListener(listener);
             }
         }
     }
@@ -364,16 +365,20 @@ public class DownloadActivity extends ListActivity {
         // Simply updates the list when notified.
         @Override
         public void onError(int id, Exception e) {
+            Log.e(TAG, "onError: " + id, e);
             updateList();
         }
 
         @Override
         public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+            Log.d(TAG, String.format("onProgressChanged: %d, total: %d, current: %d",
+                    id, bytesTotal, bytesCurrent));
             updateList();
         }
 
         @Override
         public void onStateChanged(int id, TransferState state) {
+            Log.d(TAG, "onStateChanged: " + id + ", " + state);
             updateList();
         }
     }

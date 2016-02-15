@@ -7,11 +7,14 @@ target
 lint.xml
 gen/
 bin/
+.project
 .classpath
 .settings
+project.properties
 local.properties
 proguard-project.txt
 build.xml
 .gradle
 .idea
 build/
+*.iml

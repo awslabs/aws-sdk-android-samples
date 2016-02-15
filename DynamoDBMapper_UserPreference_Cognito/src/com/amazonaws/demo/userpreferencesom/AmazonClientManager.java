@@ -45,10 +45,8 @@ public class AmazonClientManager {
     }
 
     public boolean hasCredentials() {
-        return (!(Constants.ACCOUNT_ID.equalsIgnoreCase("CHANGE_ME")
-                || Constants.IDENTITY_POOL_ID.equalsIgnoreCase("CHANGE_ME")
-                || Constants.TEST_TABLE_NAME.equalsIgnoreCase("CHANGE_ME") || Constants.UNAUTH_ROLE_ARN
-                    .equalsIgnoreCase("CHANGE_ME")));
+        return (!(Constants.IDENTITY_POOL_ID.equalsIgnoreCase("CHANGE_ME")
+                || Constants.TEST_TABLE_NAME.equalsIgnoreCase("CHANGE_ME")));
     }
 
     public void validateCredentials() {
@@ -61,10 +59,7 @@ public class AmazonClientManager {
     private void initClients() {
         CognitoCachingCredentialsProvider credentials = new CognitoCachingCredentialsProvider(
                 context,
-                Constants.ACCOUNT_ID,
                 Constants.IDENTITY_POOL_ID,
-                Constants.UNAUTH_ROLE_ARN,
-                null,
                 Regions.US_EAST_1);
 
         ddb = new AmazonDynamoDBClient(credentials);

@@ -117,6 +117,7 @@ public class UploadActivity extends ListActivity {
 
         // Use TransferUtility to get all upload transfers.
         observers = transferUtility.getTransfersWithType(TransferType.UPLOAD);
+        TransferListener listener = new UploadListener();
         for (TransferObserver observer : observers) {
 
             // For each transfer we will will create an entry in
@@ -128,11 +129,8 @@ public class UploadActivity extends ListActivity {
 
             // We only care about updates to transfers that are in a
             // non-terminal state
-            if (!TransferState.COMPLETED.equals(observer.getState())
-                    && !TransferState.FAILED.equals(observer.getState())
-                    && !TransferState.CANCELED.equals(observer.getState())) {
-
-                observer.setTransferListener(new UploadListener());
+            if (!TransferState.COMPLETED.equals(observer.getState())) {
+                observer.setTransferListener(listener);
             }
         }
     }
@@ -507,11 +505,14 @@ public class UploadActivity extends ListActivity {
 
         @Override
         public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+            Log.d(TAG, String.format("onProgressChanged: %d, total: %d, current: %d",
+                    id, bytesTotal, bytesCurrent));
             updateList();
         }
 
         @Override
         public void onStateChanged(int id, TransferState newState) {
+            Log.d(TAG, "onStateChanged: " + id + ", " + newState);
             updateList();
         }
     }

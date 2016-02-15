@@ -19,9 +19,7 @@ import java.util.Random;
 
 public class Constants {
 
-    public static final String ACCOUNT_ID = "CHANGE_ME";
     public static final String IDENTITY_POOL_ID = "CHANGE_ME";
-    public static final String UNAUTH_ROLE_ARN = "CHANGE_ME";
     // Note that spaces are not allowed in the table name
     public static final String TEST_TABLE_NAME = "CHANGE_ME";
 
