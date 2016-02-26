@@ -86,8 +86,27 @@ public class DownloadActivity extends ListActivity {
         setContentView(R.layout.activity_download);
         // Initializes TransferUtility, always do this before using it.
         transferUtility = Util.getTransferUtility(this);
-        initData();
+        checkedIndex = INDEX_NOT_CHECKED;
+        transferRecordMaps = new ArrayList<HashMap<String, Object>>();
         initUI();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initData();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Clear transfer listeners to prevent memory leak, or
+        // else this activity won't be garbage collected.
+        if (observers != null && !observers.isEmpty()) {
+            for (TransferObserver observer : observers) {
+                observer.cleanTransferListener();
+            }
+        }
     }
 
     /**
@@ -95,8 +114,7 @@ public class DownloadActivity extends ListActivity {
      * UI
      */
     private void initData() {
-        checkedIndex = INDEX_NOT_CHECKED;
-        transferRecordMaps = new ArrayList<HashMap<String, Object>>();
+        transferRecordMaps.clear();
         // Uses TransferUtility to get all previous download records.
         observers = transferUtility.getTransfersWithType(TransferType.DOWNLOAD);
         TransferListener listener = new DownloadListener();
@@ -105,13 +123,14 @@ public class DownloadActivity extends ListActivity {
             Util.fillMap(map, observer, false);
             transferRecordMaps.add(map);
 
-            // We only care about updates to transfers that are in a
-            // non-terminal state
-            if (!TransferState.COMPLETED.equals(observer.getState())) {
-                // Adds a listener for every alive download.
+            // Sets listeners to in progress transfers
+            if (TransferState.WAITING.equals(observer.getState())
+                    || TransferState.WAITING_FOR_NETWORK.equals(observer.getState())
+                    || TransferState.IN_PROGRESS.equals(observer.getState())) {
                 observer.setTransferListener(listener);
             }
         }
+        simpleAdapter.notifyDataSetChanged();
     }
 
     private void initUI() {
@@ -228,6 +247,9 @@ public class DownloadActivity extends ListActivity {
                 if (checkedIndex >= 0 && checkedIndex < observers.size()) {
                     TransferObserver resumed = transferUtility.resume(observers.get(checkedIndex)
                             .getId());
+                    // Sets a new transfer listener to the original observer.
+                    // This will overwrite existing listener.
+                    observers.get(checkedIndex).setTransferListener(new DownloadListener());
 
                     /**
                      * If resume returns null, it is likely because the transfer
@@ -319,16 +341,14 @@ public class DownloadActivity extends ListActivity {
 
         // Initiate the download
         TransferObserver observer = transferUtility.download(Constants.BUCKET_NAME, key, file);
-
-        // Add the new download to our list of TransferObservers
-        observers.add(observer);
-        HashMap<String, Object> map = new HashMap<String, Object>();
-        // Fill the map with the observers data
-        Util.fillMap(map, observer, false);
-        // Add the filled map to our list of maps which the simple adapter uses
-        transferRecordMaps.add(map);
-        observer.setTransferListener(new DownloadListener());
-        simpleAdapter.notifyDataSetChanged();
+        /*
+         * Note that usually we set the transfer listener after initializing the
+         * transfer. However it isn't required in this sample app. The flow is
+         * click upload button -> start an activity for image selection
+         * startActivityForResult -> onActivityResult -> beginUpload -> onResume
+         * -> set listeners to in progress transfers.
+         */
+        // observer.setTransferListener(new DownloadListener());
     }
 
     /*

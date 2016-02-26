@@ -100,10 +100,28 @@ public class UploadActivity extends ListActivity {
 
         // Initializes TransferUtility, always do this before using it.
         transferUtility = Util.getTransferUtility(this);
+        checkedIndex = INDEX_NOT_CHECKED;
+        transferRecordMaps = new ArrayList<HashMap<String, Object>>();
+        initUI();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         // Get the data from any transfer's that have already happened,
         initData();
-        initUI();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Clear transfer listeners to prevent memory leak, or
+        // else this activity won't be garbage collected.
+        if (observers != null && !observers.isEmpty()) {
+            for (TransferObserver observer : observers) {
+                observer.cleanTransferListener();
+            }
+        }
     }
 
     /**
@@ -111,10 +129,7 @@ public class UploadActivity extends ListActivity {
      * UI
      */
     private void initData() {
-
-        checkedIndex = INDEX_NOT_CHECKED;
-        transferRecordMaps = new ArrayList<HashMap<String, Object>>();
-
+        transferRecordMaps.clear();
         // Use TransferUtility to get all upload transfers.
         observers = transferUtility.getTransfersWithType(TransferType.UPLOAD);
         TransferListener listener = new UploadListener();
@@ -127,12 +142,14 @@ public class UploadActivity extends ListActivity {
             Util.fillMap(map, observer, false);
             transferRecordMaps.add(map);
 
-            // We only care about updates to transfers that are in a
-            // non-terminal state
-            if (!TransferState.COMPLETED.equals(observer.getState())) {
+            // Sets listeners to in progress transfers
+            if (TransferState.WAITING.equals(observer.getState())
+                    || TransferState.WAITING_FOR_NETWORK.equals(observer.getState())
+                    || TransferState.IN_PROGRESS.equals(observer.getState())) {
                 observer.setTransferListener(listener);
             }
         }
+        simpleAdapter.notifyDataSetChanged();
     }
 
     private void initUI() {
@@ -280,6 +297,9 @@ public class UploadActivity extends ListActivity {
                 if (checkedIndex >= 0 && checkedIndex < observers.size()) {
                     TransferObserver resumed = transferUtility.resume(observers.get(checkedIndex)
                             .getId());
+                    // Sets a new transfer listener to the original observer.
+                    // This will overwrite existing listener.
+                    observers.get(checkedIndex).setTransferListener(new UploadListener());
                     /**
                      * If resume returns null, it is likely because the transfer
                      * is not in a resumable state (For instance it is already
@@ -402,12 +422,14 @@ public class UploadActivity extends ListActivity {
         File file = new File(filePath);
         TransferObserver observer = transferUtility.upload(Constants.BUCKET_NAME, file.getName(),
                 file);
-        observers.add(observer);
-        HashMap<String, Object> map = new HashMap<String, Object>();
-        Util.fillMap(map, observer, false);
-        transferRecordMaps.add(map);
-        observer.setTransferListener(new UploadListener());
-        simpleAdapter.notifyDataSetChanged();
+        /*
+         * Note that usually we set the transfer listener after initializing the
+         * transfer. However it isn't required in this sample app. The flow is
+         * click upload button -> start an activity for image selection
+         * startActivityForResult -> onActivityResult -> beginUpload -> onResume
+         * -> set listeners to in progress transfers.
+         */
+        // observer.setTransferListener(new UploadListener());
     }
 
     /*
