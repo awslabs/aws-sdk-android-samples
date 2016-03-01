@@ -8,7 +8,7 @@ This sample demonstrates how to use the high-level class TransferUtility to perf
    * The starter code, has your Identity Pool ID. Keep this, you will need to add it to the sample later.
 
 2. Set up permissions
-   * Go to https://console.aws.amazon.com/iam/home/ and select "Roles".
+   * Go to https://console.aws.amazon.com/iam/home and select "Roles".
    * Select the unauthenticated role you just created in step 1.
    * Select "Attach Policy", then find "AmazonS3FullAccess" and attach it it to the role.
    * Note:  This will grant users in the identity pool full access to all buckets and operations in S3.  In a real app, you should restrict users to only have access to the resources they need.
