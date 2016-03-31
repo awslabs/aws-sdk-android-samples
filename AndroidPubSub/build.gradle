@@ -20,13 +20,13 @@ dependencies {
 
 android {
     buildToolsVersion "21.1.2"
-    compileSdkVersion 10
+    compileSdkVersion 16
 
     defaultConfig {
         versionCode 1
         versionName "1.0.0"
-        minSdkVersion 10
-        targetSdkVersion 10
+        minSdkVersion 16
+        targetSdkVersion 16
     }
 
     lintOptions {

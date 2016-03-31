@@ -47,12 +47,27 @@
             android:text="Disconnected" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnConnect"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:text="Connect" />
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btnConnect"
+            android:layout_gravity="left"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:text="Connect" />
+
+        <Button
+            android:id="@+id/btnDisconnect"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:layout_gravity="right"
+            android:text="Disconnect" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

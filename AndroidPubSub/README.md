@@ -45,7 +45,7 @@ This sample demonstrates use of the AWS IoT APIs to securely publish to and subs
     }
     ```
 
-    To access the service any certificate needs to have a policy associated.  This policy contols what actions are able to be performed by the client authenticating with that particualr certificate.  This sample application does not create its own policy, rather it assumes a policy has been created in the service.  When the application creates a certificate it makes a service call to associate the pre-existing policy with the newly created certificate.
+    To access the service any certificate needs to have a policy associated.  This policy contols what actions are able to be performed by the client authenticating with that particular certificate.  This sample application does not create its own policy, rather it assumes a policy has been created in the service.  When the application creates a certificate it makes a service call to associate the pre-existing policy with the newly created certificate.
 
 1. In the [Amazon AWS IoT console](https://console.aws.amazon.com/iot/), create a policy with full permissions to access AWS IoT as shown in this example.  Select 'Create a Policy', fill in the 'Name' field, set 'Action' to 'iot:\*', set 'Resource' to '\*', and then click 'Create'.
 

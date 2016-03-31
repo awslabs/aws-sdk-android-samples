@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.iot.AWSIotKeystoreHelper;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
+import com.amazonaws.mobileconnectors.iot.AWSIotMqttLastWillAndTestament;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttNewMessageCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttQos;
@@ -77,6 +78,7 @@ public class PubSubActivity extends Activity {
     Button btnConnect;
     Button btnSubscribe;
     Button btnPublish;
+    Button btnDisconnect;
 
     AWSIotClient mIotAndroidClient;
     AWSIotMqttManager mqttManager;
@@ -113,6 +115,9 @@ public class PubSubActivity extends Activity {
         btnPublish = (Button) findViewById(R.id.btnPublish);
         btnPublish.setOnClickListener(publishClick);
 
+        btnDisconnect = (Button) findViewById(R.id.btnDisconnect);
+        btnDisconnect.setOnClickListener(disconnectClick);
+
         // MQTT client IDs are required to be unique per AWS IoT account.
         // This UUID is "practically unique" but does not _guarantee_
         // uniqueness.
@@ -130,6 +135,16 @@ public class PubSubActivity extends Activity {
 
         // MQTT Client
         mqttManager = new AWSIotMqttManager(clientId, region, CUSTOMER_SPECIFIC_ENDPOINT_PREFIX);
+
+        // Set keepalive to 10 seconds.  Will recognize disconnects more quickly but will also send
+        // MQTT pings every 10 seconds.
+        mqttManager.setKeepAlive(10);
+
+        // Set Last Will and Testament for MQTT.  On an unclean disconnect (loss of connection)
+        // AWS IoT will publish this message to alert other clients.
+        AWSIotMqttLastWillAndTestament lwt = new AWSIotMqttLastWillAndTestament("my/lwt/topic",
+                "Android client lost connection", AWSIotMqttQos.QOS0);
+        mqttManager.setMqttLastWillAndTestament(lwt);
 
         // IoT Client (for creation of certificate if needed)
         mIotAndroidClient = new AWSIotClient(credentialsProvider);
@@ -171,13 +186,16 @@ public class PubSubActivity extends Activity {
                         // Create a new private key and certificate. This call
                         // creates both on the server and returns them to the
                         // device.
-                        CreateKeysAndCertificateRequest createKeysAndCertificateRequest = new CreateKeysAndCertificateRequest();
+                        CreateKeysAndCertificateRequest createKeysAndCertificateRequest =
+                                new CreateKeysAndCertificateRequest();
                         createKeysAndCertificateRequest.setSetAsActive(true);
-                        final CreateKeysAndCertificateResult createKeysAndCertificateResult = mIotAndroidClient
-                                .createKeysAndCertificate(createKeysAndCertificateRequest);
+                        final CreateKeysAndCertificateResult createKeysAndCertificateResult;
+                        createKeysAndCertificateResult =
+                                mIotAndroidClient.createKeysAndCertificate(createKeysAndCertificateRequest);
                         Log.i(LOG_TAG,
-                                "Cert ID: " + createKeysAndCertificateResult.getCertificateId()
-                                        + " created.");
+                                "Cert ID: " +
+                                        createKeysAndCertificateResult.getCertificateId() +
+                                        " created.");
 
                         // store in keystore for use in MQTT client
                         // saved as alias "default" so a new certificate isn't
@@ -196,7 +214,8 @@ public class PubSubActivity extends Activity {
                         // This flow assumes the policy was already created in
                         // AWS IoT and we are now just attaching it to the
                         // certificate.
-                        AttachPrincipalPolicyRequest policyAttachRequest = new AttachPrincipalPolicyRequest();
+                        AttachPrincipalPolicyRequest policyAttachRequest =
+                                new AttachPrincipalPolicyRequest();
                         policyAttachRequest.setPolicyName(AWS_IOT_POLICY_NAME);
                         policyAttachRequest.setPrincipal(createKeysAndCertificateResult
                                 .getCertificateArn());
@@ -313,6 +332,19 @@ public class PubSubActivity extends Activity {
                 mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Publish error.", e);
+            }
+
+        }
+    };
+
+    View.OnClickListener disconnectClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            try {
+                mqttManager.disconnect();
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Disconnect error.", e);
             }
 
         }
