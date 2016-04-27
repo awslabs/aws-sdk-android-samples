@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/group_main_sign_up"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_sign_up"
+            android:title="Sign up" />
+    </group>
+
+    <group
+        android:id="@+id/group_main_sign_up_confrim"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_sign_up_confirm"
+            android:title="Confirm sign-up" />
+    </group>
+
+    <group
+        android:id="@+id/group_main_sign_in_forgot_password"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_sign_in_forgot_password"
+            android:title="Forgot password" />
+    </group>
+
+    <group
+        android:id="@+id/group_main_about"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_about"
+            android:title="About" />
+    </group>
+
+    <group
+        android:id="@+id/group_main_end"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_end"
+            android:title="" />
+    </group>
+</menu>

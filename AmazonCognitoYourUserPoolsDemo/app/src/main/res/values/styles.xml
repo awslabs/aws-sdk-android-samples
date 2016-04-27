@@ -1,0 +1,55 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/toolbar_background</item>
+        <item name="colorPrimaryDark">@color/toolbar_background</item>
+        <item name="colorAccent">@color/toolbar_items</item>
+    </style>
+
+    <style name="AWSCognitoTheme" parent="AppTheme">
+        <item name="android:colorBackground">@color/toolbar_background</item>
+        <item name="android:textColor">@color/toolbar_items</item>
+    </style>
+
+    <style name="AppActionBar">
+        <item name="colorPrimary">@color/toolbar_background</item>
+        <item name="colorPrimaryDark">@color/toolbar_background</item>
+        <item name="colorAccent">@color/toolbar_items</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppNavigationBar">
+        <item name="android:colorBackground">@color/toolbar_background</item>
+        <item name="android:textColor">@color/toolbar_items</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="TextViewMessage">
+        <item name="android:textColor">@color/alert</item>
+        <item name="android:textSize">@dimen/activity_text_padding</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:textAppearanceSmall</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+    <style name="TextViewLabel">
+        <item name="android:textSize">@dimen/activity_text_size_small</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:textAppearanceSmall</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+</resources>
