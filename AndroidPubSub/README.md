@@ -28,41 +28,83 @@ This sample demonstrates use of the AWS IoT APIs to securely publish to and subs
       * aws-android-sdk-core-X.X.X.jar
       * aws-android-sdk-iot-X.X.X.jar
 
-1. In the [Amazon Cognito console](https://console.aws.amazon.com/cognito/), use Amazon Cognito to create a new identity pool. Obtain the `PoolID` constant. Make sure the [role](https://console.aws.amazon.com/iam/home?region=us-east-1#roles) has full permissions to access the AWS IoT APIs, as shown in this example:
+    **Note**:  Adding support for MQTT over WebSocket connections is only available in the Paho project nightly builds.  The Gradle file is currently configured to add the Paho snapshot repository.  This project will be updated to the official build after release as part of [Eclipse Neon](https://projects.eclipse.org/projects/technology.paho/releases/1.2.0).
 
-    ```
-    {
-        "Version": "2012-10-17",
-        "Statement": [
+1. This sample requires Cognito to authorize to AWS IoT in order to create a device certificate. Use Amazon Cognito to create a new identity pool.
+    1. In the [Amazon Cognito Console](https://console.aws.amazon.com/cognito/), select`Create Identity Pool`.
+    1. Ensure`Enable access to unauthenticated identities` is checked. This allows the sample application to assume the unauthenticated role associated with this identity pool.
+    
+        **Important**: see note below on unauthenticated user access.
+        
+    1. Obtain the `PoolID` constant.  This will be used in the application.
+    1. As part of creating the identity pool Cognito will setup two roles in [Identity and Access Management (IAM)](https://console.aws.amazon.com/iam/home#roles).  These will be named something similar to:`Cognito_PoolNameAuth_Role` and`Cognito_PoolNameUnauth_Role`.
+    1. Now we will attach a policy to the unauthenticated role which has permissions to access the required AWS IoT APIs.  This is done by first creating an IAM Policy in the [IAM Console](https://console.aws.amazon.com/iam/home#policies) and then attaching it to the unauthenticated role.  Below is an example policy which can be used with the sample application.  This policy allows the application to create a new certificate (including private key) as well as attach an existing policy to a certificate.
+
+        ```
+        {
+          "Version": "2012-10-17",
+          "Statement": [
             {
-                "Effect": "Allow",
-                "Action": [
-                    "iot:*"
-                ],
-                "Resource": "*"
-           }
-        ]
-    }
-    ```
+              "Effect": "Allow",
+              "Action": [
+                "iot:AttachPrincipalPolicy",
+                "iot:CreateKeysAndCertificate"
+              ],
+              "Resource": [
+                "*"
+              ]
+            }
+          ]
+        }
+        ```
 
-    To access the service any certificate needs to have a policy associated.  This policy contols what actions are able to be performed by the client authenticating with that particular certificate.  This sample application does not create its own policy, rather it assumes a policy has been created in the service.  When the application creates a certificate it makes a service call to associate the pre-existing policy with the newly created certificate.
+        More information on AWS IAM roles and policies can be found [here](http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html).  More information on AWS IoT policies can be found [here](http://docs.aws.amazon.com/iot/latest/developerguide/authorization.html).
 
-1. In the [Amazon AWS IoT console](https://console.aws.amazon.com/iot/), create a policy with full permissions to access AWS IoT as shown in this example.  Select 'Create a Policy', fill in the 'Name' field, set 'Action' to 'iot:\*', set 'Resource' to '\*', and then click 'Create'.
+        **Note**: to keep this example simple it makes use of unauthenticated users in the identity pool.  This can be used for getting started and prototypes but unauthenticated users should typically only be given read-only permissions if used in production applications.  More information on Cognito identity pools including the Cognito developer guide can be found [here](http://aws.amazon.com/cognito/).
+
+1. Note that the application does not actually create the AWS IoT policy itself, rather it relies on a policy to already be created in AWS IoT and then makes a call to attach that policy to the newly created certificate.  To create a policy in AWS IoT,
+    1. navigate to the [AWS IoT Console](https://console.aws.amazon.com/iot/home)
+    1. Click on Create a Resource
+    1. Click on Create a Policy
+    1. Give the policy a name.  Note this name as this is the string you will use in the application when making the attach policy API call.
+    1. The policy should be created to allow connecting to AWS IoT as well as allowing publishing, subscribing and receiving messages on whatever topics you will use in the sample application.  Below is an example policy.  This policy allows access to all topics under your AWS IoT account.   To scope this policy down to specific toipcs specify them explicitly as ARNs in the resource section: `"Resource": "arn:aws:iot:<REGION>:<ACCOUNT ID>:topic/mytopic/mysubtopic"`.  Note that the first `topic` is an ARN specifer so this example actually specifies the topic `mytopic/mysubtopic`.
+
+        ```
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "iot:Connect",
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "iot:Publish",
+                "iot:Subscribe",
+                "iot:Receive"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+        ```
 
 1. Open the AndroidPubSub project.
 
 1. Open `PubSubActivity.java` and update the following constants with the appropriate values:
 
     ```
-    CUSTOMER_SPECIFIC_ENDPOINT_PREFIX = "<CUSTOMER SPECIFIC ENDPOINT PREFIX>";
-    COGNITO_POOL_ID = "<COGNITO POOL ID GOES HERE>";
-    AWS_IOT_POLICY_NAME = "<YOUR IOT POLICY GOES HERE>";
+    CUSTOMER_SPECIFIC_ENDPOINT = "<CHANGE_ME>";
+    COGNITO_POOL_ID = "<CHANGE_ME>";
+    AWS_IOT_POLICY_NAME = "CHANGE_ME";
     MY_REGION = Regions.US_EAST_1;
     KEYSTORE_NAME = "iot_keystore";
     KEYSTORE_PASSWORD = "password";
     CERTIFICATE_ID = "default";
     ```
-    The customer specific endpoint, Cognito pool ID, Region and AWS IoT policy name will need to be updated to reflect the values in your account.  For the others the default values will work, however you can update them to reflect your setup.
+    The customer specific endpoint, Cognito pool ID, Region and AWS IoT policy name will need to be updated to reflect the values in your account.  The policy name is the name used when creating the IoT policy above.  For the other parameters the default values will work for this sample application.  The following describes these parameters in case they need to be updated going forward past this sample. The keystore name is the name used when writing the keystore file to the application's file directory.  The password is the password given to protect the keystore when written.  Certificate ID is the alias in the keystore for the certificate and private key entry.  If you end up creating a keystore off of the device you will need to update this to match the alias given when importing the certificate into the keystore.
 
 1. Build and run the sample app.
 

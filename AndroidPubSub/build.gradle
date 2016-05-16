@@ -1,5 +1,6 @@
 repositories {
     jcenter()
+    maven { url "https://repo.eclipse.org/content/repositories/paho-snapshots" }
 }
 
 buildscript {
@@ -8,14 +9,14 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.5.0'
     }
 }
 
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile 'com.amazonaws:aws-android-sdk-iot:2.2.12+'
+    compile 'com.amazonaws:aws-android-sdk-iot:2.2.+'
 }
 
 android {

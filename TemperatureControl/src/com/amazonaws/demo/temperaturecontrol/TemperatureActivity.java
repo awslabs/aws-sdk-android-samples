@@ -41,11 +41,9 @@ public class TemperatureActivity extends Activity {
 
     // --- Constants to modify per your configuration ---
 
-    // Endpoint Prefix = random characters at the beginning of the custom AWS
-    // IoT endpoint
-    // describe endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com,
-    // endpoint prefix string is XXXXXXX
-    private static final String CUSTOMER_SPECIFIC_ENDPOINT_PREFIX = "CHANGE_ME";
+    // Customer specific IoT endpoint
+    // AWS Iot CLI describe-endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com
+    private static final String CUSTOMER_SPECIFIC_ENDPOINT = "CHANGE_ME";
     // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
     // AWS IoT permissions.
     private static final String COGNITO_POOL_ID = "CHANGE_ME";
@@ -68,14 +66,8 @@ public class TemperatureActivity extends Activity {
                 MY_REGION // Region
         );
 
-        // endpoint prefix = random characters at the beginning of the custom
-        // endpoint
-        // describe endpoint call returns:
-        // XXXXXXXXXX.iot.<region>.amazonaws.com, endpoint prefix string is
-        // XXXXXXX
         iotDataClient = new AWSIotDataClient(credentialsProvider);
-        String iotDataEndpoint = String.format("%s.iot.%s.amazonaws.com",
-                CUSTOMER_SPECIFIC_ENDPOINT_PREFIX, MY_REGION.getName());
+        String iotDataEndpoint = CUSTOMER_SPECIFIC_ENDPOINT;
         iotDataClient.setEndpoint(iotDataEndpoint);
 
         NumberPicker np = (NumberPicker) findViewById(R.id.setpoint);
