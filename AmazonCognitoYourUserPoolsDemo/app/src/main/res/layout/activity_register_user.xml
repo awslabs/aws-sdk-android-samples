@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2013-2016 Amazon.com,
+  ~ Inc. or its affiliates. All Rights Reserved.
+  ~
+  ~ Licensed under the Amazon Software License (the "License").
+  ~ You may not use this file except in compliance with the
+  ~ License. A copy of the License is located at
+  ~
+  ~     http://aws.amazon.com/asl/
+  ~
+  ~ or in the "license" file accompanying this file. This file is
+  ~ distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  ~ CONDITIONS OF ANY KIND, express or implied. See the License
+  ~ for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.amazonaws.youruserpools.AboutApp">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_Register"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_centerHorizontal="true"
+                android:textAlignment="center"
+                android:id="@+id/signUp_toolbar_title"
+                android:text="@string/Menu"
+                android:textColor="@color/toolbar_items"
+                android:textSize="@dimen/action_bar_text" />
+            </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ScrollView01"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none" >
+
+        <include layout="@layout/content_register" />
+
+    </ScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

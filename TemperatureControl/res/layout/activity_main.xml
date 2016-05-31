@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:padding="3dp" >
+
+    <ImageButton
+        android:id="@+id/button"
+        android:layout_width="40dp"
+        android:layout_height="35dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/refresh"
+        android:clickable="true"
+        android:contentDescription="refresh"
+        android:onClick="getShadow" />
+
+    <ToggleButton
+        android:id="@+id/enableButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/updateSetpoint"
+        android:layout_marginLeft="30dp"
+        android:onClick="enableDisableClicked"
+        android:text="@string/enabled"
+        android:textOff="Disabled"
+        android:textOn="Enabled" />
+
+    <NumberPicker
+        android:id="@+id/setpoint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/updateSetpoint" />
+
+    <Button
+        android:id="@+id/updateSetpoint"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="62dp"
+        android:onClick="updateSetpoint"
+        android:text="@string/SetpointButtonText" />
+
+    <TextView
+        android:id="@+id/intTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button"
+        android:layout_toRightOf="@+id/enableButton"
+        android:text="@string/UnknownTemperatureText"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/extTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/intTemp"
+        android:layout_below="@+id/intTemp"
+        android:layout_marginTop="45dp"
+        android:text="@string/UnknownTemperatureText"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/intTempLabelText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/intTemp"
+        android:layout_alignParentLeft="true"
+        android:text="Interior Temp"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/extTempLabelText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/extTemp"
+        android:layout_alignParentLeft="true"
+        android:text="Exterior Temp"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</RelativeLayout>

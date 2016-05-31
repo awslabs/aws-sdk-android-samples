@@ -1,0 +1,47 @@
+repositories {
+    jcenter()
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.5.0'
+    }
+}
+
+apply plugin: 'com.android.application'
+
+dependencies {
+    compile 'com.amazonaws:aws-android-sdk-iot:2.2.+'
+}
+
+android {
+    buildToolsVersion "21.1.2"
+    compileSdkVersion 16
+
+    defaultConfig {
+        versionCode 1
+        versionName "1.0.0"
+        minSdkVersion 16
+        targetSdkVersion 23
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+    }
+}

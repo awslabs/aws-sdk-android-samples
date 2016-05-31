@@ -1,73 +1,75 @@
-aws-sdk-android-samples
+AWS Mobile SDK for Android Samples
 =======================
 
-This repository has samples that demonstrate various aspects of the [AWS SDK for Android](http://aws.amazon.com/sdkforandroid), you can get the [source on Github](https://github.com/aws/aws-sdk-android)
+This repository has samples that demonstrate various aspects of the [AWS Mobile SDK Version 2 for Android](http://aws.amazon.com/sdkforandroid), you can get the [source on Github](https://github.com/aws/aws-sdk-android-v2).  To find the AWS Mobile SDK Version 1 for Android samples, please select the v1 branch.
 
-Please refer to README file in each folder for more specific instructions.
+Please refer to README file in each folder for more specific instructions. For
+general issues and help, check the <a href="#faqs">FAQs</a> section
 
 ### List of Samples
 
-#### [DynamoDB_WIF_UserPreference](DynamoDB_WIF_UserPreference/README.md)
-* This is a sample mobile application that demonstrates how to use Amazon DynamoDB to store user preferences by using Web Identity Federation.
-    * AWS Services involved:
-      + DynamoDB
-      + Security Token Service
+* [CognitoSyncDemo](CognitoSyncDemo/README.md). This is a sample mobile application that demonstrates how to use Amazon Cognito. Involved AWS Services are:
+  + Amazon Cognito Identity
+  + Amazon Cognito Sync
 
-#### [DynamoDBMapper_UserPreference](DynamoDBMapper_UserPreference/README.md)
-* This is a sample mobile application that demonstrates how to use Amazon DynamoDB to store user preferences by using DynamoDB Object Mapper.
-    * AWS Services involved:
-      + DynamoDB
-      + Security Token Service
+* [S3TransferUtilitySample](S3TransferUtilitySample/README.md). This is a sample mobile application that demonstrates how to use Amazon S3 Transfer Utility to download and upload files to Amazon S3. Involved AWS Services are:
+  + Amazon Cognito Identity
+  + Amazon S3
+      
+* [DynamoDBMapper](DynamoDBMapper_UserPreference_Cognito/README.md). This is a sample mobile application that demonstrates how to use Amazon DynamoDB Object Mapper. Involved AWS Services are:
+  + Amazon Cognito Identity
+  + Amazon DynamoDB
      
-#### [S3_SimpleDB_SNS_SQS_Demo](S3_SimpleDB_SNS_SQS_Demo/README.md)
-* This is a sample mobile application that demonstrates how to make requests to AWS using the AWS SDK for Android.
-    * AWS Services involved:
-      + Simple Storage (S3)
-      + SimpleDB
-      + Simple Queue Service (SQS)
-      + Simple Notification Service (SNS)
+* [AndroidPubSub](AndroidPubSub/README.md). This sample demonstrates use of the AWS IoT APIs to securely publish to and subscribe from MQTT topics. Involved AWS Services are:
+  + Amazon Cognito Identity
+  + AWS IoT
 
-#### [S3_SimpleDB_SNS_SQS_DemoTVM](S3_SimpleDB_SNS_SQS_DemoTVM/README.md)
-* This is a sample mobile application that demonstrates interaction with the Token Vending Machine without requiring an identity from the user.
-    * AWS Services involved:
-      + Simple Storage (S3)
-      + SimpleDB
-      + Simple Queue Service (SQS)
-      + Simple Notification Service (SNS)
-      + Token Vending Machine (Anonymous version)
+* [CreateIotCertWithCSR](CreateIotCertWithCSR/README.md). This sample demonstrates use of the AWS IoT APIs to create an AWS IoT certificate. Involved AWS Services are:
+  + Amazon Cognito Identity
+  + AWS IoT
 
-#### [S3_SimpleDB_SNS_SQS_DemoTVMIdentity](S3_SimpleDB_SNS_SQS_DemoTVMIdentity/README.md)
-* This is a sample mobile application that demonstrates interaction with a Token Vending Machine where a username/password combination is required.
-    * AWS Services involved:
-      + Simple Storage (S3)
-      + SimpleDB
-      + Simple Queue Service (SQS)
-      + Simple Notification Service (SNS)
-      + Token Vending Machine (Identity version)
+* [TemperatureControl](TemperatureControl/README.md). This sample demonstrates use of the AWS IoT device shadow APIs. Involved AWS Services are:
+  + Amazon Cognito Identity
+  + AWS IoT
 
-#### [S3_Uploader](S3_Uploader/README.md)
-* This is a sample mobile application that demonstrates how to make requests to Amazon S3 using the AWS SDK for Android.
-    * AWS Services involved:
-      + Simple Storage (S3)
+### How to Run a Sample
+#### Requirements
+* Android SDK. You can install the SDK via Android Studio or as stand-alone tools. See [Installing the Android SDK](http://developer.android.com/sdk/installing/index.html).
+* Your favorite IDE, either Android Studio or Eclipse. The former is the official IDE for Android. However all samples are backward compatible with Eclipse, though the setup is a little more complicated.
+* Or Gradle if you prefer CLI.
 
-#### [S3_WIF_PersonalFileStore](S3_WIF_PersonalFileStore/README.html)
-* This is a sample mobile application that demonstrates how to make requests to Amazon S3 using the AWS SDK for Android.
-    * AWS Services involved:
-      + Simple Storage (S3)
+#### Android Studio
+This is the recommended way to run samples.
+* Import sample project into Android Studio. In the welcome screen, click `Import project (Eclipse ADT, Gradle, etc.)`. Navigate to the sample directory and select a sample project to import.
+* Update source code with your AWS resources. Please read the README of each sample for more details.
+* Run it!
 
-#### [SES_FeedbackForm](SES_FeedbackForm/README.md)
-* This is a sample mobile application that demonstrates how to use Amazon SES to record user feedback using the AWS SDK for Android.
-    * AWS Services involved:
-      + Simple Storage (S3)
-      + Simple Email Service (SES)
+#### Gradle
+* Make sure `ANDROID_HOME` environment variable is set to point to your Android SDK. See [Getting Started with Gradle](https://guides.codepath.com/android/Getting-Started-with-Gradle).
+* Update source code with your AWS resources. Please read the README of each sample for more details.
+* Connect an Android device to your computer or start an Android emulator. The minimum required API version for most samples is API level 10.
+* Compile the sample and install it. Run `gradlew installDebug`. Or if you on a Windows computer, use `gradlew.bat` instead. 
 
-#### [SimpleDB_HighScores](SimpleDB_HighScores/README.md)
-* This is a sample mobile application that demonstrates how to use SimpleDB to store a high score list using the AWS SDK for Android.
-    * AWS Services involved:
-      + SimpleDB
+#### Eclipse
+* Import sample project. Via menu, click File -> New -> Other -> Android Project from Existing Code. Browse to the sample directory and select a sample project to import.
+* Get AWS Mobile SDK for Android. You can download it from [AWS Mobile SDK](https://aws.amazon.com/mobile/sdk/) website. Extract it, and copy libraries to the `libs` folder of the sample. Please refer to the README of each sample for required libraries.
+* Update source code with your AWS resources. Please read the README of each sample for more details.
+* Run it!
 
-#### [SNS_SQS_MessageBoard](SNS_SQS_MessageBoard/README.md)
-* This is a sample mobile application that demonstrates how to use Amazon SQS and Amazon SNS to create a message board using the AWS SDK for Android.
-    * AWS Services involved:
-      + Simple Notification Service (SNS)
-      + Simple Queue Service (SQS)
+### FAQs<a name="faqs"></a>
+##### The sample can no longer be compiled/imported if I move it to another directory
+* We typically include the dependencies in the repo and have them already
+linked, so if you move the project you'll need to also update the path to the
+dependency. To do this, modify the project.properties file of the project
+
+##### How do I use a different version of an included library(such as the Facebook SDK)?
+* Change the path to the library in project.properties of the project you are
+building to be the path to the version you want
+
+##### I'm getting an error saying that there are multiple versions of a jar
+* To fix this, make sure that all the jars you are using conform to the same
+version. You can do this by just replacing all the problematic jars with the
+version you would like to use.
+
+##### Where do I find login-with-amazon-sdk.jar?
+* The jar is usually already included where required. However, if not or if you want to use a different version, you can find it <a href="https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/install_sdk_android.html">here</a>.

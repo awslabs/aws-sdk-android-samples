@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="16dip"
+    android:paddingRight="16dip"
+    android:paddingTop="16dip"
+    android:paddingBottom="16dip"
+    >
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="Cognito Sync Demo"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/btnLoginFacebook"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="Login with Facebook" />
+
+    <Button
+        android:id="@+id/btnLoginTwitter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="Login with Twitter" />
+
+    <Button
+        android:id="@+id/btnLoginLWA"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="Login with Amazon" />
+
+    <Button
+        android:id="@+id/btnLoginDevAuth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="Developer Authenticated Login" />
+
+    <Button
+        android:id="@+id/btnListDatasets"
+        android:layout_width="match_parent"
+        android:layout_marginTop="18dp"
+        android:layout_height="wrap_content"
+        android:text="Browse data" />
+
+    <Button
+        android:id="@+id/btnWipedata"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="Wipe Data" />
+
+
+</LinearLayout>

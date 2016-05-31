@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2013-2016 Amazon.com,
+  ~ Inc. or its affiliates. All Rights Reserved.
+  ~
+  ~ Licensed under the Amazon Software License (the "License").
+  ~ You may not use this file except in compliance with the
+  ~ License. A copy of the License is located at
+  ~
+  ~     http://aws.amazon.com/asl/
+  ~
+  ~ or in the "license" file accompanying this file. This file is
+  ~ distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  ~ CONDITIONS OF ANY KIND, express or implied. See the License
+  ~ for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    tools:context="com.amazonaws.youruserpools.AddAttributeActivity"
+    tools:showIn="@layout/activity_add_attribute">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/space_add_attr_1"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Choose an attribute"
+        android:id="@+id/textViewAddAttrTitle"
+        android:layout_below="@id/space_add_attr_1" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_intra_group_separation"
+        android:id="@+id/space_add_attr_2"
+        android:layout_below="@id/textViewAddAttrTitle"/>
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_text_height"
+        android:id="@+id/spinnerAttributes"
+        android:layout_below="@+id/space_add_attr_2"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/text_border_selector" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_intra_group_separation"
+        android:id="@+id/space_add_attr_3"
+        android:layout_below="@id/spinnerAttributes"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="@dimen/activity_text_size_small"
+        android:text=" "
+        android:id="@+id/textViewAttrDataLabel"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/space_add_attr_3" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_text_height"
+        android:paddingLeft="@dimen/activity_text_padding"
+        android:paddingRight="@dimen/activity_text_padding"
+        android:id="@+id/editTextAttrData"
+        android:layout_below="@id/textViewAttrDataLabel"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/text_border_selector"
+        android:hint="Value"
+        android:inputType="text"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="@dimen/activity_text_size_small"
+        android:text=" "
+        android:color="@color/alert"
+        android:id="@+id/textViewAttrDataMessage"
+        android:layout_below="@id/editTextAttrData"
+        android:layout_centerHorizontal="true" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_intra_group_separation"
+        android:id="@+id/space_add_attr_4"
+        android:layout_below="@id/textViewAttrDataMessage"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_button_height"
+        android:text="Add"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/activity_button_text_size"
+        android:id="@+id/add_attr_button"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/space_add_attr_4"
+        android:background="@drawable/button_selector" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_intra_group_separation"
+        android:id="@+id/space_add_attr_5"
+        android:layout_below="@id/add_attr_button"/>
+
+
+</RelativeLayout>
