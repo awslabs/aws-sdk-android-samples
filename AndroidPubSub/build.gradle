@@ -1,6 +1,5 @@
 repositories {
     jcenter()
-    maven { url "https://repo.eclipse.org/content/repositories/paho-snapshots" }
 }
 
 buildscript {
@@ -21,7 +20,7 @@ dependencies {
 
 android {
     buildToolsVersion "21.1.2"
-    compileSdkVersion 16
+    compileSdkVersion 18
 
     defaultConfig {
         versionCode 1

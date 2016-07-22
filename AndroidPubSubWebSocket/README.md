@@ -28,8 +28,6 @@ This sample demonstrates use of the AWS IoT APIs to securely publish to and subs
       * aws-android-sdk-core-X.X.X.jar
       * aws-android-sdk-iot-X.X.X.jar
       
-    **Note**:  Adding support for MQTT over WebSocket connections is only available in the Paho project nightly builds.  The Gradle file is currently configured to add the Paho snapshot repository.  This project will be updated to the official build after release as part of [Eclipse Neon](https://projects.eclipse.org/projects/technology.paho/releases/1.2.0).
-
 1. This sample requires Cognito to authorize to AWS IoT and establish a WebSocket connection. Use Amazon Cognito to create a new identity pool:
     1. In the [Amazon Cognito Console](https://console.aws.amazon.com/cognito/), select`Create Identity Pool`.
     1. Ensure`Enable access to unauthenticated identities` is checked. This allows the sample application to assume the unauthenticated role associated with this identity pool.
