@@ -34,6 +34,14 @@
     </group>
 
     <group
+        android:id="@+id/group_user_trusted_devices"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_user_trusted_devices"
+            android:title="Your devices" />
+    </group>
+
+    <group
         android:id="@+id/group_user_signout"
         android:checkableBehavior="single">
         <item

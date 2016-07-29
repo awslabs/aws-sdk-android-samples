@@ -45,7 +45,7 @@
                 android:text="@string/Menu"
                 android:textColor="@color/toolbar_items"
                 android:textSize="@dimen/action_bar_text" />
-            </android.support.v7.widget.Toolbar>
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 

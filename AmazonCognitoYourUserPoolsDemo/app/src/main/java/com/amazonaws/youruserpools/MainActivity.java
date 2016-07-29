@@ -1,18 +1,18 @@
 /*
- * Copyright 2013-2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
+ *  Copyright 2013-2016 Amazon.com,
+ *  Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
+ *  Licensed under the Amazon Software License (the "License").
+ *  You may not use this file except in compliance with the
+ *  License. A copy of the License is located at
  *
- *     http://aws.amazon.com/asl/
+ *      http://aws.amazon.com/asl/
  *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
+ *  or in the "license" file accompanying this file. This file is
+ *  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ *  CONDITIONS OF ANY KIND, express or implied. See the License
+ *  for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package com.amazonaws.youruserpools;
@@ -30,20 +30,25 @@ import android.support.v7.widget.Toolbar;
 import android.support.design.widget.NavigationView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ForgotPasswordContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.ForgotPasswordHandler;
 import com.amazonaws.youruserpools.CognitoYourUserPoolsDemo.R;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG="MainActivity";
@@ -122,6 +127,16 @@ public class MainActivity extends AppCompatActivity {
                         inUsername.setText(name);
                         inPassword.setText("");
                         inPassword.requestFocus();
+                    }
+                    String userPasswd = data.getStringExtra("password");
+                    if (!userPasswd.isEmpty()) {
+                        inPassword.setText(userPasswd);
+                    }
+                    if (!name.isEmpty() && !userPasswd.isEmpty()) {
+                        // We have the user details, so sign in!
+                        username = name;
+                        password = userPasswd;
+                        AppHelper.getPool().getUser(username).getSessionInBackground(authenticationHandler);
                     }
                 }
                 break;
@@ -437,8 +452,10 @@ public class MainActivity extends AppCompatActivity {
     //
     AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
         @Override
-        public void onSuccess(CognitoUserSession cognitoUserSession) {
+        public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice device) {
+            Log.e(TAG, "Auth Success");
             AppHelper.setCurrSession(cognitoUserSession);
+            AppHelper.newDevice(device);
             closeWaitDialog();
             launchUser();
         }
@@ -446,6 +463,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String username) {
             closeWaitDialog();
+            Locale.setDefault(Locale.US);
             getUserAuthentication(authenticationContinuation, username);
         }
 
@@ -467,6 +485,11 @@ public class MainActivity extends AppCompatActivity {
             inUsername.setBackground(getDrawable(R.drawable.text_border_error));
 
             showDialogMessage("Sign-in failed", AppHelper.formatException(e));
+        }
+
+        @Override
+        public void authenticationChallenge(ChallengeContinuation continuation) {
+            // TODO change the place holder
         }
     };
 

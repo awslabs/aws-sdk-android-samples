@@ -1,18 +1,18 @@
 /*
- * Copyright 2013-2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
+ *  Copyright 2013-2016 Amazon.com,
+ *  Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
+ *  Licensed under the Amazon Software License (the "License").
+ *  You may not use this file except in compliance with the
+ *  License. A copy of the License is located at
  *
- *     http://aws.amazon.com/asl/
+ *      http://aws.amazon.com/asl/
  *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
+ *  or in the "license" file accompanying this file. This file is
+ *  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ *  CONDITIONS OF ANY KIND, express or implied. See the License
+ *  for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package com.amazonaws.youruserpools;
@@ -22,10 +22,16 @@ import android.graphics.Color;
 import android.util.Log;
 
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AnonymousAWSCredentials;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.cognitoidentityprovider.AmazonCognitoIdentityProvider;
+import com.amazonaws.services.cognitoidentityprovider.AmazonCognitoIdentityProviderClient;
 import com.amazonaws.services.cognitoidentityprovider.model.AttributeType;
 
 import java.util.ArrayList;
@@ -45,12 +51,19 @@ public class AppHelper {
     private static AppHelper appHelper;
     private static CognitoUserPool userPool;
     private static String user;
+    private static CognitoDevice newDevice;
 
     private static CognitoUserAttributes attributesChanged;
     private static List<AttributeType> attributesToDelete;
 
     private static List<ItemToDisplay> currDisplayedItems;
     private static  int itemCount;
+
+    private static List<ItemToDisplay> trustedDevices;
+    private static int trustedDevicesCount;
+    private static List<CognitoDevice> deviceDetails;
+    private static CognitoDevice thisDevice;
+    private static boolean thisDeviceTrustState;
 
     // Change the next three lines of code to run this demo on your user pool
 
@@ -62,7 +75,7 @@ public class AppHelper {
     /**
      * Add you app id
      */
-    private static final String clientId = "replace_this_with_app_client_id ";
+    private static final String clientId = "replace_this_with_app_client_id";
 
     /**
      * App secret associated with your app id - if the App id does not have an associated App secret,
@@ -71,13 +84,17 @@ public class AppHelper {
      */
     private static final String clientSecret = "replace_this_with_the_app_client_secret";
 
+    /**
+     * Set Your User Pools region.
+     * e.g. if your user pools are in US East (N Virginia) then set cognitoRegion = Regions.US_EAST_1.
+     */
+    private static final Regions cognitoRegion = Regions.DEFAULT_REGION;
+
     // User details from the service
     private static CognitoUserSession currSession;
     private static CognitoUserDetails userDetails;
 
     // User details to display - they are the current values, including any local modification
-
-
     private static boolean phoneVerified;
     private static boolean emailVerified;
 
@@ -87,6 +104,7 @@ public class AppHelper {
     private static Set<String> currUserAttributes;
 
     public static void init(Context context) {
+        System.setProperty("com.amazonaws.sdk.disableCertChecking", "Hello");
         setData();
 
         if (appHelper != null && userPool != null) {
@@ -97,8 +115,12 @@ public class AppHelper {
             appHelper = new AppHelper();
         }
 
+        // ClientConfiguration clientConfiguration = new ClientConfiguration(Region.getRegion(Regions.AP_NORTHEAST_1));
         if (userPool == null) {
-            userPool = new CognitoUserPool(context, userPoolId, clientId, clientSecret, new ClientConfiguration());
+            ClientConfiguration clientConfiguration = new ClientConfiguration();
+            AmazonCognitoIdentityProvider cipClient = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), clientConfiguration);
+            cipClient.setRegion(Region.getRegion(cognitoRegion));
+            userPool = new CognitoUserPool(context, userPoolId, clientId, clientSecret, cipClient);
         }
 
         phoneVerified = false;
@@ -108,6 +130,10 @@ public class AppHelper {
 
         currUserAttributes = new HashSet<String>();
         currDisplayedItems = new ArrayList<ItemToDisplay>();
+        trustedDevices = new ArrayList<ItemToDisplay>();
+        newDevice = null;
+        thisDevice = null;
+        thisDeviceTrustState = false;
     }
 
     public static CognitoUserPool getPool() {
@@ -204,6 +230,7 @@ public class AppHelper {
     public static String formatException(Exception exception) {
         String formattedString = "Internal Error";
         Log.e("App Error",exception.toString());
+        Log.getStackTraceString(exception);
 
         String temp = exception.getMessage();
 
@@ -221,8 +248,64 @@ public class AppHelper {
         return itemCount;
     }
 
+    public static int getDevicesCount() {
+        return trustedDevicesCount;
+    }
+
     public  static ItemToDisplay getItemForDisplay(int position) {
         return  currDisplayedItems.get(position);
+    }
+
+    public static ItemToDisplay getDeviceForDisplay(int position) {
+        if (position >= trustedDevices.size()) {
+            return new ItemToDisplay(" ", " ", " ", Color.BLACK, Color.DKGRAY, Color.parseColor("#37A51C"), 0, null);
+        }
+        return trustedDevices.get(position);
+    }
+
+    public static void newDevice(CognitoDevice device) {
+        newDevice = device;
+    }
+
+    public static void setDevicesForDisplay(List<CognitoDevice> devicesList) {
+        trustedDevicesCount = 0;
+        thisDeviceTrustState = false;
+        deviceDetails = devicesList;
+        trustedDevices = new ArrayList<ItemToDisplay>();
+        for(CognitoDevice device: devicesList) {
+            if (thisDevice != null && thisDevice.getDeviceKey().equals(device.getDeviceKey())) {
+                thisDeviceTrustState = true;
+            } else {
+                ItemToDisplay item = new ItemToDisplay("", device.getDeviceName(), device.getCreateDate().toString(), Color.BLACK, Color.DKGRAY, Color.parseColor("#329AD6"), 0, null);
+                item.setDataDrawable("checked");
+                trustedDevices.add(item);
+                trustedDevicesCount++;
+            }
+        }
+    }
+
+    public static CognitoDevice getDeviceDetail(int position) {
+        if (position <= trustedDevicesCount) {
+            return deviceDetails.get(position);
+        } else {
+            return null;
+        }
+    }
+
+    public static CognitoDevice getNewDevice() {
+        return newDevice;
+    }
+
+    public static CognitoDevice getThisDevice() {
+        return thisDevice;
+    }
+
+    public static void setThisDevice(CognitoDevice device) {
+        thisDevice = device;
+    }
+
+    public static boolean getThisDeviceTrustState() {
+        return thisDeviceTrustState;
     }
 
     private static void setData() {

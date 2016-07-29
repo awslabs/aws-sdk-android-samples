@@ -1,3 +1,8 @@
+Introduction
+============
+This sample app will showcase using Cognito Your User Pools with the AWS Mobile SDK for Android. The sample has been updated to support the features introduced in GA.
+The sample requires Android Studio and can run on Android SDK version 21 (Android 5) and above. Please follow the setup instructions to run this sample.
+This sample app includes demonstrates how to sign-up new users, confirm a user, sign-in as a user, see/change/delete user details, change a password, change a user’s MFA settings, verify user attributes and see users remembered devices.
 
 Running AmazonCognitoYourUserPoolsDemo 
 ======================================
@@ -26,5 +31,6 @@ Running AmazonCognitoYourUserPoolsDemo
       * userPoolId set this to your pool id.
       * clientId set this to your app client id.
       * clientSecret set this to your app client secret associated with the app client id. If your app client id does not have an associated client secret, set this variable to null, i.e. clientSecret = null.
+      * cognitoRegion set this to AWS Cognito Your User Pools region.
 
 4. You are now ready to run this demo.

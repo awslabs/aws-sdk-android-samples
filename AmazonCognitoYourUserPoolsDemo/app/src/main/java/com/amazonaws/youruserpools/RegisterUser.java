@@ -1,42 +1,59 @@
 /*
- * Copyright 2013-2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
+ *  Copyright 2013-2016 Amazon.com,
+ *  Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
+ *  Licensed under the Amazon Software License (the "License").
+ *  You may not use this file except in compliance with the
+ *  License. A copy of the License is located at
  *
- *     http://aws.amazon.com/asl/
+ *      http://aws.amazon.com/asl/
  *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
+ *  or in the "license" file accompanying this file. This file is
+ *  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ *  CONDITIONS OF ANY KIND, express or implied. See the License
+ *  for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package com.amazonaws.youruserpools;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.hardware.fingerprint.FingerprintManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSCognitoIdentityProvider;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GenericHandler;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler;
 import com.amazonaws.youruserpools.CognitoYourUserPoolsDemo.R;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterUser extends AppCompatActivity {
     private final String TAG = "SignUp";
@@ -52,6 +69,7 @@ public class RegisterUser extends AppCompatActivity {
     private AlertDialog userDialog;
     private ProgressDialog waitDialog;
     private String usernameInput;
+    private String userPasswd;
 
 
     @Override
@@ -237,6 +255,7 @@ public class RegisterUser extends AppCompatActivity {
                 }
 
                 String userpasswordInput = password.getText().toString();
+                userPasswd = userpasswordInput;
                 if (userpasswordInput == null || userpasswordInput.isEmpty()) {
                     TextView view = (TextView) findViewById(R.id.textViewUserRegPasswordMessage);
                     view.setText(password.getHint() + " cannot be empty");
@@ -259,7 +278,6 @@ public class RegisterUser extends AppCompatActivity {
                 }
 
                 userInput = phone.getText().toString();
-                // userInput = "+12062578104";
                 if (userInput != null) {
                     if (userInput.length() > 0) {
                         userAttributes.addAttribute(AppHelper.getSignUpFieldsC2O().get(phone.getHint()).toString(), userInput);
@@ -319,7 +337,7 @@ public class RegisterUser extends AppCompatActivity {
                 if(data.hasExtra("name")) {
                     name = data.getStringExtra("name");
                 }
-                exit(name);
+                exit(name, userPasswd);
             }
         }
     }
@@ -362,10 +380,19 @@ public class RegisterUser extends AppCompatActivity {
     }
 
     private void exit(String uname) {
+        exit(uname, null);
+    }
+
+    private void exit(String uname, String password) {
         Intent intent = new Intent();
-        if(uname == null)
+        if (uname == null) {
             uname = "";
-        intent.putExtra("name",uname);
+        }
+        if (password == null) {
+            password = "";
+        }
+        intent.putExtra("name", uname);
+        intent.putExtra("password", password);
         setResult(RESULT_OK, intent);
         finish();
     }

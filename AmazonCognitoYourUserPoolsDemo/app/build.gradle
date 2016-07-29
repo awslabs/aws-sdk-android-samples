@@ -22,5 +22,7 @@ android {
 dependencies {
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.android.support:design:23.1.1'
-    compile 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.2.20'
+    compile 'com.android.support:cardview-v7:23.+'
+    compile 'com.android.support:recyclerview-v7:23.+'
+    compile 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.3.0'
 }

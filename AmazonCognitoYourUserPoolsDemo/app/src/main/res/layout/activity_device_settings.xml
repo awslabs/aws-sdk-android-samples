@@ -22,7 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.amazonaws.youruserpools.AboutApp">
+    tools:context="com.amazonaws.youruserpools.DeviceSettings">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -30,18 +30,18 @@
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar_Register"
+            android:id="@+id/toolbar_Devices"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" >
+            app:popupTheme="@style/AppTheme.PopupOverlay">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_centerHorizontal="true"
                 android:textAlignment="center"
-                android:id="@+id/signUp_toolbar_title"
+                android:id="@+id/devices_toolbar_title"
                 android:text="@string/Menu"
                 android:textColor="@color/toolbar_items"
                 android:textSize="@dimen/action_bar_text" />
@@ -49,15 +49,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/ScrollView01"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:scrollbars="none" >
-
-        <include layout="@layout/content_register" />
-
-    </ScrollView>
+    <include layout="@layout/content_device_settings" />
 
 </android.support.design.widget.CoordinatorLayout>

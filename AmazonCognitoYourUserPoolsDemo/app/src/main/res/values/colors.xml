@@ -5,6 +5,7 @@
     <color name="alert">#AC1600</color>
     <color name="success">#37A51C</color>
     <color name="button_default">#329AD6</color>
+    <color name="informative_message">#329AD6</color>
     <color name="button_pressed">#2A5C91</color>
     <color name="text_border_default">#303232</color>
     <color name="text_border_selected">#4EA9DC</color>

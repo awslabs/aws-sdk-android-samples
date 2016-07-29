@@ -61,7 +61,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Phone"
+        android:text="Send code"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="@dimen/activity_button_text_size"
@@ -96,7 +96,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Email"
+        android:text="Send code"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="@dimen/activity_button_text_size"

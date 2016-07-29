@@ -1,18 +1,18 @@
 /*
- * Copyright 2013-2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
+ *  Copyright 2013-2016 Amazon.com,
+ *  Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
+ *  Licensed under the Amazon Software License (the "License").
+ *  You may not use this file except in compliance with the
+ *  License. A copy of the License is located at
  *
- *     http://aws.amazon.com/asl/
+ *      http://aws.amazon.com/asl/
  *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
+ *  or in the "license" file accompanying this file. This file is
+ *  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ *  CONDITIONS OF ANY KIND, express or implied. See the License
+ *  for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package com.amazonaws.youruserpools;
@@ -39,6 +39,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
@@ -203,6 +204,9 @@ public class UserActivity extends AppCompatActivity {
                 // Sign out from this account
                 signOut();
                 break;
+            case R.id.nav_user_trusted_devices:
+                showTrustedDevices();
+                break;
             case R.id.nav_user_about:
                 // For the inquisitive
                 Intent aboutAppActivity = new Intent(this, AboutApp.class);
@@ -243,7 +247,7 @@ public class UserActivity extends AppCompatActivity {
         }
         CognitoUserAttributes updatedUserAttributes = new CognitoUserAttributes();
         updatedUserAttributes.addAttribute(attributeType, attributeValue);
-        Toast.makeText(getApplicationContext(), attributeType+": "+attributeValue, Toast.LENGTH_LONG);
+        Toast.makeText(getApplicationContext(), attributeType + ": " + attributeValue, Toast.LENGTH_LONG);
         showWaitDialog("Updating...");
         AppHelper.getPool().getUser(AppHelper.getCurrUser()).updateAttributesInBackground(updatedUserAttributes, updateHandler);
     }
@@ -280,6 +284,11 @@ public class UserActivity extends AppCompatActivity {
         startActivityForResult(attrbutesActivity, 21);
     }
 
+    private void showTrustedDevices() {
+        Intent trustedDevicesActivity = new Intent(this, DeviceSettings.class);
+        startActivity(trustedDevicesActivity);
+    }
+
     // Sign out user
     private void signOut() {
         user.signOut();
@@ -295,8 +304,6 @@ public class UserActivity extends AppCompatActivity {
         getDetails();
     }
 
-    // Callback handlers
-
     GetDetailsHandler detailsHandler = new GetDetailsHandler() {
         @Override
         public void onSuccess(CognitoUserDetails cognitoUserDetails) {
@@ -304,6 +311,8 @@ public class UserActivity extends AppCompatActivity {
             // Store details in the AppHandler
             AppHelper.setUserDetails(cognitoUserDetails);
             showAttributes();
+            // Trusted devices?
+            handleTrustedDevice();
         }
 
         @Override
@@ -312,6 +321,59 @@ public class UserActivity extends AppCompatActivity {
             showDialogMessage("Could not fetch user details!", AppHelper.formatException(exception), true);
         }
     };
+
+    private void handleTrustedDevice() {
+        CognitoDevice newDevice = AppHelper.getNewDevice();
+        if (newDevice != null) {
+            AppHelper.newDevice(null);
+            trustedDeviceDialog(newDevice);
+        }
+    }
+
+    private void updateDeviceStatus(CognitoDevice device) {
+        device.rememberThisDeviceInBackground(trustedDeviceHandler);
+    }
+
+    private void trustedDeviceDialog(final CognitoDevice newDevice) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Remember this device?");
+        //final EditText input = new EditText(UserActivity.this);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+
+        //input.setLayoutParams(lp);
+        //input.requestFocus();
+        //builder.setView(input);
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    //String newValue = input.getText().toString();
+                    showWaitDialog("Remembering this device...");
+                    updateDeviceStatus(newDevice);
+                    userDialog.dismiss();
+                } catch (Exception e) {
+                    // Log failure
+                }
+            }
+        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    userDialog.dismiss();
+                } catch (Exception e) {
+                    // Log failure
+                }
+            }
+        });
+        userDialog = builder.create();
+        userDialog.show();
+    }
+
+    // Callback handlers
 
     UpdateAttributesHandler updateHandler = new UpdateAttributesHandler() {
         @Override
@@ -350,6 +412,20 @@ public class UserActivity extends AppCompatActivity {
 
             // Fetch user details from the service
             getDetails();
+        }
+    };
+
+    GenericHandler trustedDeviceHandler = new GenericHandler() {
+        @Override
+        public void onSuccess() {
+            // Close wait dialog
+            closeWaitDialog();
+        }
+
+        @Override
+        public void onFailure(Exception exception) {
+            closeWaitDialog();
+            showDialogMessage("Failed to update device status", AppHelper.formatException(exception), true);
         }
     };
 

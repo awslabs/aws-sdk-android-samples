@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:background="@drawable/text_border_selected">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text=" "
+        android:paddingLeft="@dimen/activity_text_padding"
+        android:id="@+id/currDeviceState"
+        android:layout_below="@+id/space13"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/deviceTrustStateCheckBox" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/deviceTrustStateCheckBox"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:buttonTint="@color/button_pressed"
+        android:checked="false" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:id="@+id/space13"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/deviceTrustStateCheckBox" />
+</RelativeLayout>

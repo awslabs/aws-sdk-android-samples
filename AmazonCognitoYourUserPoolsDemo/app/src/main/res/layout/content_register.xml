@@ -26,7 +26,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="30dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.amazonaws.youruserpools.RegisterUser"
+    tools:context="com.amazonaws.youruserpools.AboutApp"
     tools:showIn="@layout/activity_register_user">
 
 
@@ -36,8 +36,9 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Enter the following information to sign up."
         android:id="@+id/textViewRegMessage"
+        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginTop="32dp" />
 
     <TextView
         android:layout_width="match_parent"
