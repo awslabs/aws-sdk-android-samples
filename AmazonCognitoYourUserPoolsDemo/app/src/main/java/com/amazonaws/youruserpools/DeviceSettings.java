@@ -186,14 +186,14 @@ public class DeviceSettings extends AppCompatActivity {
         if (device == null) {
             if (AppHelper.getThisDevice() != null) {
                 if (trustDevice) {
-                    AppHelper.getThisDevice().rememberThisDevice(deviceStatusChange);
+                    AppHelper.getThisDevice().rememberThisDeviceInBackground(deviceStatusChange);
                 } else {
                     AppHelper.getThisDevice().doNotRememberThisDeviceInBackground(deviceStatusChange);
                 }
             }
         } else {
             if (trustDevice) {
-                device.rememberThisDevice(deviceStatusChange);
+                device.rememberThisDeviceInBackground(deviceStatusChange);
             } else {
                 device.doNotRememberThisDeviceInBackground(deviceStatusChange);
             }

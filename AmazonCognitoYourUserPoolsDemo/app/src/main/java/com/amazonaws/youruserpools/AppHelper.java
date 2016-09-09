@@ -104,7 +104,6 @@ public class AppHelper {
     private static Set<String> currUserAttributes;
 
     public static void init(Context context) {
-        System.setProperty("com.amazonaws.sdk.disableCertChecking", "Hello");
         setData();
 
         if (appHelper != null && userPool != null) {
@@ -115,12 +114,18 @@ public class AppHelper {
             appHelper = new AppHelper();
         }
 
-        // ClientConfiguration clientConfiguration = new ClientConfiguration(Region.getRegion(Regions.AP_NORTHEAST_1));
         if (userPool == null) {
+
+            // Create a user pool with default ClientConfiguration
+            userPool = new CognitoUserPool(context, userPoolId, clientId, clientSecret, cognitoRegion);
+
+            // This will also work
+            /*
             ClientConfiguration clientConfiguration = new ClientConfiguration();
             AmazonCognitoIdentityProvider cipClient = new AmazonCognitoIdentityProviderClient(new AnonymousAWSCredentials(), clientConfiguration);
             cipClient.setRegion(Region.getRegion(cognitoRegion));
             userPool = new CognitoUserPool(context, userPoolId, clientId, clientSecret, cipClient);
+            */
         }
 
         phoneVerified = false;
