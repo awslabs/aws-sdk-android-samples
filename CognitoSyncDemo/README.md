@@ -33,7 +33,7 @@ This sample demonstrates how to use Cognito Sync client library on Android. It s
      + Go to Project ->  Clean.
      + Go to Project ->  Build All.
      + Go to Run -> Run.
-   * To support Facebook Login and Login with Amazon, continue with step 4 and step 5.
+   * To support Facebook Login and Login with Amazon, continue with step 5 and step 6.
 
 5. To add support for Facebook Login (Optional)
    * Follow the instructions at https://developers.facebook.com/docs/android/getting-started/ to create a Facebook app
