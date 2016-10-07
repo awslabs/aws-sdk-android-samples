@@ -65,6 +65,13 @@ public class AppHelper {
     private static CognitoDevice thisDevice;
     private static boolean thisDeviceTrustState;
 
+    private static List<ItemToDisplay> firstTimeLogInDetails;
+    private static Map<String, String> firstTimeLogInUserAttributes;
+    private static List<String> firstTimeLogInRequiredAttributes;
+    private static int firstTimeLogInItemsCount;
+    private static Map<String, String> firstTimeLogInUpDatedAttributes;
+    private static String firstTimeLoginNewPassword;
+
     // Change the next three lines of code to run this demo on your user pool
 
     /**
@@ -126,6 +133,7 @@ public class AppHelper {
             cipClient.setRegion(Region.getRegion(cognitoRegion));
             userPool = new CognitoUserPool(context, userPoolId, clientId, clientSecret, cipClient);
             */
+
         }
 
         phoneVerified = false;
@@ -136,6 +144,9 @@ public class AppHelper {
         currUserAttributes = new HashSet<String>();
         currDisplayedItems = new ArrayList<ItemToDisplay>();
         trustedDevices = new ArrayList<ItemToDisplay>();
+        firstTimeLogInDetails = new ArrayList<ItemToDisplay>();
+        firstTimeLogInUpDatedAttributes= new HashMap<String, String>();
+
         newDevice = null;
         thisDevice = null;
         thisDeviceTrustState = false;
@@ -257,6 +268,10 @@ public class AppHelper {
         return trustedDevicesCount;
     }
 
+    public static int getFirstTimeLogInItemsCount() {
+        return  firstTimeLogInItemsCount;
+    }
+
     public  static ItemToDisplay getItemForDisplay(int position) {
         return  currDisplayedItems.get(position);
     }
@@ -266,6 +281,65 @@ public class AppHelper {
             return new ItemToDisplay(" ", " ", " ", Color.BLACK, Color.DKGRAY, Color.parseColor("#37A51C"), 0, null);
         }
         return trustedDevices.get(position);
+    }
+
+    public static ItemToDisplay getUserAttributeForFirstLogInCheck(int position) {
+        return firstTimeLogInDetails.get(position);
+    }
+
+    public static void setUserAttributeForDisplayFirstLogIn(Map<String, String> currAttributes, List<String> requiredAttributes) {
+        firstTimeLogInUserAttributes = currAttributes;
+        firstTimeLogInRequiredAttributes = requiredAttributes;
+        firstTimeLogInUpDatedAttributes = new HashMap<String, String>();
+        refreshDisplayItemsForFirstTimeLogin();
+    }
+
+    public static void setUserAttributeForFirstTimeLogin(String attributeName, String attributeValue) {
+        if (firstTimeLogInUserAttributes ==  null) {
+            firstTimeLogInUserAttributes = new HashMap<String, String>();
+        }
+        firstTimeLogInUserAttributes.put(attributeName, attributeValue);
+        firstTimeLogInUpDatedAttributes.put(attributeName, attributeValue);
+        refreshDisplayItemsForFirstTimeLogin();
+    }
+
+    public static Map<String, String> getUserAttributesForFirstTimeLogin() {
+        return firstTimeLogInUpDatedAttributes;
+    }
+
+    public static void setPasswordForFirstTimeLogin(String password) {
+        firstTimeLoginNewPassword = password;
+    }
+
+    public static String getPasswordForFirstTimeLogin() {
+        return firstTimeLoginNewPassword;
+    }
+
+    private static void refreshDisplayItemsForFirstTimeLogin() {
+        firstTimeLogInItemsCount = 0;
+        firstTimeLogInDetails = new ArrayList<ItemToDisplay>();
+
+        for(Map.Entry<String, String> attr: firstTimeLogInUserAttributes.entrySet()) {
+            if ("phone_number_verified".equals(attr.getKey()) || "email_verified".equals(attr.getKey())) {
+                continue;
+            }
+            String message = "";
+            if ((firstTimeLogInRequiredAttributes != null) && (firstTimeLogInRequiredAttributes.contains(attr.getKey()))) {
+                message = "Required";
+            }
+            ItemToDisplay item = new ItemToDisplay(attr.getKey(), attr.getValue(), message, Color.BLACK, Color.DKGRAY, Color.parseColor("#329AD6"), 0, null);
+            firstTimeLogInDetails.add(item);
+            firstTimeLogInRequiredAttributes.size();
+            firstTimeLogInItemsCount++;
+        }
+
+        for (String attr: firstTimeLogInRequiredAttributes) {
+            if (!firstTimeLogInUserAttributes.containsKey(attr)) {
+                ItemToDisplay item = new ItemToDisplay(attr, "", "Required", Color.BLACK, Color.DKGRAY, Color.parseColor("#329AD6"), 0, null);
+                firstTimeLogInDetails.add(item);
+                firstTimeLogInItemsCount++;
+            }
+        }
     }
 
     public static void newDevice(CognitoDevice device) {
@@ -296,6 +370,8 @@ public class AppHelper {
             return null;
         }
     }
+
+    //public static
 
     public static CognitoDevice getNewDevice() {
         return newDevice;

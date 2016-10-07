@@ -62,6 +62,10 @@
         <activity
             android:name="com.amazonaws.youruserpools.DeviceSettings"
             android:label="@string/title_activity_device_settings"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.amazonaws.youruserpools.NewPassword"
+            android:label="@string/title_activity_new_password"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

@@ -44,11 +44,13 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.Auth
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ForgotPasswordContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.NewPasswordContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.ForgotPasswordHandler;
 import com.amazonaws.youruserpools.CognitoYourUserPoolsDemo.R;
 
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG="MainActivity";
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     //Continuations
     private MultiFactorAuthenticationContinuation multiFactorAuthenticationContinuation;
     private ForgotPasswordContinuation forgotPasswordContinuation;
+    private NewPasswordContinuation newPasswordContinuation;
 
     // User Details
     private String username;
@@ -196,6 +199,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
+            case 6:
+                //New password
+                closeWaitDialog();
+                Boolean continueSignIn = false;
+                if (resultCode == RESULT_OK) {
+                   continueSignIn = data.getBooleanExtra("continueSignIn", false);
+                }
+                if (continueSignIn) {
+                    continueWithFirstTimeSignIn();
+                }
         }
     }
 
@@ -308,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
         this.forgotPasswordContinuation = forgotPasswordContinuation;
         Intent intent = new Intent(this, ForgotPasswordActivity.class);
         intent.putExtra("destination",forgotPasswordContinuation.getParameters().getDestination());
-        intent.putExtra("deliveryMed",forgotPasswordContinuation.getParameters().getDeliveryMedium());
+        intent.putExtra("deliveryMed", forgotPasswordContinuation.getParameters().getDeliveryMedium());
         startActivityForResult(intent, 3);
     }
 
@@ -316,8 +329,37 @@ public class MainActivity extends AppCompatActivity {
         multiFactorAuthenticationContinuation = continuation;
         Intent mfaActivity = new Intent(this, MFAActivity.class);
         mfaActivity.putExtra("mode", multiFactorAuthenticationContinuation.getParameters().getDeliveryMedium());
-
         startActivityForResult(mfaActivity, 5);
+    }
+
+    private void firstTimeSignIn() {
+        Intent newPasswordActivity = new Intent(this, NewPassword.class);
+        startActivityForResult(newPasswordActivity, 6);
+    }
+
+    private void continueWithFirstTimeSignIn() {
+        newPasswordContinuation.setPassword(AppHelper.getPasswordForFirstTimeLogin());
+        Map <String, String> newAttributes = AppHelper.getUserAttributesForFirstTimeLogin();
+        if (newAttributes != null) {
+            for(Map.Entry<String, String> attr: newAttributes.entrySet()) {
+                Log.e(TAG, String.format("Adding attribute: %s, %s", attr.getKey(), attr.getValue()));
+                newPasswordContinuation.setUserAttribute(attr.getKey(), attr.getValue());
+            }
+        }
+        try {
+            newPasswordContinuation.continueTask();
+        } catch (Exception e) {
+            closeWaitDialog();
+            TextView label = (TextView) findViewById(R.id.textViewUserIdMessage);
+            label.setText("Sign-in failed");
+            inPassword.setBackground(getDrawable(R.drawable.text_border_error));
+
+            label = (TextView) findViewById(R.id.textViewUserIdMessage);
+            label.setText("Sign-in failed");
+            inUsername.setBackground(getDrawable(R.drawable.text_border_error));
+
+            showDialogMessage("Sign-in failed", AppHelper.formatException(e));
+        }
     }
 
     private void confirmUser() {
@@ -489,7 +531,18 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void authenticationChallenge(ChallengeContinuation continuation) {
-            // TODO change the place holder
+            /**
+             * For Custom authentication challenge, implement your logic to present challenge to the
+             * user and pass the user's responses to the continuation.
+             */
+            if ("NEW_PASSWORD_REQUIRED".equals(continuation.getChallengeName())) {
+                // This is the first sign-in attempt for an admin created user
+                newPasswordContinuation = (NewPasswordContinuation) continuation;
+                AppHelper.setUserAttributeForDisplayFirstLogIn(newPasswordContinuation.getCurrentUserAttributes(),
+                        newPasswordContinuation.getRequiredAttributes());
+                closeWaitDialog();
+                firstTimeSignIn();
+            }
         }
     };
 

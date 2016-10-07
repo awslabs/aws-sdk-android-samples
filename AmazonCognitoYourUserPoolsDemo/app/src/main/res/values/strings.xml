@@ -21,4 +21,5 @@
     <string name="title_activity_verify">VerifyActivity</string>
     <string name="title_activity_add_attribute">AddAttributeActivity</string>
     <string name="title_activity_device_settings">DeviceSettings</string>
+    <string name="title_activity_new_password">NewPassword</string>
 </resources>

@@ -44,7 +44,6 @@ import java.util.List;
 public class DeviceSettings extends AppCompatActivity {
     private String TAG = "DeviceSettings";
 
-
     private String username;
     private AlertDialog userDialog;
     private ProgressDialog waitDialog;
