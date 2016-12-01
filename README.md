@@ -40,6 +40,10 @@ general issues and help, check the <a href="#faqs">FAQs</a> section
   + Amazon Cognito Identity
   + Amazon Polly
 
+* [Lex Sample](LexSample/README.md). This is a sample mobile application that demonstrates how to use Amazon Lex. Involved AWS Services are:
+  + Amazon Cognito Identity
+  + Amazon Lex
+
 ### How to Run a Sample
 #### Requirements
 * Android SDK. You can install the SDK via Android Studio or as stand-alone tools. See [Installing the Android SDK](http://developer.android.com/sdk/installing/index.html).
