@@ -1,6 +1,7 @@
 *.bak
 *.swp
 aws-android-sdk*.jar
+aws-android-sdk*.aar
 
 # build artifact
 target

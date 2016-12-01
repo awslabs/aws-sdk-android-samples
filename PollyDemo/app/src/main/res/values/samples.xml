@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright 2010-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License").
+    You may not use this file except in compliance with the License.
+    A copy of the License is located at
+
+    http://aws.amazon.com/apache2.0
+
+    or in the "license" file accompanying this file. This file is distributed
+    on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+    express or implied. See the License for the specific language governing
+    permissions and limitations under the License.
+-->
+<resources>
+    <string name="sample_cy_gb_gwyneth">"Helo 'na! Gwyneth ydw i. Teipiwch unrhywbeth yma a fe wna i ei ddarllen."</string>
+    <string name="sample_da_dk_mads">"Hej! Mit navn er Mads. Jeg kan oplæse enhver tekst, som du skriver her."</string>
+    <string name="sample_da_dk_naja">"Hej! Mit navn er Naja. Jeg kan oplæse enhver tekst, som du skriver her."</string>
+    <string name="sample_de_de_hans">"Hallo, mein Name ist Hans. Ich werde jeden Text vorlesen, den Sie eingeben."</string>
+    <string name="sample_de_de_marlene">"Hallo, mein Name ist Marlene. Ich werde jeden Text vorlesen, den Sie eingeben."</string>
+    <string name="sample_en_au_nicole">"Hi there, my name is Nicole. I will read any text you type here."</string>
+    <string name="sample_en_au_russell">"Hi there, my name is Russel. I will read any text you type here."</string>
+    <string name="sample_en_gb_amy">"Hi! My name is Amy. I will read any text you type here."</string>
+    <string name="sample_en_gb_brian">"Hi! My name is Brian. I will read any text you type here."</string>
+    <string name="sample_en_gb_emma">"Hi! My name is Emma. I will read any text you type here."</string>
+    <string name="sample_en_gb_wls_geraint">"Hi! I'm Geraint. I can read any text you type here"</string>
+    <string name="sample_en_in_raveena">"Hi! My name is Raveena. I can read any text you type here."</string>
+    <string name="sample_en_us_ivy">"Hi! My name is Ivy. I will read any text you type here."</string>
+    <string name="sample_en_us_joanna">"Hi! My name is Joanna. I will read any text you type here."</string>
+    <string name="sample_en_us_joey">"Hi! My name is Joey. I will read any text you type here."</string>
+    <string name="sample_en_us_justin">"Hi! My name is Justin. I will read any text you type here."</string>
+    <string name="sample_en_us_kendra">"Hi! My name is Kendra. I will read any text you type here."</string>
+    <string name="sample_en_us_kimberly">"Hi! My name is Kimberly. I will read any text you type here."</string>
+    <string name="sample_en_us_salli">"Hi! My name is Salli. I will read any text you type here."</string>
+    <string name="sample_es_es_conchita">"Hola! Mi nombre es Conchita. Puedo leer cualquier texto que introduzcas aquí."</string>
+    <string name="sample_es_es_enrique">"Hola! Mi nombre es Enrique. Puedo leer cualquier texto que introduzcas aquí."</string>
+    <string name="sample_es_us_miguel">"Hola! Mi nombre es Miguel. Puedo leer cualquier texto que introduzcas aquí."</string>
+    <string name="sample_es_us_penelope">"Hola! Mi nombre es Penélope. Puedo leer cualquier texto que introduzcas aquí."</string>
+    <string name="sample_fr_ca_chantal">"Salut, je m'appelle Chantal. Je vais lire le texte que vous écrirez ici."</string>
+    <string name="sample_fr_fr_celine">"Salut, je m'appelle Céline. Je vais lire le texte que vous écrirez ici."</string>
+    <string name="sample_fr_fr_mathieu">"Salut, je m'appelle Mathieu. Je vais lire le texte que vous écrirez ici."</string>
+    <string name="sample_is_is_dora">"Ég heiti Dóra. Ég les upphátt allan texta sem þú skrifar hér."</string>
+    <string name="sample_is_is_karl">"Ég heiti Karl. Ég les upphátt allan texta sem þú skrifar hér."</string>
+    <string name="sample_it_it_carla">"Ciao, mi chiamo Carla. Leggerò qualsiasi testo che digiterai qui."</string>
+    <string name="sample_it_it_giorgio">"Ciao, mi chiamo Giorgio. Leggerò qualsiasi testo che digiterai qui."</string>
+    <string name="sample_ja_jp_mizuki">はじめまして。ミズキです。読みたいテキストを入力してください。</string>
+    <string name="sample_nb_no_liv">"Hei! Jeg heter Liv. Skriv inn noe her, så leser jeg det opp."</string>
+    <string name="sample_nl_nl_lotte">"Hoi! mijn naam is Lotte. Ik lees elke tekst voor die je hier invoert."</string>
+    <string name="sample_nl_nl_ruben">"Hoi! mijn naam is Ruben. Ik lees elke tekst voor die je hier invoert."</string>
+    <string name="sample_pl_pl_ewa">"Cześć, mam na imię Ewa. Przeczytam każdy tekst, który tutaj wpiszesz."</string>
+    <string name="sample_pl_pl_jacek">"Cześć, mam na imię Jacek. Przeczytam każdy tekst, który tutaj wpiszesz."</string>
+    <string name="sample_pl_pl_jan">"Cześć, mam na imię Jan. Przeczytam każdy tekst, który tutaj wpiszesz."</string>
+    <string name="sample_pl_pl_maja">"Cześć, mam na imię Maja. Przeczytam każdy tekst, który tutaj wpiszesz."</string>
+    <string name="sample_pt_br_ricardo">"Olá, meu nome é Ricardo. Eu posso ler qualquer texto que você digitar aqui."</string>
+    <string name="sample_pt_br_vitoria">"Olá, meu nome é Vitória. Eu posso ler qualquer texto que você digitar aqui."</string>
+    <string name="sample_pt_pt_cristiano">"Olá! O meu nome é Cristiano. Vou ler o texto que escrever aqui."</string>
+    <string name="sample_pt_pt_ines">"Olá! O meu nome é Inês. Vou ler o texto que escrever aqui."</string>
+    <string name="sample_ro_ro_carmen">"Bună, numele meu este Carmen. Pot citi orice text introdus aici."</string>
+    <string name="sample_ru_ru_maxim">"Привет! Меня зовут Максим. Я прочитаю любой текст который вы введете здесь."</string>
+    <string name="sample_ru_ru_tatyana">"Привет! Меня зовут Татьяна. Я прочитаю любой текст который вы введете здесь."</string>
+    <string name="sample_sv_se_astrid">"Hejsan! Jag heter Astrid och läser upp det som skrivs här."</string>
+    <string name="sample_tr_tr_filiz">"Merhaba, benim adım Filiz. Buraya girdiğiniz her metni okuyabilirim."</string>
+</resources>

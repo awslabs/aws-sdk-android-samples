@@ -20,7 +20,11 @@ general issues and help, check the <a href="#faqs">FAQs</a> section
   + Amazon Cognito Identity
   + Amazon DynamoDB
      
-* [AndroidPubSub](AndroidPubSub/README.md). This sample demonstrates use of the AWS IoT APIs to securely publish to and subscribe from MQTT topics. Involved AWS Services are:
+* [AndroidPubSub](AndroidPubSub/README.md). This sample demonstrates use of the AWS IoT APIs to securely publish to and subscribe from MQTT topics with TLS and IoT certificates. Involved AWS Services are:
+  + Amazon Cognito Identity
+  + AWS IoT
+
+* [AndroidPubSubWebSocket](AndroidPubSubWebSocket/README.md). This sample demonstrates use of the AWS IoT APIs to securely publish to and subscribe from MQTT topics with WebSockets. Involved AWS Services are:
   + Amazon Cognito Identity
   + AWS IoT
 
@@ -31,6 +35,10 @@ general issues and help, check the <a href="#faqs">FAQs</a> section
 * [TemperatureControl](TemperatureControl/README.md). This sample demonstrates use of the AWS IoT device shadow APIs. Involved AWS Services are:
   + Amazon Cognito Identity
   + AWS IoT
+
+* [PollyDemo](PollyDemo/README.md). This is a sample mobile application that demonstrates how to use Amazon Polly. Involved AWS Services are:
+  + Amazon Cognito Identity
+  + Amazon Polly
 
 ### How to Run a Sample
 #### Requirements

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_inter_group_separation"
+        android:id="@+id/space_a1"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="@string/screen_options_main_message"
+        android:textStyle="bold"
+        android:textColor="@color/text_color_1"
+        android:textSize="@dimen/activity_button_text_size"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView_options_main"
+        android:layout_below="@+id/space_a1"
+        android:layout_alignParentStart="true" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_inter_group_separation"
+        android:id="@+id/space_a2"
+        android:layout_below="@+id/textView_options_main"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Text widget"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/activity_button_text_size"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_button_height"
+        android:id="@+id/button_select_text"
+        android:layout_below="@+id/space_a2"
+        android:layout_alignParentStart="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_selector"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_intra_group_separation"
+        android:id="@+id/space_a3"
+        android:layout_below="@+id/button_select_text"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Voice widget"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/activity_button_text_size"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_button_height"
+        android:layout_below="@+id/space_a3"
+        android:layout_alignParentStart="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/button_select_voice"
+        android:background="@drawable/button_selector"/>
+
+</RelativeLayout>
