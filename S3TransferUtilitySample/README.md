@@ -19,7 +19,7 @@ This sample demonstrates how to use the high-level class TransferUtility to perf
 
 4. Import the sample project
    * Import the sample as Android project into your IDE of choice.
-   * Open com.amazonaws.demo.s3Utility.Constants.java.
+   * Open com.amazonaws.demo.s3transferutility.Constants.java.
    * Update "COGNITO_POOL_ID" with the value you got from step 1.
    * Update "BUCKET_NAME" with the value in step 3;
 
