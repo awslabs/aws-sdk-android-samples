@@ -67,7 +67,7 @@ public class Util {
      */
     public static AmazonS3Client getS3Client(Context context) {
         if (sS3Client == null) {
-            sS3Client = new AmazonS3Client(getCredProvider(context.getApplicationContext()));
+            sS3Client = new AmazonS3Client(getCredProvider(context));
         }
         return sS3Client;
     }
@@ -81,7 +81,7 @@ public class Util {
      */
     public static TransferUtility getTransferUtility(Context context) {
         if (sTransferUtility == null) {
-            sTransferUtility = new TransferUtility(getS3Client(context.getApplicationContext()),
+            sTransferUtility = new TransferUtility(getS3Client(context),
                     context.getApplicationContext());
         }
 
