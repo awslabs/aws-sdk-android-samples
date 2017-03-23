@@ -21,7 +21,9 @@ This sample demonstrates how to use the high-level class TransferUtility to perf
    * Import the sample as Android project into your IDE of choice.
    * Open com.amazonaws.demo.s3transferutility.Constants.java.
    * Update "COGNITO_POOL_ID" with the value you got from step 1.
-   * Update "BUCKET_NAME" with the value in step 3;
+   * Update "COGNITO_POOL_REGION" with the region of your cognito identity pool from step 1. For example, `us-east-1`. 
+   * Update "BUCKET_NAME" with the value in step 3.
+   * Update "BUCKET_REGION" with the region of your s3 bucket from step 3. For example, `us-east-1`.   
 
 5. Import the AWS SDK for Android
    * You can download the newest AWS Android SDK from http://aws.amazon.com/mobile/sdk/ and copy the jars into libs directory. Include the following jars

@@ -96,7 +96,7 @@ private static CognitoCachingCredentialsProvider getCredProvider(Context context
         sCredProvider = new CognitoCachingCredentialsProvider(
                 context.getApplicationContext(),
                 Constants.COGNITO_POOL_ID,
-                Regions.US_EAST_1);
+                Regions.fromName(Constants.COGNITO_POOL_REGION));
     }
     return sCredProvider;
 }
@@ -115,6 +115,7 @@ private static CognitoCachingCredentialsProvider getCredProvider(Context context
 public static AmazonS3Client getS3Client(Context context) {
     if (sS3Client == null) {
         sS3Client = new AmazonS3Client(getCredProvider(context.getApplicationContext()));
+        sS3Client.setRegion(Region.getRegion(Regions.fromName(Constants.BUCKET_REGION)));
     }
     return sS3Client;
 }
