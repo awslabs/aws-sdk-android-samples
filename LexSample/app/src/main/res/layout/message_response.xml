@@ -11,7 +11,7 @@
         android:layout_height="30dp"
         android:background="@mipmap/response" />
 
-    <TextViewfloapixelToDp
+    <TextView
         android:id="@+id/editTextUserDetailInput_rx"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

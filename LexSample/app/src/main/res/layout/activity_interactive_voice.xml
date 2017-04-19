@@ -19,4 +19,45 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:text="Transcript:"
+            android:id="@+id/transcriptLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="50dp"
+            android:textAlignment="textEnd"
+            android:textColor="@color/grey_300"
+            android:textStyle="bold" />
+
+        <TextView
+            android:text="Transcript Placeholder"
+            android:id="@+id/transcriptTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_color_1"/>
+
+        <TextView
+            android:text="Response as text:"
+            android:id="@+id/responseLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="50dp"
+            android:textColor="@color/grey_300"
+            android:textStyle="bold" />
+
+        <TextView
+            android:text="Response Placeholder"
+            android:id="@+id/responseTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color_1"/>
+    </LinearLayout>
+
+
 </RelativeLayout>

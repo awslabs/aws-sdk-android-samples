@@ -5,12 +5,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.amazonaws.auth.CognitoCredentialsProvider;
 import com.amazonaws.mobileconnectors.lex.interactionkit.Response;
 import com.amazonaws.mobileconnectors.lex.interactionkit.config.InteractionConfig;
 import com.amazonaws.mobileconnectors.lex.interactionkit.ui.InteractiveVoiceView;
-import com.amazonaws.mobileconnectors.lex.interactionkit.ui.InteractiveVoiceViewAdapter;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.util.StringUtils;
 
@@ -22,12 +22,15 @@ public class InteractiveVoiceActivity extends Activity
     private static final String TAG = "VoiceActivity";
     private Context appContext;
     private InteractiveVoiceView voiceView;
-    private InteractiveVoiceViewAdapter voiceViewAdapter;
+    private TextView transcriptTextView;
+    private TextView responseTextView;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_interactive_voice);
+        transcriptTextView = (TextView) findViewById(R.id.transcriptTextView);
+        responseTextView = (TextView) findViewById(R.id.responseTextView);
         init();
         StringUtils.isBlank("notempty");
     }
@@ -67,6 +70,10 @@ public class InteractiveVoiceActivity extends Activity
     @Override
     public void onResponse(Response response) {
         Log.d(TAG, "Bot response: " + response.getTextResponse());
+        Log.d(TAG, "Transcript: " + response.getInputTranscript());
+
+        responseTextView.setText(response.getTextResponse());
+        transcriptTextView.setText(response.getInputTranscript());
     }
 
     @Override

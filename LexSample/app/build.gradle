@@ -23,17 +23,17 @@ android {
     }
 }
 
+repositories {
+     mavenCentral()
+}
+
 dependencies {
 
     compile 'com.android.support:multidex:1.0.0'
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.android.support:design:23.0.0'
 
-    compile ('com.amazonaws:aws-android-sdk-lex:2.3.4@aar'){
+    compile ('com.amazonaws:aws-android-sdk-lex:2.4.2@aar'){
         transitive=true
     }
-}
-
-repositories {
-    mavenCentral()
 }
