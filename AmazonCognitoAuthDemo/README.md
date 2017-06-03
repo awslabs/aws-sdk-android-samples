@@ -8,10 +8,10 @@ These features are currently (as of 6/1/2017) in **public beta**. To learn more 
 
 If you are looking for our SDK to access all user APIs for Cognito User Pools, see the [Android Cognito Identity Provider SDK ](https://github.com/aws/aws-sdk-android/tree/master/aws-android-sdk-cognitoidentityprovider).
 
-#Using Amazon Cognito Auth Android SDK
+# Using Amazon Cognito Auth Android SDK
 Find the Android sample for this SDK at the [GitHub Repository](https://github.com/awslabs/aws-sdk-android-samples/tree/master/AmazonCognitoAuthDemo).
 
-##Dependencies
+## Dependencies
 Add the following dependencies to your `app/build.gradle`.
 <br/>
 
@@ -32,7 +32,7 @@ dependency {
 ```
 **Note** Chrome is required on the Android device to use this SDK.
 
-##Instantiate Cognito Auth
+## Instantiate Cognito Auth
 Create a new instance of `Auth` with the following userpool settings.
 
 **cognitoAuthWebDomain** The Cognito's authentication domain. <br/>This domain will point to the hosted UI pages. This domain can be created in userpool settings.<br/>This is just the domain name without the scheme. The SDK will always use *https*. <br/>**e.g.** foo.auth.us-east-1.amazoncognito.com
@@ -79,8 +79,8 @@ Create an instance for Cognito Auth.
 ```java
 Auth cognitoAuth = builder.build();
 ```
-##AndroidManifest
-###Add intent-filter
+## AndroidManifest
+### Add intent-filter
 Add an `intent-filter` in the app manifest to allow Android to invoke your app `Activity` after successful authentication and signout.<br/>
 ```xml
 <intent-filter>
@@ -90,12 +90,12 @@ Add an `intent-filter` in the app manifest to allow Android to invoke your app `
       <data android:host="YOUR_REDIRECT_URI_AUTHORITY"android:scheme="YOUR_REDIRECT_SCHEME"/>
 </intent-filter>
 ```
-###Add permissions
+### Add permissions
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 ```
-##Get Session
+## Get Session
 Use the `getSession` API to authenticate a user and get tokens for the user.<br/>
 ```java
 cognitoAuth.getSession();
@@ -109,12 +109,12 @@ Pass this redirect URI to the SDK to get the tokens for the user.<br/>
 ```java
 cognitoAuth.getTokens(getIntent().getData());
 ```
-##Sign out
+## Sign out
 This will sign out the current user by clearing cached tokens.<br/>
 ```java
 cognitoAuth.signOut();
 ```
-#Developer Feedback
+# Developer Feedback
 We welcome developer feedback on this project. You can reach us by creating an issue on the GitHub repository or posting to the Amazon Cognito Identity forums and the below blog post:<br/>
 * [GitHub Repository](https://github.com/aws/aws-sdk-android/tree/master/aws-android-sdk-cognitoauth)
 * [AWS Forums](https://forums.aws.amazon.com/index.jspa)
