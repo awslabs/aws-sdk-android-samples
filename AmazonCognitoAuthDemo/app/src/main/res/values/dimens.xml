@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App UI component's dimensions -->
+    <dimen name="activity_action_bar_height">50dp</dimen>
+    <dimen name="activity_action_bar_text">20dp</dimen>
+    <dimen name="activity_button_height">45dp</dimen>
+    <dimen name="activity_button_border">1dp</dimen>
+    <dimen name="activity_button_radius">2dp</dimen>
+    <dimen name="activity_button_text_size">20dp</dimen>
+    <dimen name="activity_horizontal_margin">20dp</dimen>
+    <dimen name="activity_intra_group_separation">10dp</dimen>
+    <dimen name="activity_inter_group_separation">30dp</dimen>
+    <dimen name="activity_text_height">40dp</dimen>
+    <dimen name="activity_text_border">1dp</dimen>
+    <dimen name="activity_text_radius">1dp</dimen>
+    <dimen name="activity_text_size_small">15dp</dimen>
+    <dimen name="activity_text_padding">10dp</dimen>
+    <dimen name="activity_vertical_margin">20dp</dimen>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App UI color palette -->
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="toolbar_background">#404142</color>
+    <color name="toolbar_items">#CBCBCB</color>
+    <color name="alert">#AC1600</color>
+    <color name="success">#37A51C</color>
+    <color name="informative_message">#329AD6</color>
+    <color name="button_default">#329AD6</color>
+    <color name="button_pressed">#2A5C91</color>
+    <color name="text_border_default">#303232</color>
+    <color name="text_border_selected">#4EA9DC</color>
+    <color name="warning">#E94700</color>
+    <color name="white">#FFFFFF</color>
+    <color name="grey_100">#F5F7F7</color>
+    <color name="grey_300">#8D9496</color>
+    <color name="grey_400">#5A5D5E</color>
+    <color name="grey_500">#404142</color>
+    <color name="grey_600">#303232</color>
+    <color name="grey_700">#1D1E1E</color>
+</resources>
