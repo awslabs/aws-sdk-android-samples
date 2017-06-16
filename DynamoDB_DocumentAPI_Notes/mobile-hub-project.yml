@@ -1,0 +1,29 @@
+--- !com.amazonaws.mobilehub.v0.Project
+features: 
+  database: !com.amazonaws.mobilehub.v0.Database
+    components: 
+      database-nosql: !com.amazonaws.mobilehub.v0.NoSQLDatabase
+        tables: 
+          - !com.amazonaws.mobilehub.v0.NoSQLTable
+            attributes: 
+              content: S
+              creationDate: N
+              noteId: S
+              title: S
+              userId: S
+            hashKeyName: userId
+            hashKeyType: S
+            indexes: 
+              - !com.amazonaws.mobilehub.v0.NoSQLIndex
+                hashKeyName: userId
+                hashKeyType: S
+                indexName: DateSorted
+                rangeKeyName: creationDate
+                rangeKeyType: N
+            rangeKeyName: noteId
+            rangeKeyType: S
+            tableName: ___DYNAMIC_PREFIX___-Notes
+            tablePrivacy: public
+  sign-in: !com.amazonaws.mobilehub.v0.SignIn {}
+name: android-memo-app
+region: us-east-1
