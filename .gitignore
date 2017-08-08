@@ -19,3 +19,5 @@ build.xml
 .idea
 build/
 *.iml
+
+*.DS_Store
