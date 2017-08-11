@@ -110,6 +110,7 @@ implements AuthUserFragment.OnFragmentInteractionListener,
     void initCognito() {
         //  -- Create an instance of Auth --
         Auth.Builder builder = new Auth.Builder().setAppClientId(getString(R.string.cognito_client_id))
+                .setAppClientSecret(getString(R.string.cognito_client_secret))
                 .setAppCognitoWebDomain(getString(R.string.cognito_web_domain))
                 .setApplicationContext(getApplicationContext())
                 .setAuthHandler(new callback())
