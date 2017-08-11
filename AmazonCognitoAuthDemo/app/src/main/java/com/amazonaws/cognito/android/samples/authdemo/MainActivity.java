@@ -25,6 +25,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.amazonaws.cognito.android.samples.authdemo.fragments.AuthUserFragment;
 import com.amazonaws.cognito.android.samples.authdemo.fragments.UnauthUserFragment;
@@ -67,6 +68,7 @@ implements AuthUserFragment.OnFragmentInteractionListener,
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frameLayoutContainer, newUserFragment);
         transaction.commit();
+        setScreenImages();
     }
 
     /**
@@ -84,6 +86,7 @@ implements AuthUserFragment.OnFragmentInteractionListener,
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frameLayoutContainer, userFragment);
         transaction.commit();
+        setScreenImages();
     }
 
     /**
@@ -138,7 +141,7 @@ implements AuthUserFragment.OnFragmentInteractionListener,
 
         @Override
         public void onFailure(Exception e) {
-
+            showDialogMessage("error", e.getMessage());
         }
     }
 
@@ -165,4 +168,11 @@ implements AuthUserFragment.OnFragmentInteractionListener,
         userDialog.show();
     }
 
+    /**
+     * Sets images on the screen.
+     */
+    private void setScreenImages() {
+        ImageView cognitoLogo = (ImageView) findViewById(R.id.imageViewCognito);
+        cognitoLogo.setImageDrawable(getDrawable(R.drawable.ic_mobileservices_amazoncognito));
+    }
 }

@@ -4,7 +4,7 @@ You can now use Amazon Cognito Auth to easily add sign-in and sign-out to your m
 # Introduction
 The Amazon Cognito Auth SDK for Android simplifies adding sign-up, sign-in functionality in your apps.<br/>
 With this SDK, you can use Cognito User Pools’ app integration and federation features, with a customizable UI hosted by AWS to sign up and sign in users, and with built-in federation for external identity providers via SAML.<br/>
-These features are currently (as of 6/1/2017) in **public beta**. To learn more see our [Developer Guide](http://alpha-docs-aws.amazon.com/cognito/latest/developerguide/amazon-cognito-federation-beta-release-overview.html). <br/>
+To learn more see our [Developer Guide](http://alpha-docs-aws.amazon.com/cognito/latest/developerguide/amazon-cognito-federation-beta-release-overview.html). <br/>
 
 If you are looking for our SDK to access all user APIs for Cognito User Pools, see the [Android Cognito Identity Provider SDK ](https://github.com/aws/aws-sdk-android/tree/master/aws-android-sdk-cognitoidentityprovider).
 
@@ -18,7 +18,7 @@ Add the following dependencies to your `app/build.gradle`.
 ***AWS Android Cognito Auth*** The SDK with sign-in and sign-up functions `aws-android-sdk-cognitoauth`
 ```
 dependency {
-  compile 'com.amazonaws:aws-android-sdk-cognitoauth:2.4.4@aar'
+  compile 'com.amazonaws:aws-android-sdk-cognitoauth:2.4.7@aar'
 }
 ```
 To add other AWS Android SDK's in your app read the [Guide for AWS Android Mobile SDK](http://docs.aws.amazon.com/mobile/sdkforandroid/developerguide/setup.html).

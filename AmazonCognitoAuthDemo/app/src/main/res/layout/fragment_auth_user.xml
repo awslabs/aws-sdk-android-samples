@@ -21,19 +21,19 @@
                 android:id="@+id/info_text_id_tok_ttl"
                 android:text= "Id Token"
                 android:padding="@dimen/activity_text_padding"
-                android:background="@color/grey_100"
-                android:textColor="@color/grey_300"
+                android:background="@color/grey_300"
+                android:textColor="@color/grey_600"
                 android:textSize="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="50dp" />
             <TextView
                 android:id="@+id/info_text_id_tok"
                 android:padding="@dimen/activity_text_padding"
-                android:background="@color/grey_100"
-                android:textColor="@color/grey_400"
+                android:background="@color/grey_300"
+                android:textColor="@color/grey_600"
                 android:layout_below="@+id/info_text_id_tok_ttl"
                 android:layout_width="match_parent"
-                android:layout_height="40dp" />
+                android:layout_height="20dp" />
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>
@@ -64,19 +64,19 @@
                 android:id="@+id/info_text_acc_tok_ttl"
                 android:text= "Access Token"
                 android:padding="@dimen/activity_text_padding"
-                android:background="@color/grey_100"
-                android:textColor="@color/grey_300"
+                android:background="@color/grey_600"
+                android:textColor="@color/grey_100"
                 android:textSize="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="50dp" />
             <TextView
                 android:id="@+id/info_text_acc_tok"
                 android:padding="@dimen/activity_text_padding"
-                android:background="@color/grey_100"
-                android:textColor="@color/grey_400"
+                android:background="@color/grey_600"
+                android:textColor="@color/grey_100"
                 android:layout_below="@+id/info_text_acc_tok_ttl"
                 android:layout_width="match_parent"
-                android:layout_height="40dp" />
+                android:layout_height="20dp" />
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>
