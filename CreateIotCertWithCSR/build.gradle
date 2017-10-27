@@ -8,19 +8,19 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:2.3.3'
     }
 }
 
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile 'com.amazonaws:aws-android-sdk-iot:2.2.+'
+    compile 'com.amazonaws:aws-android-sdk-iot:2.6.+'
     compile 'com.madgag.spongycastle:pkix:1.54.0.0'
 }
 
 android {
-    buildToolsVersion "21.1.2"
+    buildToolsVersion "25.0.0"
     compileSdkVersion 10
 
     defaultConfig {

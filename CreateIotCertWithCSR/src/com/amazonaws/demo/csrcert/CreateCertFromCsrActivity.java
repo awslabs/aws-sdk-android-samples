@@ -1,5 +1,5 @@
 /**
- * Copyright 2010-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,25 +39,34 @@ public class CreateCertFromCsrActivity extends Activity {
 
     // --- Constants to modify per your configuration ---
 
-    // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
-    // AWS IoT permissions.
+    /** Cognito pool ID. For this app, pool needs to be unauthenticated pool with AWS IoT permissions. */
     private static final String COGNITO_POOL_ID = "CHANGE_ME";
-    // Region of AWS IoT
+
+    /** Region of AWS IoT */
     private static final Regions MY_REGION = Regions.US_EAST_1;
-    // Filename of KeyStore file on the filesystem
+
+    /** Filename of KeyStore file on the filesystem */
     private static final String KEYSTORE_NAME = "iot_keystore";
-    // Password for the private key in the KeyStore
+
+    /** Password for the private key in the KeyStore */
     private static final String KEYSTORE_PASSWORD = "password";
-    // Certificate and key aliases in the KeyStore
+
+    /** Certificate and key aliases in the KeyStore */
     private static final String CERTIFICATE_ID = "default";
 
-    private String keystorePath; // set below to app's file directory
+    /** Set below to app's file directory */
+    private String keystorePath;
 
+    /** The credentials provider which fetches the identity id to connect to AWS services */
     CognitoCachingCredentialsProvider credentialsProvider;
 
+    /** High level client to communicate with AWS IoT */
     AWSIotClient iotClient;
 
+    /** Button - onClick will create a certificate. */
     Button btnCreateCertificate;
+
+    /** Displays the status of the certificate. */
     TextView tvCertificateStatus;
 
     @Override
@@ -108,6 +117,10 @@ public class CreateCertFromCsrActivity extends Activity {
         }
     }
 
+    /**
+     * Create a IoT certificate
+     * @param view the view
+     */
     public void createCertificate(View view) {
         Log.d(LOG_TAG, "Creating CSR.");
         CreateCertificateTask createCertificateTask = new CreateCertificateTask();
