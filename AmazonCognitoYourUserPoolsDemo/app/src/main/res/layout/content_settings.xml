@@ -70,7 +70,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="SMS MFA"
+        android:text="SMS"
         android:id="@+id/textViewSettingsPhone"
         android:layout_below="@+id/space8"
         android:layout_alignParentStart="true" />
@@ -82,5 +82,40 @@
         android:layout_alignParentStart="true"
         android:id="@+id/space9" />
 
+    <Switch
+        android:id="@+id/switchTotpPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/space9"
+        android:layout_below="@+id/space9"
+        android:text=" " />
+
+    <TextView
+        android:id="@+id/textViewTotpPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/space9"
+        android:text="TOTP" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_intra_group_separation"
+        android:layout_below="@+id/textViewTotpPhone"
+        android:layout_alignParentStart="true"
+        android:id="@+id/spaceA" />
+
+    <Button
+        android:id="@+id/buttonRegisterTotp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_inter_group_separation"
+        android:layout_below="@+id/spaceA"
+        android:textAllCaps="false"
+        android:textSize="@dimen/activity_text_size_small"
+        android:layout_centerHorizontal="true"
+        android:text="Register TOTP MFA"
+        android:textColor="@color/white"
+        android:background="@drawable/button_selector"/>
 
 </RelativeLayout>

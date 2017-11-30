@@ -1,18 +1,18 @@
 /*
- *  Copyright 2013-2016 Amazon.com,
- *  Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2013-2017 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
  *
- *  Licensed under the Amazon Software License (the "License").
- *  You may not use this file except in compliance with the
- *  License. A copy of the License is located at
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
  *
  *      http://aws.amazon.com/asl/
  *
- *  or in the "license" file accompanying this file. This file is
- *  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- *  CONDITIONS OF ANY KIND, express or implied. See the License
- *  for the specific language governing permissions and
- *  limitations under the License.
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.amazonaws.youruserpools;
@@ -45,10 +45,12 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.Chal
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ForgotPasswordContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.NewPasswordContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChooseMfaContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.ForgotPasswordHandler;
 import com.amazonaws.youruserpools.CognitoYourUserPoolsDemo.R;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private MultiFactorAuthenticationContinuation multiFactorAuthenticationContinuation;
     private ForgotPasswordContinuation forgotPasswordContinuation;
     private NewPasswordContinuation newPasswordContinuation;
+    private ChooseMfaContinuation mfaOptionsContinuation;
 
     // User Details
     private String username;
@@ -209,6 +212,24 @@ public class MainActivity extends AppCompatActivity {
                 if (continueSignIn) {
                     continueWithFirstTimeSignIn();
                 }
+                break;
+            case 7:
+                // Choose MFA
+                closeWaitDialog();
+                if(resultCode == RESULT_OK) {
+                    String option = data.getStringExtra("mfaOption");
+                    if (option != null) {
+                        if (option.length() > 0) {
+                            Log.d(TAG, " -- Selected Option: " + option);
+                            conitnueWithSelectedMfa(option);
+                        } else {
+                            inPassword.setText("");
+                            inPassword.requestFocus();
+                            TextView label = (TextView) findViewById(R.id.textViewUserPasswordMessage);
+                            label.setText("Login cancelled");
+                        }
+                    }
+                }
         }
     }
 
@@ -337,12 +358,24 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(newPasswordActivity, 6);
     }
 
+    private void selectMfaToSignIn(List<String> options, Map<String, String> parameters) {
+        Intent chooseMfaActivity = new Intent(this, ChooseMFA.class);
+        AppHelper.setMfaOptionsForDisplay(options, parameters);
+        startActivityForResult(chooseMfaActivity, 7);
+    }
+
+    private void conitnueWithSelectedMfa(String option) {
+        // mfaOptionsContinuation.setChallengeResponse("ANSWER", option);
+        mfaOptionsContinuation.setMfaOption(option);
+        mfaOptionsContinuation.continueTask();
+    }
+
     private void continueWithFirstTimeSignIn() {
         newPasswordContinuation.setPassword(AppHelper.getPasswordForFirstTimeLogin());
         Map <String, String> newAttributes = AppHelper.getUserAttributesForFirstTimeLogin();
         if (newAttributes != null) {
             for(Map.Entry<String, String> attr: newAttributes.entrySet()) {
-                Log.e(TAG, String.format("Adding attribute: %s, %s", attr.getKey(), attr.getValue()));
+                Log.d(TAG, String.format(" -- Adding attribute: %s, %s", attr.getKey(), attr.getValue()));
                 newPasswordContinuation.setUserAttribute(attr.getKey(), attr.getValue());
             }
         }
@@ -495,7 +528,7 @@ public class MainActivity extends AppCompatActivity {
     AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
         @Override
         public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice device) {
-            Log.e(TAG, "Auth Success");
+            Log.d(TAG, " -- Auth Success");
             AppHelper.setCurrSession(cognitoUserSession);
             AppHelper.newDevice(device);
             closeWaitDialog();
@@ -542,6 +575,11 @@ public class MainActivity extends AppCompatActivity {
                         newPasswordContinuation.getRequiredAttributes());
                 closeWaitDialog();
                 firstTimeSignIn();
+            } else if ("SELECT_MFA_TYPE".equals(continuation.getChallengeName())) {
+                closeWaitDialog();
+                mfaOptionsContinuation = (ChooseMfaContinuation) continuation;
+                List<String> mfaOptions = mfaOptionsContinuation.getMfaOptions();
+                selectMfaToSignIn(mfaOptions, continuation.getParameters());
             }
         }
     };

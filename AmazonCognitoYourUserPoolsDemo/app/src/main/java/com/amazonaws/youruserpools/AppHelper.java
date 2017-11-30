@@ -1,18 +1,18 @@
 /*
- *  Copyright 2013-2016 Amazon.com,
- *  Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2013-2017 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
  *
- *  Licensed under the Amazon Software License (the "License").
- *  You may not use this file except in compliance with the
- *  License. A copy of the License is located at
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
  *
  *      http://aws.amazon.com/asl/
  *
- *  or in the "license" file accompanying this file. This file is
- *  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- *  CONDITIONS OF ANY KIND, express or implied. See the License
- *  for the specific language governing permissions and
- *  limitations under the License.
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.amazonaws.youruserpools;
@@ -28,7 +28,6 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttribu
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
-import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cognitoidentityprovider.AmazonCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidentityprovider.AmazonCognitoIdentityProviderClient;
@@ -42,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class AppHelper {
+    private static final String TAG = "AppHelper";
     // App settings
 
     private static List<String> attributeDisplaySeq;
@@ -72,30 +72,33 @@ public class AppHelper {
     private static Map<String, String> firstTimeLogInUpDatedAttributes;
     private static String firstTimeLoginNewPassword;
 
+    private static List<ItemToDisplay> mfaOptions;
+    private static List<String> mfaAllOptionsCode;
+
     // Change the next three lines of code to run this demo on your user pool
 
     /**
      * Add your pool id here
      */
-    private static final String userPoolId = "replace_this_with_your_cognito_pool_id";
+    private static final String userPoolId = "us-east-1_NfDf4Xsut";
 
     /**
      * Add you app id
      */
-    private static final String clientId = "replace_this_with_app_client_id";
+    private static final String clientId = "2tv7uj109lltfiq6g7co37o64f";
 
     /**
      * App secret associated with your app id - if the App id does not have an associated App secret,
      * set the App secret to null.
      * e.g. clientSecret = null;
      */
-    private static final String clientSecret = "replace_this_with_the_app_client_secret";
+    private static final String clientSecret = null;
 
     /**
      * Set Your User Pools region.
      * e.g. if your user pools are in US East (N Virginia) then set cognitoRegion = Regions.US_EAST_1.
      */
-    private static final Regions cognitoRegion = Regions.DEFAULT_REGION;
+    private static final Regions cognitoRegion = Regions.US_EAST_1;
 
     // User details from the service
     private static CognitoUserSession currSession;
@@ -134,6 +137,7 @@ public class AppHelper {
             userPool = new CognitoUserPool(context, userPoolId, clientId, clientSecret, cipClient);
             */
 
+
         }
 
         phoneVerified = false;
@@ -150,6 +154,8 @@ public class AppHelper {
         newDevice = null;
         thisDevice = null;
         thisDeviceTrustState = false;
+
+        mfaOptions = new ArrayList<ItemToDisplay>();
     }
 
     public static CognitoUserPool getPool() {
@@ -245,7 +251,7 @@ public class AppHelper {
 
     public static String formatException(Exception exception) {
         String formattedString = "Internal Error";
-        Log.e("App Error",exception.toString());
+        Log.e(TAG, " -- Error: "+exception.toString());
         Log.getStackTraceString(exception);
 
         String temp = exception.getMessage();
@@ -369,6 +375,47 @@ public class AppHelper {
         } else {
             return null;
         }
+    }
+
+    public static void setMfaOptionsForDisplay(List<String> options, Map<String, String> parameters) {
+        mfaAllOptionsCode = options;
+        mfaOptions = new ArrayList<ItemToDisplay>();
+        String textToDisplay = "";
+        for (String option: options) {
+            if ("SMS_MFA".equals(option)) {
+                textToDisplay = "Send SMS";
+                if (parameters.containsKey("CODE_DELIVERY_DESTINATION")) {
+                    textToDisplay = textToDisplay + " to "+ parameters.get("CODE_DELIVERY_DESTINATION");
+                }
+            } else if ("SOFTWARE_TOKEN_MFA".equals(option)) {
+                textToDisplay = "Use TOTP";
+                if (parameters.containsKey("FRIENDLY_DEVICE_NAME")) {
+                    textToDisplay = textToDisplay + ": " + parameters.get("FRIENDLY_DEVICE_NAME");
+                }
+            }
+            ItemToDisplay item = new ItemToDisplay("", textToDisplay, "", Color.BLACK, Color.DKGRAY, Color.parseColor("#329AD6"), 0, null);
+            mfaOptions.add(item);
+            textToDisplay = "Unsupported MFA";
+        }
+    }
+
+    public static List<String> getAllMfaOptions() {
+        return mfaAllOptionsCode;
+    }
+
+    public static String getMfaOptionCode(int position) {
+        return mfaAllOptionsCode.get(position);
+    }
+
+    public static ItemToDisplay getMfaOptionForDisplay(int position) {
+        if (position >= mfaOptions.size()) {
+            return new ItemToDisplay(" ", " ", " ", Color.BLACK, Color.DKGRAY, Color.parseColor("#37A51C"), 0, null);
+        }
+        return mfaOptions.get(position);
+    }
+
+    public static int getMfaOptionsCount() {
+        return mfaOptions.size();
     }
 
     //public static

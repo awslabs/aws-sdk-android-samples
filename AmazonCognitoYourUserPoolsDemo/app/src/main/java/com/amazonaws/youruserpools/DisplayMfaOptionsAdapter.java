@@ -27,19 +27,24 @@ import android.widget.TextView;
 
 import com.amazonaws.youruserpools.CognitoYourUserPoolsDemo.R;
 
-public class UserAttributesAdapter extends BaseAdapter {
-    private String TAG = "UserAttributesAdapter";
+/**
+ * Displays user MFA options.
+ */
+
+public class DisplayMfaOptionsAdapter extends BaseAdapter {
+    private String TAG = "DisplayDevicesAdapter";
     private Context context;
     private int count;
     private static LayoutInflater layoutInflater;
 
-    public UserAttributesAdapter(Context context) {
+    public DisplayMfaOptionsAdapter(Context context) {
         this.context = context;
 
-        count = AppHelper.getItemCount();
+        count = AppHelper.getMfaOptionsCount();
 
         layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
+
     @Override
     public int getCount() {
         return count;
@@ -57,22 +62,21 @@ public class UserAttributesAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Holder holder;
+        DisplayMfaOptionsAdapter.Holder holder;
 
-        if(convertView == null) {
+        if (convertView == null) {
             convertView = layoutInflater.inflate(R.layout.fields_generic, null);
-            holder = new Holder();
+            holder = new DisplayMfaOptionsAdapter.Holder();
             holder.label = (TextView) convertView.findViewById(R.id.textViewUserDetailLabel);
             holder.data = (TextView) convertView.findViewById(R.id.editTextUserDetailInput);
             holder.message = (TextView) convertView.findViewById(R.id.textViewUserDetailMessage);
 
             convertView.setTag(holder);
-        }
-        else {
-            holder = (Holder) convertView.getTag();
+        } else {
+            holder = (DisplayMfaOptionsAdapter.Holder) convertView.getTag();
         }
 
-        ItemToDisplay item = AppHelper.getItemForDisplay(position);
+        ItemToDisplay item = AppHelper.getMfaOptionForDisplay(position);
         holder.label.setText(item.getLabelText());
         holder.label.setTextColor(item.getLabelColor());
         holder.data.setHint(item.getLabelText());
@@ -92,6 +96,7 @@ public class UserAttributesAdapter extends BaseAdapter {
         holder.message.setTextColor(item.getMessageColor());
 
         return convertView;
+
     }
 
     // Helper class to recycle View's
