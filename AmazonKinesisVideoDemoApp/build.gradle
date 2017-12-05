@@ -1,0 +1,71 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:2.3.3"
+    }
+}
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "25.0.3"
+    defaultConfig {
+        applicationId "com.amazonaws.kinesisvideo.demoapp"
+        minSdkVersion 21
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+
+        ndk {
+            abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+            ldLibs "log"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    splits {
+        abi {
+            enable false
+            reset()
+            include 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+            universalApk true
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    packagingOptions {
+        exclude 'com/fasterxml/jackson/databind/cfg/VERSION.txt'
+        exclude 'com/fasterxml/jackson/core/json/VERSION.txt'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile ('com.amazonaws:aws-android-sdk-kinesisvideo:2.6.10@aar') { transitive = true; }
+    compile ('com.amazonaws:aws-android-sdk-auth-ui:2.6.10@aar') { transitive = true; }
+    compile ('com.amazonaws:aws-android-sdk-auth-userpools:2.6.10@aar') { transitive = true; }
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'junit:junit:4.12'
+}

@@ -1,0 +1,71 @@
+<resources>
+    <string name="app_name">AWSKinesisVideoDemoApp</string>
+    <string name="picture">Picture</string>
+    <string name="description_info">Description</string>
+    <string name="camera_error">Camera error</string>
+    <string name="intro_message">Welcome</string>
+
+    <string name="app_main_screen">Sign in</string>
+    <string name="app_main_screen_title">KinesisVideo Demo</string>
+    <string name="app_main_desc">A sample app to integrate KinesisVideo with Android camera.</string>
+    <string name="nav_drawer_open">Open navigation drawer</string>
+    <string name="nav_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_user">Account Info</string>
+    <string name="title_activity_streaming">Streaming</string>
+    <string name="title_activity_main">AWS KinesisVideo Demo App</string>
+    <string name="title_fragment_stream">Stream Configuration</string>
+    <string name="title_fragment_stream_detailed_configuration">Stream Detailed Configuration</string>
+    <string name="Username">Username</string>
+    <string name="Password">Password</string>
+    <string name="Menu">Menu</string>
+    <string name="title_activity_about_app">AboutApp</string>
+    <string name="about">Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.\n\nLicensed under the Amazon Software License (the "License").\nYou may not use this file except in compliance with the License.\nA copy of the License is located at\n\nhttp://aws.amazon.com/asl/
+        \n\nor in the "license" file accompanying this app. This app is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.</string>
+    <string name="more_info">This is a sample app to integrate KinesisVideo with Android camera.</string>
+    <string name="title_activity_sign_up_confirm">Sign Up</string>
+    <string name="title_activity_settings">Account Settings</string>
+    <string name="title_activity_login">AWS KinesisVideo Demo</string>
+    <string name="title_activity_signup">Sign Up</string>
+    <string name="title_activity_forgot_password">Forgot Password</string>
+    <string name="title_activity_drawer">Drawer Test</string>
+    <string name="title_activity_change_password">Change Password</string>
+    <string name="title_activity_verify">VerifyActivity</string>
+    <string name="title_activity_add_attribute">AddAttributeActivity</string>
+    <string name="title_activity_new_password">NewPassword</string>
+    <string name="camera_back_facing">Back Facing Camera</string>
+    <string name="camera_front_facing">Front Facing Camera</string>
+    <string name="camera_external">External Camera</string>
+    <string name="camera">Camera %1$d</string>
+
+    <string name="start_streaming">Start Streaming</string>
+    <string name="stop_streaming">Stop Streaming</string>
+
+    <string name="main_nav_user_info">User Info</string>
+    <string name="main_nav_configure_known">Ex 1. Configure a MediaSource</string>
+    <string name="main_nav_register_existing">Ex 2. Register Existing MediaSource</string>
+    <string name="main_nav_use_known">Ex 3. Use Known MediaSource Configuration</string>
+    <string name="main_nav_configure_detailed">Ex 4. Detailed Configuration</string>
+    <string name="main_nav_settings">Settings</string>
+    <string name="main_nav_log_out">Log Out</string>
+
+    <string name="cognito_settings_error">Cognito is not configured for the app.\nConsult the AWS KinesisVideo documentation</string>
+
+    <string-array name="main_nav_menu_items">
+        <item>@string/main_nav_user_info</item>
+        <item>@string/main_nav_configure_known</item>
+        <item>@string/main_nav_register_existing</item>
+        <item>@string/main_nav_use_known</item>
+        <item>@string/main_nav_configure_detailed</item>
+        <item>@string/main_nav_settings</item>
+        <item>@string/main_nav_log_out</item>
+    </string-array>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="title_activity_simple_nav">SimpleNavActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+</resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#adc0e7"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_account_circle_white1"
+            android:layout_gravity="center_vertical"/>
+
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:id="@+id/nav_menu_item_title"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:textAppearance="?android:attr/textAppearanceListItem"
+                  android:gravity="center_vertical"
+                  android:padding="16dp"
+                  android:textColor="#111"
+                  android:background="?android:attr/activatedBackgroundIndicator"
+                  android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <solid android:color="@android:color/transparent" />
+    <stroke
+        android:width="@dimen/activity_text_border"
+        android:color="@color/text_border_selected" />
+    <corners android:radius="@dimen/activity_text_radius"/>
+
+</shape>
