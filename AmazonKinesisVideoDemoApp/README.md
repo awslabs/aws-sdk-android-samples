@@ -20,9 +20,9 @@
   * Click `Manage Federated Identities`
   * Click `Create new identity pool`
   * Fill-in `Identity pool name`
-    ![Shows field for inputting identity pool name](./AmazonKinesisVideoDemoApp/screenshots/pool_name.png)
+    ![Shows field for inputting identity pool name](screenshots/pool_name.png)
   * Under the heading `Authentication providers`, in the `Cognito` tab, fill-in the `User Pool Id` and `App client id` from the user pools step.
-    ![Shows field for inputting identity pool name](./AmazonKinesisVideoDemoApp/screenshots/fill_in_user_pool.png)
+    ![Shows field for inputting identity pool name](screenshots/fill_in_user_pool.png)
   * Click `Create create`
   * There will be details for 2 roles. Look at the one that says `a` and click `Edit` next to the policy document and your policy should look like this:
     ```
@@ -46,4 +46,4 @@
   * Copy the `Identity Pool Id` from the code snippets on the screen. :clipboard:
 
 3. Paste
-  * You will need all the information from the above steps that have :clipboard: and paste them into this file on your local copy [awsconfiguration.json](AmazonKinesisVideoDemoApp/src/main/res/raw/awsconfiguration.json)
+  * You will need all the information from the above steps that have :clipboard: and paste them into this file on your local copy [awsconfiguration.json](src/main/res/raw/awsconfiguration.json)
