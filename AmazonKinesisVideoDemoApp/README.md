@@ -1,0 +1,49 @@
+# Running AmazonKinesisVideoStreaming Sample
+
+1. Create a user pool
+  * Go to https://console.aws.amazon.com/cognito/
+  * Click `Manage your User Pools`
+  * Click `Create a user pool`
+  * Fill-in `Pool name`
+  * Click `Review defaults`
+  * Click `Create user pool`
+  * Copy `Pool Id` :clipboard:
+  * Select `App clients` in the left nav.
+  * Click `Add an app client`
+  * Fill-in `App client name`
+  * Click `Create app client`
+  * Click `Show details`
+  * Copy `App client id` and `App client secret` :clipboard:
+
+2. Create an identity pool
+  * Go to https://console.aws.amazon.com/cognito/
+  * Click `Manage Federated Identities`
+  * Click `Create new identity pool`
+  * Fill-in `Identity pool name`
+    ![Shows field for inputting identity pool name](./AmazonKinesisVideoDemoApp/screenshots/pool_name.png)
+  * Under the heading `Authentication providers`, in the `Cognito` tab, fill-in the `User Pool Id` and `App client id` from the user pools step.
+    ![Shows field for inputting identity pool name](./AmazonKinesisVideoDemoApp/screenshots/fill_in_user_pool.png)
+  * Click `Create create`
+  * There will be details for 2 roles. Look at the one that says `a` and click `Edit` next to the policy document and your policy should look like this:
+    ```
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "cognito-identity:*",
+              "kinesisvideo:*"
+            ],
+            "Resource": [
+              "*"
+            ]
+          }
+        ]
+      }
+    ```
+  * Click `Allow`
+  * Copy the `Identity Pool Id` from the code snippets on the screen. :clipboard:
+
+3. Paste
+  * You will need all the information from the above steps that have :clipboard: and paste them into this file on your local copy [awsconfiguration.json](AmazonKinesisVideoDemoApp/src/main/res/raw/awsconfiguration.json)
