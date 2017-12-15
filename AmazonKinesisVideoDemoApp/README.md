@@ -13,9 +13,11 @@
   * Fill-in `App client name`
   * Click `Create app client`
   * Click `Show details`
-    ![Shows show details button](screenshots/click_show_details.png)
+  
+  ![Shows show details button](screenshots/click_show_details.png)
   * Copy `App client id` and `App client secret` :clipboard:
-    ![](screenshots/copy_app_client_id_and_secret.png)
+  
+  ![](screenshots/copy_app_client_id_and_secret.png)
 
 2. Create an identity pool
   * Go to https://console.aws.amazon.com/cognito/
