@@ -1,6 +1,6 @@
 # Running AmazonKinesisVideoStreaming Sample
 
-1. Create a user pool
+## 1. Create a user pool
   * Go to https://console.aws.amazon.com/cognito/
   * Click `Manage your User Pools`
   * Click `Create a user pool`
@@ -12,23 +12,19 @@
   * Click `Add an app client`
   * Fill-in `App client name`
   * Click `Create app client`
-  * Click `Show details`
-  
-  ![Shows show details button](screenshots/click_show_details.png)
-  * Copy `App client id` and `App client secret` :clipboard:
-  
-  ![](screenshots/copy_app_client_id_and_secret.png)
+  * Click `Show details` and copy `App client id` and `App client secret` :clipboard:
+    * ![Shows show details button](screenshots/click_show_details.png) --> ![](screenshots/copy_app_client_id_and_secret.png)
 
-2. Create an identity pool
+## 2. Create an identity pool
   * Go to https://console.aws.amazon.com/cognito/
   * Click `Manage Federated Identities`
   * Click `Create new identity pool`
   * Fill-in `Identity pool name`
-    ![Shows field for inputting identity pool name](screenshots/pool_name.png)
+    * ![Shows field for inputting identity pool name](screenshots/pool_name.png)
   * Under the heading `Authentication providers`, in the `Cognito` tab, fill-in the `User Pool Id` and `App client id` from the user pools step.
     ![Shows field for inputting identity pool name](screenshots/fill_in_user_pool.png)
   * Click `Create create`
-  * There will be details for 2 roles. Look at the one that says `a` and click `Edit` next to the policy document and your policy should look like this:
+  * There will be details for 2 roles. Look at the one for `authenticated identities` and click `Edit` next to the policy document and your policy should look like this:
     ```
     {
         "Version": "2012-10-17",
@@ -49,5 +45,5 @@
   * Click `Allow`
   * Copy the `Identity Pool Id` from the code snippets on the screen. :clipboard:
 
-3. Paste
+## 3. Paste
   * You will need all the information from the above steps that have :clipboard: and paste them into this file on your local copy [awsconfiguration.json](src/main/res/raw/awsconfiguration.json)
