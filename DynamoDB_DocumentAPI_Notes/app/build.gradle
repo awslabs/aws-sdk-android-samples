@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.amazonaws.samples.notes"
         minSdkVersion 21
@@ -25,9 +25,11 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.amazonaws:aws-android-sdk-core:2.4.4'
-    compile 'com.amazonaws:aws-android-sdk-ddb:2.4.4'
-    compile 'com.amazonaws:aws-android-sdk-ddb-document:2.4.4'
+
+    compile 'com.amazonaws:aws-android-sdk-core:2.6.+'
+    compile 'com.amazonaws:aws-android-sdk-ddb:2.6.+'
+    compile 'com.amazonaws:aws-android-sdk-ddb-document:2.6.+'
+
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     testCompile 'junit:junit:4.12'

@@ -60,10 +60,10 @@ public class AmazonClientManager {
         CognitoCachingCredentialsProvider credentials = new CognitoCachingCredentialsProvider(
                 context,
                 Constants.IDENTITY_POOL_ID,
-                Regions.US_EAST_1);
+                Constants.COGNITO_REGION);
 
         ddb = new AmazonDynamoDBClient(credentials);
-        ddb.setRegion(Region.getRegion(Regions.US_WEST_2));
+        ddb.setRegion(Region.getRegion(Constants.DYNAMODB_REGION));
     }
 
     public boolean wipeCredentialsOnAuthError(AmazonServiceException ex) {
