@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:2.3.3"
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
@@ -51,6 +51,7 @@ android {
     packagingOptions {
         exclude 'com/fasterxml/jackson/databind/cfg/VERSION.txt'
         exclude 'com/fasterxml/jackson/core/json/VERSION.txt'
+        exclude 'META-INF/DEPENDENCIES'
     }
 }
 

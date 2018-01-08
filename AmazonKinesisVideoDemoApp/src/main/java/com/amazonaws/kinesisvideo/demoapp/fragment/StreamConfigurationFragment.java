@@ -4,8 +4,12 @@ import static com.amazonaws.mobileconnectors.kinesisvideo.util.CameraUtils.getCa
 import static com.amazonaws.mobileconnectors.kinesisvideo.util.CameraUtils.getSupportedResolutions;
 import static com.amazonaws.mobileconnectors.kinesisvideo.util.VideoEncoderUtils.getSupportedMimeTypes;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Size;
 import android.view.LayoutInflater;
@@ -53,6 +57,10 @@ public class StreamConfigurationFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater,
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
+        if (ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.CAMERA},9393 );
+        }
+
         getActivity().setTitle(getActivity().getString(com.amazonaws.kinesisvideo.demoapp.R.string.title_fragment_stream));
 
         final View view = inflater.inflate(com.amazonaws.kinesisvideo.demoapp.R.layout.fragment_stream_configuration, container, false);
