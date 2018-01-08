@@ -61,7 +61,7 @@ This sample demonstrates use of the AWS IoT APIs to create an AWS IoT certificat
 
 1. Open the CreateCertWithCSR project.
 
-1. Open `MainActivity.java` and update the following constants with the appropriate values:
+1. Open `CreateCertFromCsrActivity.java` and update the following constants with the appropriate values:
 
 	```
 	COGNITO_POOL_ID = "<COGNITO POOL ID GOES HERE>";

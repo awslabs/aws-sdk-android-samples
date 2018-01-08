@@ -75,12 +75,12 @@
         android:orientation="horizontal" >
 
         <EditText
-            android:id="@+id/txtSubcribe"
+            android:id="@+id/txtSubscribe"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5"
-            android:hint="Topic name"
-            android:gravity="center_vertical" />
+            android:gravity="center_vertical"
+            android:hint="Topic name" />
 
         <Button
             android:id="@+id/btnSubscribe"

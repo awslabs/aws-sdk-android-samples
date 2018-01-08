@@ -1,19 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "24.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.amazonaws.sample.lex"
         minSdkVersion 23
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        jackOptions {
-            enabled true
-        }
     }
     buildTypes {
         release {
@@ -29,11 +26,12 @@ repositories {
 
 dependencies {
 
-    compile 'com.android.support:multidex:1.0.0'
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:design:23.0.0'
+    compile 'com.android.support:multidex:1.0.2'
+    compile 'com.android.support:appcompat-v7:25.4.0'
+    compile 'com.android.support:design:25.4.0'
 
-    compile ('com.amazonaws:aws-android-sdk-lex:2.4.2@aar'){
+    compile ('com.amazonaws:aws-android-sdk-lex:2.6.+@aar'){
         transitive=true
     }
+
 }

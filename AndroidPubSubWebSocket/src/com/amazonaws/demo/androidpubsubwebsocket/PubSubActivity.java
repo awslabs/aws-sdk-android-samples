@@ -1,5 +1,5 @@
 /**
- * Copyright 2010-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,19 +22,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import java.io.UnsupportedEncodingException;
+import java.util.UUID;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttNewMessageCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttQos;
-import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
-
-import java.io.UnsupportedEncodingException;
-import java.util.UUID;
 
 public class PubSubActivity extends Activity {
 
@@ -45,6 +41,7 @@ public class PubSubActivity extends Activity {
     // Customer specific IoT endpoint
     // AWS Iot CLI describe-endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com,
     private static final String CUSTOMER_SPECIFIC_ENDPOINT = "CHANGE_ME";
+
     // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
     // AWS IoT permissions.
     private static final String COGNITO_POOL_ID = "CHANGE_ME";
@@ -52,7 +49,7 @@ public class PubSubActivity extends Activity {
     // Region of AWS IoT
     private static final Regions MY_REGION = Regions.US_EAST_1;
 
-    EditText txtSubcribe;
+    EditText txtSubscribe;
     EditText txtTopic;
     EditText txtMessage;
 
@@ -68,7 +65,6 @@ public class PubSubActivity extends Activity {
     AWSIotMqttManager mqttManager;
     String clientId;
 
-    AWSCredentials awsCredentials;
     CognitoCachingCredentialsProvider credentialsProvider;
 
     @Override
@@ -76,7 +72,7 @@ public class PubSubActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        txtSubcribe = (EditText) findViewById(R.id.txtSubcribe);
+        txtSubscribe = (EditText) findViewById(R.id.txtSubscribe);
         txtTopic = (EditText) findViewById(R.id.txtTopic);
         txtMessage = (EditText) findViewById(R.id.txtMessage);
 
@@ -110,21 +106,13 @@ public class PubSubActivity extends Activity {
                 MY_REGION // Region
         );
 
-        Region region = Region.getRegion(MY_REGION);
-
         // MQTT Client
         mqttManager = new AWSIotMqttManager(clientId, CUSTOMER_SPECIFIC_ENDPOINT);
-
-        // The following block uses IAM user credentials for authentication with AWS IoT.
-        //awsCredentials = new BasicAWSCredentials("ACCESS_KEY_CHANGE_ME", "SECRET_KEY_CHANGE_ME");
-        //btnConnect.setEnabled(true);
 
         // The following block uses a Cognito credentials provider for authentication with AWS IoT.
         new Thread(new Runnable() {
             @Override
             public void run() {
-                awsCredentials = credentialsProvider.getCredentials();
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -187,7 +175,7 @@ public class PubSubActivity extends Activity {
         @Override
         public void onClick(View v) {
 
-            final String topic = txtSubcribe.getText().toString();
+            final String topic = txtSubscribe.getText().toString();
 
             Log.d(LOG_TAG, "topic = " + topic);
 

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.3"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.amazonaws.demo.polly"
         minSdkVersion 10
@@ -10,9 +10,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        jackOptions {
-            enabled true
-        }
     }
     buildTypes {
         release {
@@ -31,7 +28,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile'com.amazonaws:aws-android-sdk-polly:2.3.4'
+    compile'com.amazonaws:aws-android-sdk-polly:2.6.+'
     testCompile 'junit:junit:4.12'
 }
 

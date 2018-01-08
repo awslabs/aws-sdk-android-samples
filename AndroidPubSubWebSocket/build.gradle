@@ -8,24 +8,24 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile 'com.amazonaws:aws-android-sdk-iot:2.2.+'
+    compile 'com.amazonaws:aws-android-sdk-iot:2.6.+'
 }
 
 android {
-    buildToolsVersion "23.0.2"
-    compileSdkVersion 23
+    buildToolsVersion "26.0.2"
+    compileSdkVersion 25
 
     defaultConfig {
         versionCode 1
         versionName "1.0.0"
-        minSdkVersion 10
+        minSdkVersion 19
         targetSdkVersion 23
     }
 
