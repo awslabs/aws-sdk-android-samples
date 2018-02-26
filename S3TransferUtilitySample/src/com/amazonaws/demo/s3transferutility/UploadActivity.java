@@ -93,13 +93,17 @@ public class UploadActivity extends ListActivity {
     // Which row in the UI is currently checked (if any)
     private int checkedIndex;
 
+    // Reference to the utility class
+    private Util util;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
 
         // Initializes TransferUtility, always do this before using it.
-        transferUtility = Util.getTransferUtility(this);
+        util = new Util();
+        transferUtility = util.getTransferUtility(this);
         checkedIndex = INDEX_NOT_CHECKED;
         transferRecordMaps = new ArrayList<HashMap<String, Object>>();
         initUI();
@@ -139,7 +143,7 @@ public class UploadActivity extends ListActivity {
             // transferRecordMaps which will display
             // as a single row in the UI
             HashMap<String, Object> map = new HashMap<String, Object>();
-            Util.fillMap(map, observer, false);
+            util.fillMap(map, observer, false);
             transferRecordMaps.add(map);
 
             // Sets listeners to in progress transfers
@@ -376,7 +380,7 @@ public class UploadActivity extends ListActivity {
         for (int i = 0; i < observers.size(); i++) {
             observer = observers.get(i);
             map = transferRecordMaps.get(i);
-            Util.fillMap(map, observer, i == checkedIndex);
+            util.fillMap(map, observer, i == checkedIndex);
         }
         simpleAdapter.notifyDataSetChanged();
 

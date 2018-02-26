@@ -79,13 +79,15 @@ public class DownloadActivity extends ListActivity {
      */
     private ArrayList<HashMap<String, Object>> transferRecordMaps;
     private int checkedIndex;
+    private Util util;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
         // Initializes TransferUtility, always do this before using it.
-        transferUtility = Util.getTransferUtility(this);
+        util = new Util();
+        transferUtility = util.getTransferUtility(this);
         checkedIndex = INDEX_NOT_CHECKED;
         transferRecordMaps = new ArrayList<HashMap<String, Object>>();
         initUI();
@@ -120,7 +122,7 @@ public class DownloadActivity extends ListActivity {
         TransferListener listener = new DownloadListener();
         for (TransferObserver observer : observers) {
             HashMap<String, Object> map = new HashMap<String, Object>();
-            Util.fillMap(map, observer, false);
+            util.fillMap(map, observer, false);
             transferRecordMaps.add(map);
 
             // Sets listeners to in progress transfers
@@ -361,7 +363,7 @@ public class DownloadActivity extends ListActivity {
         for (int i = 0; i < observers.size(); i++) {
             observer = observers.get(i);
             map = transferRecordMaps.get(i);
-            Util.fillMap(map, observer, i == checkedIndex);
+            util.fillMap(map, observer, i == checkedIndex);
         }
         simpleAdapter.notifyDataSetChanged();
     }

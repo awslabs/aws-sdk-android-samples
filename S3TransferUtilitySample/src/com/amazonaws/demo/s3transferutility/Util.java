@@ -37,10 +37,9 @@ import java.util.UUID;
  */
 public class Util {
 
-    // We only need one instance of the clients and credentials provider
-    private static AmazonS3Client sS3Client;
-    private static CognitoCachingCredentialsProvider sCredProvider;
-    private static TransferUtility sTransferUtility;
+    private AmazonS3Client sS3Client;
+    private CognitoCachingCredentialsProvider sCredProvider;
+    private TransferUtility sTransferUtility;
 
     /**
      * Gets an instance of CognitoCachingCredentialsProvider which is
@@ -49,7 +48,7 @@ public class Util {
      * @param context An Context instance.
      * @return A default credential provider.
      */
-    private static CognitoCachingCredentialsProvider getCredProvider(Context context) {
+    private CognitoCachingCredentialsProvider getCredProvider(Context context) {
         if (sCredProvider == null) {
             sCredProvider = new CognitoCachingCredentialsProvider(
                     context.getApplicationContext(),
@@ -66,7 +65,7 @@ public class Util {
      * @param context An Context instance.
      * @return A default S3 client.
      */
-    public static AmazonS3Client getS3Client(Context context) {
+    public AmazonS3Client getS3Client(Context context) {
         if (sS3Client == null) {
             sS3Client = new AmazonS3Client(getCredProvider(context.getApplicationContext()));
             sS3Client.setRegion(Region.getRegion(Regions.fromName(Constants.BUCKET_REGION)));
@@ -81,10 +80,13 @@ public class Util {
      * @param context
      * @return a TransferUtility instance
      */
-    public static TransferUtility getTransferUtility(Context context) {
+    public TransferUtility getTransferUtility(Context context) {
         if (sTransferUtility == null) {
-            sTransferUtility = new TransferUtility(getS3Client(context.getApplicationContext()),
-                    context.getApplicationContext());
+            sTransferUtility = TransferUtility.builder()
+                    .context(context.getApplicationContext())
+                    .s3Client(getS3Client(context.getApplicationContext()))
+                    .defaultBucket(Constants.BUCKET_NAME)
+                    .build();
         }
 
         return sTransferUtility;
@@ -96,7 +98,7 @@ public class Util {
      * @param bytes number of bytes to be converted.
      * @return A string that represents the bytes in a proper scale.
      */
-    public static String getBytesString(long bytes) {
+    public String getBytesString(long bytes) {
         String[] quantifiers = new String[] {
                 "KB", "MB", "GB", "TB"
         };
@@ -121,7 +123,7 @@ public class Util {
      * @return
      * @throws IOException
      */
-    public static File copyContentUriToFile(Context context, Uri uri) throws IOException {
+    public File copyContentUriToFile(Context context, Uri uri) throws IOException {
         InputStream is = context.getContentResolver().openInputStream(uri);
         File copiedData = new File(context.getDir("SampleImagesDir", Context.MODE_PRIVATE), UUID
                 .randomUUID().toString());
@@ -144,7 +146,7 @@ public class Util {
      * Fills in the map with information in the observer so that it can be used
      * with a SimpleAdapter to populate the UI
      */
-    public static void fillMap(Map<String, Object> map, TransferObserver observer, boolean isChecked) {
+    public void fillMap(Map<String, Object> map, TransferObserver observer, boolean isChecked) {
         int progress = (int) ((double) observer.getBytesTransferred() * 100 / observer
                 .getBytesTotal());
         map.put("id", observer.getId());

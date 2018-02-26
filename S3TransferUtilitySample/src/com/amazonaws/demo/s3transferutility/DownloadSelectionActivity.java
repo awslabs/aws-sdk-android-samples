@@ -44,11 +44,13 @@ public class DownloadSelectionActivity extends ListActivity {
     // An adapter to show the objects
     private SimpleAdapter simpleAdapter;
     private ArrayList<HashMap<String, Object>> transferRecordMaps;
+    private Util util;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download_selection);
+        util = new Util();
         initData();
         initUI();
     }
@@ -62,7 +64,7 @@ public class DownloadSelectionActivity extends ListActivity {
 
     private void initData() {
         // Gets the default S3 client.
-        s3 = Util.getS3Client(DownloadSelectionActivity.this);
+        s3 = util.getS3Client(DownloadSelectionActivity.this);
         transferRecordMaps = new ArrayList<HashMap<String, Object>>();
     }
 
