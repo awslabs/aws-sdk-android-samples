@@ -60,9 +60,9 @@ repositories {
 }
 
 dependencies {
-    compile ('com.amazonaws:aws-android-sdk-kinesisvideo:2.6.10@aar') { transitive = true; }
-    compile ('com.amazonaws:aws-android-sdk-auth-ui:2.6.10@aar') { transitive = true; }
-    compile ('com.amazonaws:aws-android-sdk-auth-userpools:2.6.10@aar') { transitive = true; }
+    compile ('com.amazonaws:aws-android-sdk-kinesisvideo:2.6.+@aar') { transitive = true; }
+    compile ('com.amazonaws:aws-android-sdk-auth-ui:2.6.+@aar') { transitive = true; }
+    compile ('com.amazonaws:aws-android-sdk-auth-userpools:2.6.+@aar') { transitive = true; }
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
