@@ -20,6 +20,7 @@ import com.amazonaws.kinesisvideo.client.KinesisVideoClient;
 import com.amazonaws.mobileconnectors.kinesisvideo.client.KinesisVideoAndroidClientFactory;
 import com.amazonaws.mobileconnectors.kinesisvideo.mediasource.android.AndroidCameraMediaSource;
 import com.amazonaws.mobileconnectors.kinesisvideo.mediasource.android.AndroidCameraMediaSourceConfiguration;
+import com.amazonaws.regions.Regions;
 
 public class StreamingFragment extends Fragment implements TextureView.SurfaceTextureListener {
     public static final String KEY_MEDIA_SOURCE_CONFIGURATION = "mediaSourceConfiguration";
@@ -60,6 +61,7 @@ public class StreamingFragment extends Fragment implements TextureView.SurfaceTe
         try {
             mKinesisVideoClient = KinesisVideoAndroidClientFactory.createKinesisVideoClient(
                     getActivity(),
+                    Regions.US_WEST_2,
                     KinesisVideoDemoApp.getCredentialsProvider());
 
             mCameraMediaSource = (AndroidCameraMediaSource) mKinesisVideoClient

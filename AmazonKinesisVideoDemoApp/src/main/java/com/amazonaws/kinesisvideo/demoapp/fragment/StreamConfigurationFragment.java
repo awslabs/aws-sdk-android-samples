@@ -20,6 +20,7 @@ import android.widget.EditText;
 
 import com.amazonaws.kinesisvideo.common.exception.KinesisVideoException;
 import com.amazonaws.kinesisvideo.demoapp.KinesisVideoDemoApp;
+import com.amazonaws.kinesisvideo.demoapp.R;
 import com.amazonaws.kinesisvideo.demoapp.activity.SimpleNavActivity;
 import com.amazonaws.kinesisvideo.client.KinesisVideoClient;
 import com.amazonaws.kinesisvideo.client.mediasource.CameraMediaSourceConfiguration;
@@ -61,9 +62,9 @@ public class StreamConfigurationFragment extends Fragment {
             ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.CAMERA},9393 );
         }
 
-        getActivity().setTitle(getActivity().getString(com.amazonaws.kinesisvideo.demoapp.R.string.title_fragment_stream));
+        getActivity().setTitle(getActivity().getString(R.string.title_fragment_stream));
 
-        final View view = inflater.inflate(com.amazonaws.kinesisvideo.demoapp.R.layout.fragment_stream_configuration, container, false);
+        final View view = inflater.inflate(R.layout.fragment_stream_configuration, container, false);
 
         try {
             mKinesisVideoClient = KinesisVideoAndroidClientFactory.createKinesisVideoClient(getActivity(),KinesisVideoDemoApp.getCredentialsProvider());
@@ -74,7 +75,7 @@ public class StreamConfigurationFragment extends Fragment {
         mCamerasDropdown = new StringSpinnerWidget<>(
                 getActivity(),
                 view,
-                com.amazonaws.kinesisvideo.demoapp.R.id.cameras_spinner,
+                R.id.cameras_spinner,
                 ToStrings.CAMERA_DESCRIPTION,
                 getCameras(mKinesisVideoClient));
 
@@ -85,7 +86,7 @@ public class StreamConfigurationFragment extends Fragment {
                         mResolutionDropdown = new StringSpinnerWidget<>(
                                 getActivity(),
                                 view,
-                                com.amazonaws.kinesisvideo.demoapp.R.id.resolutions_spinner,
+                                R.id.resolutions_spinner,
                                 getSupportedResolutions(getActivity(), mediaSource.getCameraId()));
                         select640orBelow();
                     }
@@ -94,7 +95,7 @@ public class StreamConfigurationFragment extends Fragment {
         mMimeTypeDropdown = new StringSpinnerWidget<>(
                 getActivity(),
                 view,
-                com.amazonaws.kinesisvideo.demoapp.R.id.codecs_spinner,
+                R.id.codecs_spinner,
                 getSupportedMimeTypes());
 
         return view;
@@ -120,9 +121,9 @@ public class StreamConfigurationFragment extends Fragment {
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
-        mStartStreamingButton = (Button) view.findViewById(com.amazonaws.kinesisvideo.demoapp.R.id.start_streaming);
+        mStartStreamingButton = (Button) view.findViewById(R.id.start_streaming);
         mStartStreamingButton.setOnClickListener(startStreamingActivityWhenClicked());
-        mStreamName = (EditText) view.findViewById(com.amazonaws.kinesisvideo.demoapp.R.id.stream_name);
+        mStreamName = (EditText) view.findViewById(R.id.stream_name);
     }
 
     private View.OnClickListener startStreamingActivityWhenClicked() {
