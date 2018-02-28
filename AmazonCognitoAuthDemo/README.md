@@ -1,3 +1,8 @@
+# Running this sample
+
+Make changes to the values found in the [strings.xml file](app/src/main/res/values/strings.xml)
+See following sections for explanation on what these fields are.
+
 # Amazon Cognito Auth SDK for Android
 You can now use Amazon Cognito Auth to easily add sign-in and sign-out to your mobile apps. Your User Pool in Amazon Cognito is a fully managed user directory that can scale to hundreds of millions of users, so you don't have to worry about building, securing, and scaling a solution to handle user management and authentication.
 
@@ -37,7 +42,7 @@ Create a new instance of `Auth` with the following userpool settings.
 
 **cognitoAuthWebDomain** The Cognito's authentication domain. <br/>This domain will point to the hosted UI pages. This domain can be created in userpool settings.<br/>This is just the domain name without the scheme. The SDK will always use *https*. <br/>**e.g.** foo.auth.us-east-1.amazoncognito.com
 
-**cognitoClientId** The app client ID.
+**cognitoClientId** The app client ID can be found by navigating to the `App client settings` in the Cognito UserPools console.
 
 **signInRedirectUri** The Fully Qualified Domain Name (FQDN) to which Cognito must redirect to after authentication.<br/>
 This must include the scheme. **e.g.** myApp://www.myApp.com
