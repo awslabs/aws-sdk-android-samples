@@ -9,8 +9,8 @@ import com.amazonaws.services.kinesisvideo.model.StreamInfo;
 
 public class ToStrings {
 
-    private static final int FACING_BACK = 0x00;
-    private static final int FACING_FRONT = 0x01;
+    private static final int FACING_FRONT = 0x00;
+    private static final int FACING_BACK = 0x01;
     private static final int FACING_EXTERNAL = 0x02;
 
     public static final ToString<CameraMediaSourceConfiguration> CAMERA_DESCRIPTION =
