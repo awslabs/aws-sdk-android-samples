@@ -18,14 +18,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!--
-                TODO: Add intent-filter's for your redirect Uri for Cognito Authentication.
-             -->
+            <!--TODO Add sign-in redirect URI as intent filter-->
+
+            <!--This intent filter is an example for sign-in redirect URI: demoapp://demo.cognitoauth.com/signin-->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="www.loginactivity.com" android:scheme="demoapp" android:path="/mainactivity"/>
+                <data android:scheme="demoapp" android:host="demo.cognitoauth.com" android:path="/signin"/>
             </intent-filter>
 
         </activity>
