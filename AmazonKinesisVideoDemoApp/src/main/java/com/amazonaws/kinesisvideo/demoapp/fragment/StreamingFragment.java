@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.amazonaws.kinesisvideo.client.KinesisVideoClientConfiguration;
 import com.amazonaws.kinesisvideo.common.exception.KinesisVideoException;
 import com.amazonaws.kinesisvideo.demoapp.KinesisVideoDemoApp;
 import com.amazonaws.kinesisvideo.demoapp.R;
@@ -61,7 +62,7 @@ public class StreamingFragment extends Fragment implements TextureView.SurfaceTe
         try {
             mKinesisVideoClient = KinesisVideoAndroidClientFactory.createKinesisVideoClient(
                     getActivity(),
-                    Regions.US_WEST_2,
+                    KinesisVideoDemoApp.KINESIS_VIDEO_REGION,
                     KinesisVideoDemoApp.getCredentialsProvider());
 
             mCameraMediaSource = (AndroidCameraMediaSource) mKinesisVideoClient

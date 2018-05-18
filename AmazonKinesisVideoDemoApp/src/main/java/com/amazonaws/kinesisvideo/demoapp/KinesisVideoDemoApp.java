@@ -6,6 +6,7 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.mobile.auth.core.IdentityManager;
 import com.amazonaws.mobile.auth.userpools.CognitoUserPoolsSignInProvider;
 import com.amazonaws.mobile.config.AWSConfiguration;
+import com.amazonaws.regions.Regions;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +14,7 @@ import java.util.logging.Logger;
 import static com.amazonaws.util.StringUtils.isBlank;
 
 public class KinesisVideoDemoApp extends Application {
+    public static Regions KINESIS_VIDEO_REGION = Regions.US_WEST_2;
 
     @Override
     public void onCreate() {
