@@ -67,7 +67,10 @@ public class StreamConfigurationFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_stream_configuration, container, false);
 
         try {
-            mKinesisVideoClient = KinesisVideoAndroidClientFactory.createKinesisVideoClient(getActivity(),KinesisVideoDemoApp.getCredentialsProvider());
+            mKinesisVideoClient = KinesisVideoAndroidClientFactory.createKinesisVideoClient(
+                    getActivity(),
+                    KinesisVideoDemoApp.KINESIS_VIDEO_REGION,
+                    KinesisVideoDemoApp.getCredentialsProvider());
         } catch (KinesisVideoException e) {
             Log.e(TAG, "Failed to create Kinesis Video client", e);
         }

@@ -1,10 +1,11 @@
 buildscript {
     repositories {
+        google()
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.2'
     }
 }
 
@@ -12,35 +13,20 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.amazonaws.kinesisvideo.demoapp"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-
-        ndk {
-            abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
-            ldLibs "log"
-        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    splits {
-        abi {
-            enable false
-            reset()
-            include 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
-            universalApk true
         }
     }
 
@@ -59,14 +45,17 @@ repositories {
     mavenCentral()
 }
 
+def aws_version = '2.6.+'
+def android_library_version = '24.2.1'
+
 dependencies {
-    compile ('com.amazonaws:aws-android-sdk-kinesisvideo:2.6.+@aar') { transitive = true; }
-    compile ('com.amazonaws:aws-android-sdk-auth-ui:2.6.+@aar') { transitive = true; }
-    compile ('com.amazonaws:aws-android-sdk-auth-userpools:2.6.+@aar') { transitive = true; }
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
-    androidTestCompile 'junit:junit:4.12'
+    implementation ("com.amazonaws:aws-android-sdk-kinesisvideo:$aws_version@aar") { transitive = true }
+    implementation ("com.amazonaws:aws-android-sdk-auth-ui:$aws_version@aar") { transitive = true }
+    implementation ("com.amazonaws:aws-android-sdk-auth-userpools:$aws_version@aar") { transitive = true }
+    implementation "com.android.support:support-v4:$android_library_version"
+    implementation "com.android.support:appcompat-v7:$android_library_version"
+    implementation "com.android.support:design:$android_library_version"
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'junit:junit:4.12'
 }
