@@ -15,7 +15,7 @@ buildscript {
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile 'com.amazonaws:aws-android-sdk-ddb-mapper:2.6.+'
+    compile 'com.amazonaws:aws-android-sdk-ddb-mapper:2.7.+'
 }
 
 android {

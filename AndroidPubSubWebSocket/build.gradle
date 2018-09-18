@@ -17,7 +17,7 @@ buildscript {
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile 'com.amazonaws:aws-android-sdk-iot:2.6.+'
+    compile 'com.amazonaws:aws-android-sdk-iot:2.7.+'
 }
 
 android {
