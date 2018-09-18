@@ -16,6 +16,7 @@
 package com.amazonaws.demo.s3transferutility;
 
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -39,6 +40,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferType;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,10 +54,13 @@ public class DownloadActivity extends ListActivity {
 
     private static final int DOWNLOAD_SELECTION_REQUEST_CODE = 1;
 
+    private static final int DOWNLOAD_IN_BACKGROUND_SELECTION_REQUEST_CODE = 2;
+
     // Indicates no row element has beens selected
     private static final int INDEX_NOT_CHECKED = -1;
 
     private Button btnDownload;
+    private Button btnDownloadInBackground;
     private Button btnPause;
     private Button btnResume;
     private Button btnCancel;
@@ -64,22 +69,22 @@ public class DownloadActivity extends ListActivity {
     private Button btnCancelAll;
 
     // This is the main class for interacting with the Transfer Manager
-    private TransferUtility transferUtility;
+    static TransferUtility transferUtility;
 
     // The SimpleAdapter adapts the data about transfers to rows in the UI
-    private SimpleAdapter simpleAdapter;
+    static SimpleAdapter simpleAdapter;
 
     // A List of all transfers
-    private List<TransferObserver> observers;
+    static List<TransferObserver> observers;
 
     /**
      * This map is used to provide data to the SimpleAdapter above. See the
      * fillMap() function for how it relates observers to rows in the displayed
      * activity.
      */
-    private ArrayList<HashMap<String, Object>> transferRecordMaps;
-    private int checkedIndex;
-    private Util util;
+    static ArrayList<HashMap<String, Object>> transferRecordMaps;
+    static int checkedIndex;
+    static Util util;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,12 +120,13 @@ public class DownloadActivity extends ListActivity {
      * Gets all relevant transfers from the Transfer Service for populating the
      * UI
      */
-    private void initData() {
+    static void initData() {
         transferRecordMaps.clear();
         // Uses TransferUtility to get all previous download records.
         observers = transferUtility.getTransfersWithType(TransferType.DOWNLOAD);
         TransferListener listener = new DownloadListener();
         for (TransferObserver observer : observers) {
+            observer.refresh();
             HashMap<String, Object> map = new HashMap<String, Object>();
             util.fillMap(map, observer, false);
             transferRecordMaps.add(map);
@@ -200,6 +206,7 @@ public class DownloadActivity extends ListActivity {
         });
 
         btnDownload = (Button) findViewById(R.id.buttonDownload);
+        btnDownloadInBackground = (Button) findViewById(R.id.buttonDownloadInBackground);
         btnPause = (Button) findViewById(R.id.buttonPause);
         btnResume = (Button) findViewById(R.id.buttonResume);
         btnCancel = (Button) findViewById(R.id.buttonCancel);
@@ -214,6 +221,16 @@ public class DownloadActivity extends ListActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DownloadActivity.this, DownloadSelectionActivity.class);
                 startActivityForResult(intent, DOWNLOAD_SELECTION_REQUEST_CODE);
+            }
+        });
+
+        // Launches an activity for the user to select an object in their S3
+        // bucket to download in the background
+        btnDownloadInBackground.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DownloadActivity.this, DownloadSelectionActivity.class);
+                startActivityForResult(intent, DOWNLOAD_IN_BACKGROUND_SELECTION_REQUEST_CODE);
             }
         });
 
@@ -253,7 +270,7 @@ public class DownloadActivity extends ListActivity {
                     // This will overwrite existing listener.
                     observers.get(checkedIndex).setTransferListener(new DownloadListener());
 
-                    /**
+                     /**
                      * If resume returns null, it is likely because the transfer
                      * is not in a resumable state (For instance it is already
                      * running).
@@ -330,6 +347,13 @@ public class DownloadActivity extends ListActivity {
                 String key = data.getStringExtra("key");
                 beginDownload(key);
             }
+        } else if (requestCode == DOWNLOAD_IN_BACKGROUND_SELECTION_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // Start downloading with the key they selected in the
+                // DownloadSelectionActivity screen.
+                String key = data.getStringExtra("key");
+                beginDownloadInBackground(key);
+            }
         }
     }
 
@@ -343,6 +367,36 @@ public class DownloadActivity extends ListActivity {
 
         // Initiate the download
         TransferObserver observer = transferUtility.download(Constants.BUCKET_NAME, key, file);
+
+        /*
+         * Note that usually we set the transfer listener after initializing the
+         * transfer. However it isn't required in this sample app. The flow is
+         * click upload button -> start an activity for image selection
+         * startActivityForResult -> onActivityResult -> beginUpload -> onResume
+         * -> set listeners to in progress transfers.
+         */
+        // observer.setTransferListener(new DownloadListener());
+    }
+
+    /*
+     * Begins to download the file specified by the key in the bucket.
+     */
+    private void beginDownloadInBackground(String key) {
+        // Location to download files from S3 to. You can choose any accessible
+        // file.
+        File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
+
+        // Wrap the download call from a background service to
+        // support long-running downloads. Uncomment the following
+        // code in order to start a download from the background
+        // service.
+        Context context = getApplicationContext();
+        Intent intent = new Intent(context, MyService.class);
+        intent.putExtra(MyService.INTENT_KEY_NAME, key);
+        intent.putExtra(MyService.INTENT_TRANSFER_OPERATION, MyService.TRANSFER_OPERATION_DOWNLOAD);
+        intent.putExtra(MyService.INTENT_FILE, file);
+        context.startService(intent);
+
         /*
          * Note that usually we set the transfer listener after initializing the
          * transfer. However it isn't required in this sample app. The flow is
@@ -357,11 +411,12 @@ public class DownloadActivity extends ListActivity {
      * Updates the ListView according to observers, by making transferRecordMap
      * reflect the current data in observers.
      */
-    private void updateList() {
+    static void updateList() {
         TransferObserver observer = null;
         HashMap<String, Object> map = null;
         for (int i = 0; i < observers.size(); i++) {
             observer = observers.get(i);
+            observer.setTransferListener(new DownloadListener());
             map = transferRecordMaps.get(i);
             util.fillMap(map, observer, i == checkedIndex);
         }
@@ -383,7 +438,7 @@ public class DownloadActivity extends ListActivity {
      * A TransferListener class that can listen to a download task and be
      * notified when the status changes.
      */
-    private class DownloadListener implements TransferListener {
+    private static class DownloadListener implements TransferListener, Serializable {
         // Simply updates the list when notified.
         @Override
         public void onError(int id, Exception e) {

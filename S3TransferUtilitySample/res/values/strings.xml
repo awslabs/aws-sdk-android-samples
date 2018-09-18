@@ -5,8 +5,10 @@
     <string name="download_activity">DownloadActivity</string>
     <string name="download_selection_activity">Select a file from the bucket</string>
     <string name="download">Download</string>
+    <string name="downloadInBackground">Download In Background</string>
     <string name="manage_download">Manage downloads</string>
     <string name="upload">Upload</string>
+    <string name="upload_file_in_background">Upload In Background</string>
     <string name="manage_upload">Manage uploads</string>
     <string name="upload_file">Upload a file</string>
     <string name="upload_image">Upload an image</string>

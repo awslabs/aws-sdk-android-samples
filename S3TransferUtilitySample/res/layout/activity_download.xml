@@ -17,6 +17,12 @@
             android:layout_height="wrap_content"
             android:text="@string/download" />
 
+        <Button
+            android:id="@+id/buttonDownloadInBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/downloadInBackground" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

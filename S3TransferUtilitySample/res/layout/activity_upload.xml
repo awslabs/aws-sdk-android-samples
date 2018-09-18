@@ -77,6 +77,14 @@
             android:text="@string/upload_file" />
 
         <Button
+            android:id="@+id/buttonUploadFileInBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/upload_file_in_background" />
+
+
+        <Button
             android:id="@+id/buttonUploadImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

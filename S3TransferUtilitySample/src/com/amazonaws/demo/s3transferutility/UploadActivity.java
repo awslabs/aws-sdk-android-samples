@@ -19,6 +19,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -64,8 +65,13 @@ public class UploadActivity extends ListActivity {
     // TAG for logging;
     private static final String TAG = "UploadActivity";
 
+    private static final int UPLOAD_REQUEST_CODE = 0;
+
+    private static final int UPLOAD_IN_BACKGROUND_REQUEST_CODE = 1;
+
     // Button for upload operations
     private Button btnUploadFile;
+    private Button btnUploadFileInBackground;
     private Button btnUploadImage;
     private Button btnPause;
     private Button btnResume;
@@ -75,26 +81,26 @@ public class UploadActivity extends ListActivity {
     private Button btnCancelAll;
 
     // The TransferUtility is the primary class for managing transfer to S3
-    private TransferUtility transferUtility;
+    static TransferUtility transferUtility;
 
     // The SimpleAdapter adapts the data about transfers to rows in the UI
-    private SimpleAdapter simpleAdapter;
+    static SimpleAdapter simpleAdapter;
 
     // A List of all transfers
-    private List<TransferObserver> observers;
+    static List<TransferObserver> observers;
 
     /**
      * This map is used to provide data to the SimpleAdapter above. See the
      * fillMap() function for how it relates observers to rows in the displayed
      * activity.
      */
-    private ArrayList<HashMap<String, Object>> transferRecordMaps;
+    static ArrayList<HashMap<String, Object>> transferRecordMaps;
 
     // Which row in the UI is currently checked (if any)
-    private int checkedIndex;
+    static int checkedIndex;
 
     // Reference to the utility class
-    private Util util;
+    static Util util;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,12 +138,13 @@ public class UploadActivity extends ListActivity {
      * Gets all relevant transfers from the Transfer Service for populating the
      * UI
      */
-    private void initData() {
+    static void initData() {
         transferRecordMaps.clear();
         // Use TransferUtility to get all upload transfers.
         observers = transferUtility.getTransfersWithType(TransferType.UPLOAD);
         TransferListener listener = new UploadListener();
         for (TransferObserver observer : observers) {
+            observer.refresh();
 
             // For each transfer we will will create an entry in
             // transferRecordMaps which will display
@@ -222,6 +229,7 @@ public class UploadActivity extends ListActivity {
         });
 
         btnUploadFile = (Button) findViewById(R.id.buttonUploadFile);
+        btnUploadFileInBackground = (Button) findViewById(R.id.buttonUploadFileInBackground);
         btnUploadImage = (Button) findViewById(R.id.buttonUploadImage);
         btnPause = (Button) findViewById(R.id.buttonPause);
         btnResume = (Button) findViewById(R.id.buttonResume);
@@ -247,7 +255,28 @@ public class UploadActivity extends ListActivity {
                     intent.setType("file/*");
                 }
 
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, UPLOAD_REQUEST_CODE);
+            }
+        });
+
+        btnUploadFileInBackground.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                if (Build.VERSION.SDK_INT >= 19) {
+                    // For Android KitKat, we use a different intent to ensure
+                    // we can
+                    // get the file path from the returned intent URI
+                    intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                    intent.setType("*/*");
+                } else {
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("file/*");
+                }
+
+                startActivityForResult(intent, UPLOAD_IN_BACKGROUND_REQUEST_CODE);
             }
         });
 
@@ -268,7 +297,7 @@ public class UploadActivity extends ListActivity {
                 }
 
                 intent.setType("image/*");
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, UPLOAD_REQUEST_CODE);
             }
         });
 
@@ -374,7 +403,7 @@ public class UploadActivity extends ListActivity {
     /*
      * Updates the ListView according to the observers.
      */
-    private void updateList() {
+    static void updateList() {
         TransferObserver observer = null;
         HashMap<String, Object> map = null;
         for (int i = 0; i < observers.size(); i++) {
@@ -399,17 +428,33 @@ public class UploadActivity extends ListActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            Uri uri = data.getData();
+        if (requestCode == UPLOAD_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Uri uri = data.getData();
 
-            try {
-                String path = getPath(uri);
-                beginUpload(path);
-            } catch (URISyntaxException e) {
-                Toast.makeText(this,
-                        "Unable to get the file from the given URI.  See error log for details",
-                        Toast.LENGTH_LONG).show();
-                Log.e(TAG, "Unable to upload file from the given uri", e);
+                try {
+                    String path = getPath(uri);
+                    beginUpload(path);
+                } catch (URISyntaxException e) {
+                    Toast.makeText(this,
+                            "Unable to get the file from the given URI. See error log for details",
+                            Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "Unable to upload file from the given uri", e);
+                }
+            }
+        } else if (requestCode == UPLOAD_IN_BACKGROUND_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Uri uri = data.getData();
+
+                try {
+                    String path = getPath(uri);
+                    beginUploadInBackground(path);
+                } catch (URISyntaxException e) {
+                    Toast.makeText(this,
+                            "Unable to get the file from the given URI. See error log for details",
+                            Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "Unable to upload file from the given uri", e);
+                }
             }
         }
     }
@@ -423,9 +468,45 @@ public class UploadActivity extends ListActivity {
                     Toast.LENGTH_LONG).show();
             return;
         }
+
         File file = new File(filePath);
-        TransferObserver observer = transferUtility.upload(Constants.BUCKET_NAME, file.getName(),
+        TransferObserver observer = transferUtility.upload(Constants.BUCKET_NAME,
+                file.getName(),
                 file);
+
+        /*
+         * Note that usually we set the transfer listener after initializing the
+         * transfer. However it isn't required in this sample app. The flow is
+         * click upload button -> start an activity for image selection
+         * startActivityForResult -> onActivityResult -> beginUpload -> onResume
+         * -> set listeners to in progress transfers.
+         */
+        // observer.setTransferListener(new UploadListener());
+    }
+
+    /*
+     * Begins to upload the file specified by the file path.
+     */
+    private void beginUploadInBackground(String filePath) {
+        if (filePath == null) {
+            Toast.makeText(this, "Could not find the filepath of the selected file",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        File file = new File(filePath);
+
+        // Wrap the upload call from a background service to
+        // support long-running downloads. Uncomment the following
+        // code in order to start a upload from the background
+        // service.
+        Context context = getApplicationContext();
+        Intent intent = new Intent(context, MyService.class);
+        intent.putExtra(MyService.INTENT_KEY_NAME, file.getName());
+        intent.putExtra(MyService.INTENT_TRANSFER_OPERATION, MyService.TRANSFER_OPERATION_UPLOAD);
+        intent.putExtra(MyService.INTENT_FILE, file);
+        context.startService(intent);
+
         /*
          * Note that usually we set the transfer listener after initializing the
          * transfer. However it isn't required in this sample app. The flow is
@@ -520,7 +601,7 @@ public class UploadActivity extends ListActivity {
      * A TransferListener class that can listen to a upload task and be notified
      * when the status changes.
      */
-    private class UploadListener implements TransferListener {
+    static class UploadListener implements TransferListener {
 
         // Simply updates the UI list when notified.
         @Override
