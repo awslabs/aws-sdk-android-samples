@@ -23,7 +23,7 @@ Add the following dependencies to your `app/build.gradle`.
 ***AWS Android Cognito Auth*** The SDK with sign-in and sign-up functions `aws-android-sdk-cognitoauth`
 ```
 dependency {
-  compile 'com.amazonaws:aws-android-sdk-cognitoauth:2.6.+@aar'
+  compile 'com.amazonaws:aws-android-sdk-cognitoauth:2.7.+@aar'
 }
 ```
 To add other AWS Android SDK's in your app read the [Guide for AWS Android Mobile SDK](http://docs.aws.amazon.com/mobile/sdkforandroid/developerguide/setup.html).
