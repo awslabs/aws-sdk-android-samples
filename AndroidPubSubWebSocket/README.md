@@ -77,7 +77,9 @@ This sample demonstrates use of the AWS IoT APIs to publish to and subscribe fro
 1. Open `PubSubActivity.java` and update the following constants with the appropriate values:
 
     ```
+    // customer specific endpoint can be found under the settings tab on the left-hand panel
     CUSTOMER_SPECIFIC_ENDPOINT = "CHANGE_ME";
+    // Identity pool ID
     COGNITO_POOL_ID = "CHANGE_ME";
     MY_REGION = Regions.US_EAST_1;
     ```
