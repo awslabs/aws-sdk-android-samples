@@ -90,3 +90,7 @@ version you would like to use.
 
 ##### Where do I find login-with-amazon-sdk.jar?
 * The jar is usually already included where required. However, if not or if you want to use a different version, you can find it <a href="https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/install_sdk_android.html">here</a>.
+
+### Getting Help
+
+We use [AWS Android SDK GitHub issues](https://github.com/aws/aws-sdk-android/issues) for tracking questions, bugs, and feature requests.
