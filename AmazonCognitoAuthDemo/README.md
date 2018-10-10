@@ -1,7 +1,36 @@
 # Running this sample
 
-Make changes to the values found in the [strings.xml file](app/src/main/res/values/strings.xml)
-See following sections for explanation on what these fields are.
+1. Create Your user pool on the Cognito console
+   - Follow the steps outlined [here](https://github.com/awslabs/aws-sdk-android-samples/blob/master/AmazonCognitoYourUserPoolsDemo/README.md#running-amazoncognitoyouruserpoolsdemo) to create a user pool.
+   - Configure the App Client as follows:
+      - Choose _App client settings_ from the navigation bar on the left-side of the console page.
+      - Select Cognito User Pool as one of the Enabled Identity Providers.
+      - Type a callback URL for the Amazon Cognito authorization server to call after users are authenticated. For the sample app set it to _myapp://_
+      - Set Sign out URL(s) to _myapp://_
+      - You can enable both the Authorization code grant and the Implicit code grant under Allowed OAuth flows.
+      - Unless you specifically want to exclude one, select the check boxes for all of the Allowed OAuth scopes.
+      - Choose Save changes.
+   - Configure a user pool domain
+      - On the Domain name page, type a domain prefix that's available.
+      - Make a note of the complete domain address.
+      - Choose Save changes.
+
+2. Download and import the AmazonCognitoYourUserPoolsDemo project into your Android Studio
+   - From the Welcome screen, click on "_Import project_".
+   - Browse to the AAmazonCognitoAuthDemo directory and click OK.
+   - Accept requests to add Gradle to the project.
+   - If the SDK reports missing Android SDK packages (such as Build Tools or the Android API package), import AWS SDK.
+      
+3. Modify the demo to run it on your user pool.
+   - Open the file [strings.xml](app/src/main/res/values/strings.xml) file.
+   - Fill in the values for the following string resources : 
+      * __cognito_web_domain__ set this to the user pool domain set above. It must be of the form _foo.auth.us-east-1.amazoncognito.com_ without the preceding _http://_ or _https://_
+      * __cognito_client_id__ set this to your app client id obtained above.
+      * __cognito_client_secret__ set this to your app client secret associated with the app client id.
+      * __app_redirect__ set this to be same as callback URL for your app client(i.e. _myapp://_).
+
+4. You are now ready to run this demo.
+
 
 # Amazon Cognito Auth SDK for Android
 You can now use Amazon Cognito Auth to easily add sign-in and sign-out to your mobile apps. Your User Pool in Amazon Cognito is a fully managed user directory that can scale to hundreds of millions of users, so you don't have to worry about building, securing, and scaling a solution to handle user management and authentication.
