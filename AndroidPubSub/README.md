@@ -145,6 +145,7 @@ The keytool command does not allow importing an existing private key into a keys
 
 1. Push to Android Emulator (optional).
 
+        adb root
         adb push <keystore name>.bks /data/user/0/your_app_dir_goes_here/files/<keystore name>
 
     The directory and filename used will depend on your use case.  Typically the application's files directory is in /data/user/0/<app namespace>/files/.  You may however choose to locate your keystore on removable media or another space on the filesystem.  The SDK allows for specifying the file path and name of the keystore so the choice is up to you.
