@@ -169,7 +169,8 @@ credentialsProvider = new CognitoCachingCredentialsProvider(
                 MY_REGION // Region
         );
 // Set up as a credentials provider.
-Map<String, String> logins = new HashMap<String, String>(); 
+Map<String, String> logins = new HashMap<String, String>();
+// Key must be of the form "cognito-idp.<REGION>.amazonaws.com/<COGNITO_USER_POOL_ID>"
 logins.put("cognito-idp.us-east-1.amazonaws.com/us-east-1_123456XXX", cognitoUserSession.getIdToken().getJWTToken()); 
 credentialsProvider.setLogins(logins);
 ```
