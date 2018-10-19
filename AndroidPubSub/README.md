@@ -7,7 +7,7 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
 * AndroidStudio 
 * Android API 10 or greater
 
-## Using the Sample
+## Using the Sample with unauthenticated user
 
 1. Import the AndroidPubSub project into Android Studio.
       * From the Welcome screen, click on "Import project".
@@ -112,7 +112,6 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
 
    **Note**: This application also contains commented-out code for acccessing a KeyStore that was deployed as a resource file as part of an APK.
 
-
 ### Using an off-device keystore (optional)
 
 This section provides information about how to use an AWS IoT certificate and private key which were created off of the device.  The following instructions walk through the process of creating a keystore which can be placed on the filesystem of the device and accessed by the Android SDK.
@@ -149,3 +148,51 @@ The keytool command does not allow importing an existing private key into a keys
         adb push <keystore name>.bks /data/user/0/your_app_dir_goes_here/files/<keystore name>
 
     The directory and filename used will depend on your use case.  Typically the application's files directory is in /data/user/0/<app namespace>/files/.  You may however choose to locate your keystore on removable media or another space on the filesystem.  The SDK allows for specifying the file path and name of the keystore so the choice is up to you.
+	
+## Using AWS IoT with authenticated users
+
+This sample demonstrates enabling unauthenticated users to use the AWS IoT APIs to securely publish-to and subscribe-from MQTT topics. Following steps demonstrates usage of AWS IoT with authenticated users. 
+
+1. Retrieve JWT Token upon successful sign in
+```
+// Get id token from CognitoUserSession.
+String ids = cognitoUserSession.getIdToken().getJWTToken();
+```
+
+2. Setup credentials provider.
+
+```
+ // Create a credentials provider, or use the existing provider.
+credentialsProvider = new CognitoCachingCredentialsProvider(
+                getApplicationContext(), // context
+                COGNITO_POOL_ID, // Identity Pool ID
+                MY_REGION // Region
+        );
+ // Set up as a credentials provider.
+Map<String, String> logins = new HashMap<String, String>(); 
+logins.put("cognito-idp.us-east-1.amazonaws.com/us-east-1_123456XXX", cognitoUserSession.getIdToken().getJWTToken()); 
+credentialsProvider.setLogins(logins);
+```
+
+3. Create MQTT client and connect
+
+```
+// MQTT Client
+mqttManager = new AWSIotMqttManager(clientId, CUSTOMER_SPECIFIC_ENDPOINT);
+
+// Set keepalive to 10 seconds.  Will recognize disconnects more quickly but will also send
+// MQTT pings every 10 seconds.
+mqttManager.setKeepAlive(10);
+
+// Set Last Will and Testament for MQTT.  On an unclean disconnect (loss of connection)
+// AWS IoT will publish this message to alert other clients.
+AWSIotMqttLastWillAndTestament lwt = new AWSIotMqttLastWillAndTestament("my/lwt/topic",
+	"Android client lost connection", AWSIotMqttQos.QOS0);
+mqttManager.setMqttLastWillAndTestament(lwt);
+mqttManager.connect(credentialsProvider, new AWSIotMqttClientStatusCallback() {
+                    @Override
+                    public void onStatusChanged(final AWSIotMqttClientStatus status,
+                                                final Throwable throwable) {
+                    }
+                });
+```
