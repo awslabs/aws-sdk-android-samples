@@ -7,7 +7,7 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
 * AndroidStudio 
 * Android API 10 or greater
 
-## Using the Sample with unauthenticated user
+## Using the Sample
 
 1. Import the AndroidPubSub project into Android Studio.
       * From the Welcome screen, click on "Import project".
@@ -111,6 +111,7 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
 1. The sample application will allow you to connect to the AWS IoT platform, and then publish or subscribe to a topic using MQTT.
 
    **Note**: This application also contains commented-out code for acccessing a KeyStore that was deployed as a resource file as part of an APK.
+
 
 ### Using an off-device keystore (optional)
 
