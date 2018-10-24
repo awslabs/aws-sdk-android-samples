@@ -152,7 +152,7 @@ The keytool command does not allow importing an existing private key into a keys
 	
 ## Using AWS IoT with authenticated users
 
-This sample demonstrates enabling unauthenticated users to use the AWS IoT APIs to securely publish-to and subscribe-from MQTT topics. Following steps demonstrates usage of AWS IoT with authenticated users. 
+This sample demonstrates enabling unauthenticated users to use the AWS IoT APIs to securely publish-to and subscribe-from MQTT topics. Following steps demonstrated here will change usage of AWS IoT to be with authenticated users. 
 
 1. Retrieve JWT Token upon successful sign in
 ```
