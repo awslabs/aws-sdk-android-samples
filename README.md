@@ -13,7 +13,7 @@ general issues and help, check the <a href="#faqs">FAQs</a> section
   + Amazon Cognito Identity
   + Amazon Cognito Identity Provider (Your User Pools)
 
-* [CognitoSyncDemo]([DEPRECATED]CognitoSyncDemo/README.md). This is a sample mobile application that demonstrates how to use Amazon Cognito. Involved AWS Services are:
+* [[DEPRECATED]CognitoSyncDemo]([DEPRECATED]CognitoSyncDemo/README.md). This is a sample mobile application that demonstrates how to use Amazon Cognito. Involved AWS Services are:
   + Amazon Cognito Identity
   + Amazon Cognito Sync
 
@@ -21,7 +21,7 @@ general issues and help, check the <a href="#faqs">FAQs</a> section
   + Amazon Cognito Identity
   + Amazon S3
       
-* [DynamoDBMapper]([DEPRECATED]DynamoDBMapper_UserPreference_Cognito/README.md). This is a sample mobile application that demonstrates how to use Amazon DynamoDB Object Mapper. Involved AWS Services are:
+* [[DEPRECATED]DynamoDBMapper]([DEPRECATED]DynamoDBMapper_UserPreference_Cognito/README.md). This is a sample mobile application that demonstrates how to use Amazon DynamoDB Object Mapper. Involved AWS Services are:
   + Amazon Cognito Identity
   + Amazon DynamoDB
      
