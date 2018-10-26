@@ -154,7 +154,7 @@ The keytool command does not allow importing an existing private key into a keys
 
 This sample demonstrates enabling unauthenticated users to use the AWS IoT APIs to securely publish-to and subscribe-from MQTT topics. Following steps demonstrates usage of AWS IoT with authenticated users. 
 
-1. Follow the steps [here](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/how-to-user-sign-in-sign-out.html) to add authentication UI to your app.
+1. Follow the steps [here](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/add-aws-mobile-user-sign-in.html) to add authentication UI to your app.
 
 2. Get the credentials provider
 
@@ -163,7 +163,7 @@ credentialsProvider =
                IdentityManager.getDefaultIdentityManager().getCredentialsProvider();
 ```
 
-3. Get CognitoIdentity from credentialsProvider and use it to attach pricipal policy to the IotAndroidClient. Create IoT policy as specified in step 4 of [Using the sample](https://github.com/awslabs/aws-sdk-android-samples/tree/master/AndroidPubSub#using-the-sample) section above. 
+3. In the app, after the user logs in using the sign-in UI, get CognitoIdentity from credentialsProvider and use it to attach pricipal policy to the IotAndroidClient. Create IoT policy as specified in step 4 of [Using the sample](https://github.com/awslabs/aws-sdk-android-samples/tree/master/AndroidPubSub#using-the-sample) section above. 
 
 ```
 // Setup the logins map
