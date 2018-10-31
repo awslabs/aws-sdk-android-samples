@@ -19,7 +19,7 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
    -  Gradle will take care of downloading these dependencies automatically for you.
 
 1. This sample will create a certificate and key, save it in the local java key store and upload the certificate to the AWS IoT platform.  To upload the certifiate, it requires a Cognito Identity with access to AWS IoT to upload the device certificate. Use Amazon Cognito to create a new identity pool ( or you can reuse an identity pool that you previously created):
-	*  In the [Amazon Cognito Console](https://console.aws.amazon.com/cognito/), press the `Manage Federated Identities` button and on the resulting page press the `Create new identity pool` button.
+	*  In the [Amazon Cognito Console](https://console.aws.amazon.com/cognito/), press the `Manage Identity Pools` button and on the resulting page press the `Create new identity pool` button.
 	*  Give your identity pool a name and ensure that `Enable access to unauthenticated identities` under the `Unauthenticated identities` section is checked.  This allows the sample application to assume the unauthenticated role associated with this identity pool.  Press the `Create Pool` button to create your identity pool.
 
 		**Important**: see note below on unauthenticated user access.
@@ -48,7 +48,7 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
 
         **Note**: to keep this example simple it makes use of unauthenticated users in the identity pool.  This can be used for getting started and prototypes but unauthenticated users should typically only be given read-only permissions if used in production applications.  More information on Cognito identity pools can be found [here](http://aws.amazon.com/cognito/), information on AWS IAM roles and policies can be found [here](http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html), and information on AWS IoT policies can be found [here](http://docs.aws.amazon.com/iot/latest/developerguide/authorization.html).
 
-1. The configuration we have setup up to this point will enable the Sample App to connect to the AWS IoT platform using Cognito and upload certificates and policies.  Next, we will need to create a policy, that we will attach to the Device Certificate that will authorize the certificate to connect to the the AWS IoT message broker and peform publish, subscribe and receive operations. To create the policy in AWS IoT,
+1. The configuration we have setup up to this point will enable the Sample App to connect to the AWS IoT platform using Cognito and upload certificates and policies.  Next, we will need to create a policy, that we will attach to the Device Certificate that will authorize the certificate to connect to the the AWS IoT message broker and perform publish, subscribe and receive operations. To create the policy in AWS IoT,
     *  Navigate to the [AWS IoT Console](https://console.aws.amazon.com/iot/home) and press the `Get Started` button.  On the resulting page click on `Secure` on the side panel and the click on `Policies`.
     * Click on `Create`
     * Give the policy a name.  Note this name as you will use it in the application when making the attach policy API call.
@@ -84,7 +84,7 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
     ```
     CUSTOMER_SPECIFIC_ENDPOINT = "<CHANGE_ME>";
     ```
-    The customer specific endpoint can be found on the IoT console settings page. 
+    The customer specific endpoint can be found on the IoT console settings page. Navigate to the [AWS IoT Console](https://console.aws.amazon.com/iot/home) and press the `Settings` button.
 
     ```
     COGNITO_POOL_ID = "<CHANGE_ME>";
