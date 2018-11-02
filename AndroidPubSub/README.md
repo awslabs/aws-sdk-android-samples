@@ -217,3 +217,4 @@ mqttManager.connect(credentialsProvider, new AWSIotMqttClientStatusCallback() {
                     }
                 });
 ```
+**Note**: To keep things simple, this policy allows access to all the topics under your AWS IoT account. This can be used for getting started and prototypes. In a product, you should scope this policy down to specific topics, specify them explicitly as ARNs in the resource section. Scoping the policy down to specific topics is however not supported currently.
