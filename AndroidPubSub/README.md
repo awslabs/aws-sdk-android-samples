@@ -75,7 +75,7 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
           ]
         }
         ```
-    	**Note**: To keep things simple, This policy allows access to all the topics under your AWS IoT account. This can be used for getting started and prototypes. In product, you should scope this policy down to specific topics, specify them explicitly as ARNs in the resource section: `"Resource": "arn:aws:iot:<REGION>:<ACCOUNT ID>:topic/<<mytopic/mysubtopic>>"`.
+    	**Note**: To keep things simple, this policy allows access to all the topics under your AWS IoT account. This can be used for getting started and prototypes. In product, you should scope this policy down to specific topics, specify them explicitly as ARNs in the resource section: `"Resource": "arn:aws:iot:<REGION>:<ACCOUNT ID>:topic/<<mytopic/mysubtopic>>"`.
 
 1. Open the AndroidPubSub project.
 
@@ -150,9 +150,9 @@ The keytool command does not allow importing an existing private key into a keys
 
     The directory and filename used will depend on your use case.  Typically the application's files directory is in /data/user/0/<app namespace>/files/.  You may however choose to locate your keystore on removable media or another space on the filesystem.  The SDK allows for specifying the file path and name of the keystore so the choice is up to you.
 	
-## Using AWS IoT with authenticated users
+## Using AWS IOT with user sign-in
 
-This sample demonstrates enabling unauthenticated users to use the AWS IoT APIs to securely publish-to and subscribe-from MQTT topics. Following steps demonstrates usage of AWS IoT with authenticated users. 
+This sample demonstrates enabling guest users to use the AWS IoT APIs to securely publish-to and subscribe-from MQTT topics. Following steps demonstrates usage of AWS IoT with user sign-in. 
 
 1. Follow the steps [here](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/add-aws-mobile-user-sign-in.html) to add authentication UI to your app.
 
@@ -163,7 +163,7 @@ credentialsProvider =
                IdentityManager.getDefaultIdentityManager().getCredentialsProvider();
 ```
 
-3. In the app, after the user logs in using the sign-in UI, get CognitoIdentity from credentialsProvider and use it to attach pricipal policy to the IotAndroidClient. Create IoT policy as specified in step 4 of [Using the sample](https://github.com/awslabs/aws-sdk-android-samples/tree/master/AndroidPubSub#using-the-sample) section above. 
+3. In the app, after the user logs in using the sign-in UI, get CognitoIdentity from credentialsProvider and use it to attach principal policy to the IotAndroidClient. Create IoT policy as specified in step 4 of [Using the sample](https://github.com/awslabs/aws-sdk-android-samples/tree/master/AndroidPubSub#using-the-sample) section above. 
 
 ```
 // Setup the logins map
@@ -195,21 +195,13 @@ new Thread(new Runnable() {
 }).start();
 ```
 
-3. Create MQTT client and connect
+4. Create MQTT client and connect
 
 ```
 // MQTT Client
 // CUSTOMER_SPECIFIC_ENDPOINT is same as the one used in the sample app above
 mqttManager = new AWSIotMqttManager(clientId, CUSTOMER_SPECIFIC_ENDPOINT); 
-// Set keepalive to 10 seconds.  Will recognize disconnects more quickly but will also send
-// MQTT pings every 10 seconds.
-mqttManager.setKeepAlive(10);
 
-// Set Last Will and Testament for MQTT.  On an unclean disconnect (loss of connection)
-// AWS IoT will publish this message to alert other clients.
-AWSIotMqttLastWillAndTestament lwt = new AWSIotMqttLastWillAndTestament("my/lwt/topic",
-	"Android client lost connection", AWSIotMqttQos.QOS0);
-mqttManager.setMqttLastWillAndTestament(lwt);
 mqttManager.connect(credentialsProvider, new AWSIotMqttClientStatusCallback() {
                     @Override
                     public void onStatusChanged(final AWSIotMqttClientStatus status,
@@ -217,4 +209,4 @@ mqttManager.connect(credentialsProvider, new AWSIotMqttClientStatusCallback() {
                     }
                 });
 ```
-**Note**: To keep things simple, this policy allows access to all the topics under your AWS IoT account. This can be used for getting started and prototypes. In a product, you should scope this policy down to specific topics, specify them explicitly as ARNs in the resource section. Scoping the policy down to specific topics is however not supported currently.
+**Note**: To keep things simple, the policy created in step 3 above allows access to all the topics under your AWS IoT account. This can be used for getting started and prototypes. In a product, you should scope this policy down to specific topics, specify them explicitly as ARNs in the resource section. Scoping the policy down to specific topics is however not supported currently.
