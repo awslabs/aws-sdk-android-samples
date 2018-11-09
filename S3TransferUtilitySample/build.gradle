@@ -18,7 +18,7 @@ buildscript {
 apply plugin: 'com.android.application'
 
 dependencies {
-    implementation 'com.amazonaws:aws-android-sdk-s3:2.7.+'
+    implementation 'com.amazonaws:aws-android-sdk-s3:2.8.+'
 }
 
 android {

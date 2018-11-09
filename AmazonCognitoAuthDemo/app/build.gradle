@@ -30,7 +30,7 @@ dependencies {
     implementation "com.android.support:support-v4:${androidLibraryVersion}"
 
     // Required for Cognito
-    implementation ('com.amazonaws:aws-android-sdk-cognitoauth:2.6.18@aar') { transitive = true}
+    implementation ('com.amazonaws:aws-android-sdk-cognitoauth:2.8.+@aar') { transitive = true}
     implementation "com.android.support:customtabs:${androidLibraryVersion}"
 }
 
