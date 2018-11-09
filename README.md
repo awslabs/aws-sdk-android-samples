@@ -13,18 +13,10 @@ general issues and help, check the <a href="#faqs">FAQs</a> section
   + Amazon Cognito Identity
   + Amazon Cognito Identity Provider (Your User Pools)
 
-* [[DEPRECATED]CognitoSyncDemo]([DEPRECATED]CognitoSyncDemo/README.md). This is a sample mobile application that demonstrates how to use Amazon Cognito. Involved AWS Services are:
-  + Amazon Cognito Identity
-  + Amazon Cognito Sync
-
 * [S3TransferUtilitySample](S3TransferUtilitySample/README.md). This is a sample mobile application that demonstrates how to use Amazon S3 Transfer Utility to download and upload files to Amazon S3. Involved AWS Services are:
   + Amazon Cognito Identity
   + Amazon S3
-      
-* [[DEPRECATED]DynamoDBMapper]([DEPRECATED]DynamoDBMapper_UserPreference_Cognito/README.md). This is a sample mobile application that demonstrates how to use Amazon DynamoDB Object Mapper. Involved AWS Services are:
-  + Amazon Cognito Identity
-  + Amazon DynamoDB
-     
+
 * [AndroidPubSub](AndroidPubSub/README.md). This sample demonstrates use of the AWS IoT APIs to securely publish to and subscribe from MQTT topics with TLS and IoT certificates. Involved AWS Services are:
   + Amazon Cognito Identity
   + AWS IoT
@@ -66,12 +58,6 @@ This is the recommended way to run samples.
 * Update source code with your AWS resources. Please read the README of each sample for more details.
 * Connect an Android device to your computer or start an Android emulator. The minimum required API version for most samples is API level 10.
 * Compile the sample and install it. Run `gradlew installDebug`. Or if you on a Windows computer, use `gradlew.bat` instead. 
-
-#### Eclipse
-* Import sample project. Via menu, click File -> New -> Other -> Android Project from Existing Code. Browse to the sample directory and select a sample project to import.
-* Get AWS Mobile SDK for Android. You can download it from [AWS Mobile SDK](https://aws.amazon.com/mobile/sdk/) website. Extract it, and copy libraries to the `libs` folder of the sample. Please refer to the README of each sample for required libraries.
-* Update source code with your AWS resources. Please read the README of each sample for more details.
-* Run it!
 
 ### FAQs<a name="faqs"></a>
 ##### The sample can no longer be compiled/imported if I move it to another directory

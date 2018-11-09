@@ -30,7 +30,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.android.support:design:25.4.0'
 
-    compile ('com.amazonaws:aws-android-sdk-lex:2.7.+@aar'){
+    compile ('com.amazonaws:aws-android-sdk-lex:2.8.+@aar'){
         transitive=true
     }
 
