@@ -5,7 +5,7 @@ This repository has samples that demonstrate various aspects of the [AWS SDK for
 
 ### Resources
 
-* [Developer Guide for AWS SDK for Android](./https://aws-amplify.github.io/docs/android/start)
+* [Developer Guide for AWS SDK for Android](https://aws-amplify.github.io/docs/android/start)
 
 Please refer to README file in each folder for more specific instructions. For general issues and help, check the <a href="#faqs">FAQs</a> section
 
