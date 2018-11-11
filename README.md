@@ -1,10 +1,13 @@
-AWS Mobile SDK for Android Samples
+AWS SDK for Android Samples
 =======================
 
-This repository has samples that demonstrate various aspects of the [AWS Mobile SDK Version 2 for Android](http://aws.amazon.com/sdkforandroid), you can get the [source on Github](https://github.com/aws/aws-sdk-android-v2).  To find the AWS Mobile SDK Version 1 for Android samples, please select the v1 branch.
+This repository has samples that demonstrate various aspects of the [AWS SDK for Android](https://github.com/aws-amplify/aws-sdk-android).
 
-Please refer to README file in each folder for more specific instructions. For
-general issues and help, check the <a href="#faqs">FAQs</a> section
+### Resources
+
+* [Developer Guide for AWS SDK for Android](./https://aws-amplify.github.io/docs/android/start)
+
+Please refer to README file in each folder for more specific instructions. For general issues and help, check the <a href="#faqs">FAQs</a> section
 
 ### List of Samples
 
@@ -79,4 +82,4 @@ version you would like to use.
 
 ### Getting Help
 
-We use [AWS Android SDK GitHub issues](https://github.com/aws/aws-sdk-android/issues) for tracking questions, bugs, and feature requests.
+We use [AWS Android SDK GitHub issues](https://github.com/aws-amplify/aws-sdk-android/issues) for tracking questions, bugs, and feature requests.
