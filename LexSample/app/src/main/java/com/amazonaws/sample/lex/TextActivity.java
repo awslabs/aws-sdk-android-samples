@@ -25,7 +25,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.amazonaws.auth.CognitoCredentialsProvider;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.Callback;
+import com.amazonaws.mobile.client.UserStateDetails;
 import com.amazonaws.mobileconnectors.lex.interactionkit.InteractionClient;
 import com.amazonaws.mobileconnectors.lex.interactionkit.Response;
 import com.amazonaws.mobileconnectors.lex.interactionkit.continuations.LexServiceContinuation;
@@ -36,14 +38,66 @@ import com.amazonaws.services.lexrts.model.DialogState;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 
 public class TextActivity extends Activity {
     private static final String TAG = "TextActivity";
+    /**
+     * Implementing {@link AudioPlaybackListener}.
+     */
+    final AudioPlaybackListener audioPlaybackListener = new AudioPlaybackListener() {
+        @Override
+        public void onAudioPlaybackStarted() {
+            Log.d(TAG, " -- Audio playback started");
+        }
+
+        @Override
+        public void onAudioPlayBackCompleted() {
+            Log.d(TAG, " -- Audio playback ended");
+        }
+
+        @Override
+        public void onAudioPlaybackError(Exception e) {
+            Log.d(TAG, " -- Audio playback error", e);
+        }
+    };
     private EditText userTextInput;
     private Context appContext;
     private InteractionClient lexInteractionClient;
     private boolean inConversation;
     private LexServiceContinuation convContinuation;
+    final InteractionListener interactionListener = new InteractionListener() {
+        @Override
+        public void onReadyForFulfillment(final Response response) {
+            Log.d(TAG, "Transaction completed successfully");
+            addMessage(new TextMessage(response.getTextResponse(), "rx", getCurrentTimeStamp()));
+            inConversation = false;
+        }
+
+        @Override
+        public void promptUserToRespond(final Response response,
+                                        final LexServiceContinuation continuation) {
+            addMessage(new TextMessage(response.getTextResponse(), "rx", getCurrentTimeStamp()));
+            readUserText(continuation);
+        }
+
+        @Override
+        public void onInteractionError(final Response response, final Exception e) {
+            if (response != null) {
+                if (DialogState.Failed.toString().equals(response.getDialogState())) {
+                    addMessage(new TextMessage(response.getTextResponse(), "rx",
+                            getCurrentTimeStamp()));
+                    inConversation = false;
+                } else {
+                    addMessage(new TextMessage("Please retry", "rx", getCurrentTimeStamp()));
+                }
+            } else {
+                showToast("Error: " + e.getMessage());
+                Log.e(TAG, "Interaction error", e);
+                inConversation = false;
+            }
+        }
+    };
     private int file_count = 0;
 
     @Override
@@ -88,19 +142,27 @@ public class TextActivity extends Activity {
      */
     private void initializeLexSDK() {
         Log.d(TAG, "Lex Client");
-        // Cognito Identity Broker is the credentials provider.
-        CognitoCredentialsProvider credentialsProvider = new CognitoCredentialsProvider(
-                appContext.getResources().getString(R.string.identity_id_test),
-                Regions.fromName(appContext.getResources().getString(R.string.cognito_region)));
 
-        // Create Lex interaction client.
-        lexInteractionClient = new InteractionClient(getApplicationContext(),
-                credentialsProvider,
-                Regions.fromName(appContext.getResources().getString(R.string.lex_region)),
-                appContext.getResources().getString(R.string.bot_name),
-                appContext.getResources().getString(R.string.bot_alias));
-        lexInteractionClient.setAudioPlaybackListener(audioPlaybackListener);
-        lexInteractionClient.setInteractionListener(interactionListener);
+        // Initialize the mobile client
+        AWSMobileClient.getInstance().initialize(this, new Callback<UserStateDetails>() {
+            @Override
+            public void onResult(UserStateDetails result) {
+                Log.d(TAG, "onResult: ");
+                // Create Lex interaction client.
+                lexInteractionClient = new InteractionClient(getApplicationContext(),
+                        AWSMobileClient.getInstance(),
+                        Regions.fromName(appContext.getResources().getString(R.string.lex_region)),
+                        appContext.getResources().getString(R.string.bot_name),
+                        appContext.getResources().getString(R.string.bot_alias));
+                lexInteractionClient.setAudioPlaybackListener(audioPlaybackListener);
+                lexInteractionClient.setInteractionListener(interactionListener);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e(TAG, "onError: ", e);
+            }
+        });
     }
 
     /**
@@ -172,59 +234,6 @@ public class TextActivity extends Activity {
     private String getCurrentTimeStamp() {
         return DateFormat.getDateTimeInstance().format(new Date());
     }
-
-    final InteractionListener interactionListener = new InteractionListener() {
-        @Override
-        public void onReadyForFulfillment(final Response response) {
-            Log.d(TAG, "Transaction completed successfully");
-            addMessage(new TextMessage(response.getTextResponse(), "rx", getCurrentTimeStamp()));
-            inConversation = false;
-        }
-
-        @Override
-        public void promptUserToRespond(final Response response,
-                final LexServiceContinuation continuation) {
-            addMessage(new TextMessage(response.getTextResponse(), "rx", getCurrentTimeStamp()));
-            readUserText(continuation);
-        }
-
-        @Override
-        public void onInteractionError(final Response response, final Exception e) {
-            if (response != null) {
-                if (DialogState.Failed.toString().equals(response.getDialogState())) {
-                    addMessage(new TextMessage(response.getTextResponse(), "rx",
-                            getCurrentTimeStamp()));
-                    inConversation = false;
-                } else {
-                    addMessage(new TextMessage("Please retry", "rx", getCurrentTimeStamp()));
-                }
-            } else {
-                showToast("Error: " + e.getMessage());
-                Log.e(TAG, "Interaction error", e);
-                inConversation = false;
-            }
-        }
-    };
-
-    /**
-     * Implementing {@link AudioPlaybackListener}.
-     */
-    final AudioPlaybackListener audioPlaybackListener = new AudioPlaybackListener() {
-        @Override
-        public void onAudioPlaybackStarted() {
-            Log.d(TAG, " -- Audio playback started");
-        }
-
-        @Override
-        public void onAudioPlayBackCompleted() {
-            Log.d(TAG, " -- Audio playback ended");
-        }
-
-        @Override
-        public void onAudioPlaybackError(Exception e) {
-            Log.d(TAG, " -- Audio playback error", e);
-        }
-    };
 
     /**
      * Show a toast.

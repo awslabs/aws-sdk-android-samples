@@ -36,7 +36,14 @@ This sample demonstrates how to use Amazon Lex interaction client library on And
 
 1. Open the LexSample project.
 
-1. Open `res/values/strings.xml` and update the values for Cognito Identity Pool ID (from the value you saved above), Cognito region for Cognito Identity Pool Id (for example us-east-1), Lex region, your Amazon Lex Bot name and the Bot Alias (usually $LATEST).
+1. Open `res/values/strings.xml` and update the values for Lex region, your Amazon Lex Bot name and the Bot Alias (usually $LATEST).
+
+1. Open `res/raw/awsconfiguration.json` and update the values for Cognito Identity Pool ID (from the value you saved above) and Cognito region for Cognito Identity Pool Id (for example us-east-1).
+
+	```
+    "PoolId": "REPLACE_ME",
+    "Region": "REPLACE_ME"
+	```
 
 1. Build and run the sample app.
 

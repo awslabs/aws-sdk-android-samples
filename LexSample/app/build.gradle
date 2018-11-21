@@ -1,12 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.amazonaws.sample.lex"
         minSdkVersion 23
-        targetSdkVersion 25
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -25,13 +24,12 @@ repositories {
 }
 
 dependencies {
+    def android_libs_version = "28.0.0"
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation "com.android.support:appcompat-v7:$android_libs_version"
+    implementation "com.android.support:design:$android_libs_version"
 
-    compile 'com.android.support:multidex:1.0.2'
-    compile 'com.android.support:appcompat-v7:25.4.0'
-    compile 'com.android.support:design:25.4.0'
-
-    compile ('com.amazonaws:aws-android-sdk-lex:2.8.+@aar'){
-        transitive=true
-    }
-
+    def aws_version = "2.8.+"
+    implementation ("com.amazonaws:aws-android-sdk-lex:$aws_version@aar") { transitive=true }
+    implementation ("com.amazonaws:aws-android-sdk-mobile-client:$aws_version@aar") { transitive=true }
 }
