@@ -17,13 +17,19 @@ package com.amazonaws.demo.s3transferutility;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
-import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.Callback;
+import com.amazonaws.mobile.client.UserStateDetails;
+import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
+
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,31 +37,48 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 /*
  * Handles basic helper functions used throughout the app.
  */
 public class Util {
+    public static final String TAG = Util.class.getSimpleName();
 
     private AmazonS3Client sS3Client;
-    private CognitoCachingCredentialsProvider sCredProvider;
+    private AWSCredentialsProvider sMobileClient;
     private TransferUtility sTransferUtility;
 
     /**
-     * Gets an instance of CognitoCachingCredentialsProvider which is
+     * Gets an instance of AWSMobileClient which is
      * constructed using the given Context.
      *
      * @param context An Context instance.
-     * @return A default credential provider.
+     * @return AWSMobileClient which is a credentials provider
      */
-    private CognitoCachingCredentialsProvider getCredProvider(Context context) {
-        if (sCredProvider == null) {
-            sCredProvider = new CognitoCachingCredentialsProvider(
-                    context.getApplicationContext(),
-                    Constants.COGNITO_POOL_ID,
-                    Regions.fromName(Constants.COGNITO_POOL_REGION));
+    private AWSCredentialsProvider getCredProvider(Context context) {
+        if (sMobileClient == null) {
+            final CountDownLatch latch = new CountDownLatch(1);
+            AWSMobileClient.getInstance().initialize(context, new Callback<UserStateDetails>() {
+                @Override
+                public void onResult(UserStateDetails result) {
+                    latch.countDown();
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Log.e(TAG, "onError: ", e);
+                    latch.countDown();
+                }
+            });
+            try {
+                latch.await();
+                sMobileClient = AWSMobileClient.getInstance();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        return sCredProvider;
+        return sMobileClient;
     }
 
     /**
@@ -67,8 +90,15 @@ public class Util {
      */
     public AmazonS3Client getS3Client(Context context) {
         if (sS3Client == null) {
-            sS3Client = new AmazonS3Client(getCredProvider(context.getApplicationContext()));
-            sS3Client.setRegion(Region.getRegion(Regions.fromName(Constants.BUCKET_REGION)));
+            sS3Client = new AmazonS3Client(getCredProvider(context));
+            try {
+                String regionString = new AWSConfiguration(context)
+                        .optJsonObject("S3TransferUtility")
+                        .getString("Bucket");
+                sS3Client.setRegion(Region.getRegion(regionString));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         return sS3Client;
     }
@@ -76,16 +106,16 @@ public class Util {
     /**
      * Gets an instance of the TransferUtility which is constructed using the
      * given Context
-     * 
+     *
      * @param context
      * @return a TransferUtility instance
      */
     public TransferUtility getTransferUtility(Context context) {
         if (sTransferUtility == null) {
             sTransferUtility = TransferUtility.builder()
-                    .context(context.getApplicationContext())
-                    .s3Client(getS3Client(context.getApplicationContext()))
-                    .defaultBucket(Constants.BUCKET_NAME)
+                    .context(context)
+                    .s3Client(getS3Client(context))
+                    .awsConfiguration(new AWSConfiguration(context))
                     .build();
         }
 
@@ -99,11 +129,11 @@ public class Util {
      * @return A string that represents the bytes in a proper scale.
      */
     public String getBytesString(long bytes) {
-        String[] quantifiers = new String[] {
+        String[] quantifiers = new String[]{
                 "KB", "MB", "GB", "TB"
         };
         double speedNum = bytes;
-        for (int i = 0;; i++) {
+        for (int i = 0; ; i++) {
             if (i >= quantifiers.length) {
                 return "";
             }
@@ -117,7 +147,7 @@ public class Util {
     /**
      * Copies the data from the passed in Uri, to a new file for use with the
      * Transfer Service
-     * 
+     *
      * @param context
      * @param uri
      * @return

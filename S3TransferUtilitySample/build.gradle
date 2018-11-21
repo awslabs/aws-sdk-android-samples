@@ -1,35 +1,35 @@
 repositories {
-    mavenCentral()
+    google()
     jcenter()
 }
 
 buildscript {
     repositories {
-        mavenCentral()
-        jcenter()
         google()
+        jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.2.1'
     }
 }
 
 apply plugin: 'com.android.application'
 
 dependencies {
-    implementation 'com.amazonaws:aws-android-sdk-s3:2.8.+'
+    def aws_version = "2.8.+"
+    implementation "com.amazonaws:aws-android-sdk-s3:$aws_version"
+    implementation ("com.amazonaws:aws-android-sdk-mobile-client:$aws_version") { transitive = true }
 }
 
 android {
-    buildToolsVersion '27.0.3'
-    compileSdkVersion 25
+    compileSdkVersion 28
 
     defaultConfig {
         versionCode 1
         versionName "1.0.0"
         minSdkVersion 19
-        targetSdkVersion 22
+        targetSdkVersion 28
     }
 
     lintOptions {

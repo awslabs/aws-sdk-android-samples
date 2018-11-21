@@ -366,7 +366,7 @@ public class DownloadActivity extends ListActivity {
         File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
 
         // Initiate the download
-        TransferObserver observer = transferUtility.download(Constants.BUCKET_NAME, key, file);
+        TransferObserver observer = transferUtility.download(key, file);
 
         /*
          * Note that usually we set the transfer listener after initializing the

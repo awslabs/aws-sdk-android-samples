@@ -27,6 +27,7 @@ import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TextView;
 import com.amazonaws.demo.s3transferutility.R;
+import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import java.util.ArrayList;
@@ -45,12 +46,14 @@ public class DownloadSelectionActivity extends ListActivity {
     private SimpleAdapter simpleAdapter;
     private ArrayList<HashMap<String, Object>> transferRecordMaps;
     private Util util;
+    private String bucket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download_selection);
         util = new Util();
+        bucket = new AWSConfiguration(this).optJsonObject("S3TransferUtility").optString("Bucket");
         initData();
         initUI();
     }
@@ -124,7 +127,7 @@ public class DownloadSelectionActivity extends ListActivity {
         @Override
         protected Void doInBackground(Void... inputs) {
             // Queries files in the bucket from S3.
-            s3ObjList = s3.listObjects(Constants.BUCKET_NAME).getObjectSummaries();
+            s3ObjList = s3.listObjects(bucket).getObjectSummaries();
             transferRecordMaps.clear();
             for (S3ObjectSummary summary : s3ObjList) {
                 HashMap<String, Object> map = new HashMap<String, Object>();

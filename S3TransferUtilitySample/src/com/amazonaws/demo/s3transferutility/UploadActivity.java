@@ -470,9 +470,10 @@ public class UploadActivity extends ListActivity {
         }
 
         File file = new File(filePath);
-        TransferObserver observer = transferUtility.upload(Constants.BUCKET_NAME,
+        TransferObserver observer = transferUtility.upload(
                 file.getName(),
-                file);
+                file
+        );
 
         /*
          * Note that usually we set the transfer listener after initializing the
