@@ -1,14 +1,10 @@
 package com.amazonaws.kinesisvideo.demoapp.fragment;
 
-import static com.amazonaws.mobileconnectors.kinesisvideo.util.CameraUtils.getCameras;
-import static com.amazonaws.mobileconnectors.kinesisvideo.util.CameraUtils.getSupportedResolutions;
-import static com.amazonaws.mobileconnectors.kinesisvideo.util.VideoEncoderUtils.getSupportedMimeTypes;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Size;
@@ -18,18 +14,22 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.amazonaws.kinesisvideo.client.KinesisVideoClient;
+import com.amazonaws.kinesisvideo.client.mediasource.CameraMediaSourceConfiguration;
 import com.amazonaws.kinesisvideo.common.exception.KinesisVideoException;
 import com.amazonaws.kinesisvideo.demoapp.KinesisVideoDemoApp;
 import com.amazonaws.kinesisvideo.demoapp.R;
 import com.amazonaws.kinesisvideo.demoapp.activity.SimpleNavActivity;
-import com.amazonaws.kinesisvideo.client.KinesisVideoClient;
-import com.amazonaws.kinesisvideo.client.mediasource.CameraMediaSourceConfiguration;
-import com.amazonaws.kinesisvideo.demoapp.ui.widget.StringSpinnerWidget;
 import com.amazonaws.kinesisvideo.demoapp.ui.adapter.ToStrings;
+import com.amazonaws.kinesisvideo.demoapp.ui.widget.StringSpinnerWidget;
 import com.amazonaws.kinesisvideo.producer.StreamInfo;
 import com.amazonaws.mobileconnectors.kinesisvideo.client.KinesisVideoAndroidClientFactory;
 import com.amazonaws.mobileconnectors.kinesisvideo.data.MimeType;
 import com.amazonaws.mobileconnectors.kinesisvideo.mediasource.android.AndroidCameraMediaSourceConfiguration;
+
+import static com.amazonaws.mobileconnectors.kinesisvideo.util.CameraUtils.getCameras;
+import static com.amazonaws.mobileconnectors.kinesisvideo.util.CameraUtils.getSupportedResolutions;
+import static com.amazonaws.mobileconnectors.kinesisvideo.util.VideoEncoderUtils.getSupportedMimeTypes;
 
 public class StreamConfigurationFragment extends Fragment {
     private static final String TAG = StreamConfigurationFragment.class.getSimpleName();
@@ -59,7 +59,7 @@ public class StreamConfigurationFragment extends Fragment {
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
         if (ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.CAMERA},9393 );
+            ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.CAMERA}, 9393);
         }
 
         getActivity().setTitle(getActivity().getString(R.string.title_fragment_stream));
@@ -112,7 +112,7 @@ public class StreamConfigurationFragment extends Fragment {
             if (resolution.getWidth() <= RESOLUTION_320x240.getWidth()
                     && tmpSize.getWidth() <= resolution.getWidth()
                     && resolution.getHeight() <= RESOLUTION_320x240.getHeight()
-                    && tmpSize.getHeight() <=resolution.getHeight()) {
+                    && tmpSize.getHeight() <= resolution.getHeight()) {
 
                 tmpSize = resolution;
                 indexToSelect = i;

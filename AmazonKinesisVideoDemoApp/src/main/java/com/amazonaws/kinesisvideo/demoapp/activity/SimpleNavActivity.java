@@ -1,30 +1,28 @@
 package com.amazonaws.kinesisvideo.demoapp.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.amazonaws.kinesisvideo.demoapp.R;
 import com.amazonaws.kinesisvideo.demoapp.fragment.StreamConfigurationFragment;
 import com.amazonaws.kinesisvideo.demoapp.fragment.StreamingFragment;
-import com.amazonaws.mobile.auth.core.DefaultSignInResultHandler;
-import com.amazonaws.mobile.auth.core.IdentityManager;
-import com.amazonaws.mobile.auth.core.IdentityProvider;
-import com.amazonaws.mobile.auth.ui.AuthUIConfiguration;
-import com.amazonaws.mobile.auth.ui.SignInActivity;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.Callback;
+import com.amazonaws.mobile.client.UserStateDetails;
 
 public class SimpleNavActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    public static final String TAG = SimpleNavActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,19 +88,18 @@ public class SimpleNavActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         } else if (id == R.id.nav_logout) {
-            IdentityManager.getDefaultIdentityManager().signOut();
-            IdentityManager.getDefaultIdentityManager().setUpToAuthenticate(this, new DefaultSignInResultHandler() {
+            AWSMobileClient.getInstance().signOut();
+            AWSMobileClient.getInstance().showSignIn(this, new Callback<UserStateDetails>() {
                 @Override
-                public void onSuccess(Activity callingActivity, IdentityProvider provider) {
-                    startConfigFragment();
+                public void onResult(UserStateDetails result) {
+                    Log.d(TAG, "onResult: User sign-in " + result.getUserState());
                 }
 
                 @Override
-                public boolean onCancel(Activity callingActivity) {
-                    return false;
+                public void onError(Exception e) {
+                    Log.e(TAG, "onError: User sign-in", e);
                 }
             });
-            SignInActivity.startSignInActivity(this, new AuthUIConfiguration.Builder().userPools(true).build());
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
