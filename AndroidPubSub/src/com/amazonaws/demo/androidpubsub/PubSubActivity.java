@@ -1,12 +1,12 @@
 /**
  * Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at:
- *
- *    http://aws.amazon.com/apache2.0
- *
+ * <p>
+ * http://aws.amazon.com/apache2.0
+ * <p>
  * This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
  * OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and
@@ -24,6 +24,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.Callback;
+import com.amazonaws.mobile.client.UserStateDetails;
 import com.amazonaws.mobileconnectors.iot.AWSIotKeystoreHelper;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttLastWillAndTestament;
@@ -50,9 +53,6 @@ public class PubSubActivity extends Activity {
     // IoT endpoint
     // AWS Iot CLI describe-endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com
     private static final String CUSTOMER_SPECIFIC_ENDPOINT = "CHANGE_ME";
-    // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
-    // AWS IoT permissions.
-    private static final String COGNITO_POOL_ID = "CHANGE_ME";
     // Name of the AWS IoT policy to attach to a newly created certificate
     private static final String AWS_IOT_POLICY_NAME = "CHANGE_ME";
 
@@ -74,9 +74,6 @@ public class PubSubActivity extends Activity {
     TextView tvStatus;
 
     Button btnConnect;
-    Button btnSubscribe;
-    Button btnPublish;
-    Button btnDisconnect;
 
     AWSIotClient mIotAndroidClient;
     AWSIotMqttManager mqttManager;
@@ -88,33 +85,100 @@ public class PubSubActivity extends Activity {
     KeyStore clientKeyStore = null;
     String certificateId;
 
-    CognitoCachingCredentialsProvider credentialsProvider;
+    public void connectClick(final View view) {
+        Log.d(LOG_TAG, "clientId = " + clientId);
+
+        try {
+            mqttManager.connect(clientKeyStore, new AWSIotMqttClientStatusCallback() {
+                @Override
+                public void onStatusChanged(final AWSIotMqttClientStatus status,
+                                            final Throwable throwable) {
+                    Log.d(LOG_TAG, "Status = " + String.valueOf(status));
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tvStatus.setText(status.toString());
+                            if (throwable != null) {
+                                Log.e(LOG_TAG, "Connection error.", throwable);
+                            }
+                        }
+                    });
+                }
+            });
+        } catch (final Exception e) {
+            Log.e(LOG_TAG, "Connection error.", e);
+            tvStatus.setText("Error! " + e.getMessage());
+        }
+    }
+
+    public void subscribeClick(final View view) {
+        final String topic = txtSubcribe.getText().toString();
+
+        Log.d(LOG_TAG, "topic = " + topic);
+
+        try {
+            mqttManager.subscribeToTopic(topic, AWSIotMqttQos.QOS0,
+                    new AWSIotMqttNewMessageCallback() {
+                        @Override
+                        public void onMessageArrived(final String topic, final byte[] data) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        String message = new String(data, "UTF-8");
+                                        Log.d(LOG_TAG, "Message arrived:");
+                                        Log.d(LOG_TAG, "   Topic: " + topic);
+                                        Log.d(LOG_TAG, " Message: " + message);
+
+                                        tvLastMessage.setText(message);
+                                    } catch (UnsupportedEncodingException e) {
+                                        Log.e(LOG_TAG, "Message encoding error.", e);
+                                    }
+                                }
+                            });
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Subscription error.", e);
+        }
+    }
+
+    public void publishClick(final View view) {
+        final String topic = txtTopic.getText().toString();
+        final String msg = txtMessage.getText().toString();
+
+        try {
+            mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Publish error.", e);
+        }
+    }
+
+
+    public void disconnectClick(final View view) {
+        try {
+            mqttManager.disconnect();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Disconnect error.", e);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        txtSubcribe = (EditText) findViewById(R.id.txtSubcribe);
-        txtTopic = (EditText) findViewById(R.id.txtTopic);
-        txtMessage = (EditText) findViewById(R.id.txtMessage);
+        txtSubcribe = findViewById(R.id.txtSubcribe);
+        txtTopic = findViewById(R.id.txtTopic);
+        txtMessage = findViewById(R.id.txtMessage);
 
-        tvLastMessage = (TextView) findViewById(R.id.tvLastMessage);
-        tvClientId = (TextView) findViewById(R.id.tvClientId);
-        tvStatus = (TextView) findViewById(R.id.tvStatus);
+        tvLastMessage = findViewById(R.id.tvLastMessage);
+        tvClientId = findViewById(R.id.tvClientId);
+        tvStatus = findViewById(R.id.tvStatus);
 
-        btnConnect = (Button) findViewById(R.id.btnConnect);
-        btnConnect.setOnClickListener(connectClick);
+        btnConnect = findViewById(R.id.btnConnect);
         btnConnect.setEnabled(false);
-
-        btnSubscribe = (Button) findViewById(R.id.btnSubscribe);
-        btnSubscribe.setOnClickListener(subscribeClick);
-
-        btnPublish = (Button) findViewById(R.id.btnPublish);
-        btnPublish.setOnClickListener(publishClick);
-
-        btnDisconnect = (Button) findViewById(R.id.btnDisconnect);
-        btnDisconnect.setOnClickListener(disconnectClick);
 
         // MQTT client IDs are required to be unique per AWS IoT account.
         // This UUID is "practically unique" but does not _guarantee_
@@ -123,12 +187,20 @@ public class PubSubActivity extends Activity {
         tvClientId.setText(clientId);
 
         // Initialize the AWS Cognito credentials provider
-        credentialsProvider = new CognitoCachingCredentialsProvider(
-                getApplicationContext(), // context
-                COGNITO_POOL_ID, // Identity Pool ID
-                MY_REGION // Region
-        );
+        AWSMobileClient.getInstance().initialize(this, new Callback<UserStateDetails>() {
+            @Override
+            public void onResult(UserStateDetails result) {
+                initIoTClient();
+            }
 
+            @Override
+            public void onError(Exception e) {
+                Log.e(LOG_TAG, "onError: ", e);
+            }
+        });
+    }
+
+    void initIoTClient() {
         Region region = Region.getRegion(MY_REGION);
 
         // MQTT Client
@@ -145,7 +217,7 @@ public class PubSubActivity extends Activity {
         mqttManager.setMqttLastWillAndTestament(lwt);
 
         // IoT Client (for creation of certificate if needed)
-        mIotAndroidClient = new AWSIotClient(credentialsProvider);
+        mIotAndroidClient = new AWSIotClient(AWSMobileClient.getInstance());
         mIotAndroidClient.setRegion(region);
 
         keystorePath = getFilesDir().getPath();
@@ -234,117 +306,4 @@ public class PubSubActivity extends Activity {
             }).start();
         }
     }
-
-    View.OnClickListener connectClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-            Log.d(LOG_TAG, "clientId = " + clientId);
-
-            try {
-                mqttManager.connect(clientKeyStore, new AWSIotMqttClientStatusCallback() {
-                    @Override
-                    public void onStatusChanged(final AWSIotMqttClientStatus status,
-                            final Throwable throwable) {
-                        Log.d(LOG_TAG, "Status = " + String.valueOf(status));
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (status == AWSIotMqttClientStatus.Connecting) {
-                                    tvStatus.setText("Connecting...");
-
-                                } else if (status == AWSIotMqttClientStatus.Connected) {
-                                    tvStatus.setText("Connected");
-
-                                } else if (status == AWSIotMqttClientStatus.Reconnecting) {
-                                    if (throwable != null) {
-                                        Log.e(LOG_TAG, "Connection error.", throwable);
-                                    }
-                                    tvStatus.setText("Reconnecting");
-                                } else if (status == AWSIotMqttClientStatus.ConnectionLost) {
-                                    if (throwable != null) {
-                                        Log.e(LOG_TAG, "Connection error.", throwable);
-                                    }
-                                    tvStatus.setText("Disconnected");
-                                } else {
-                                    tvStatus.setText("Disconnected");
-
-                                }
-                            }
-                        });
-                    }
-                });
-            } catch (final Exception e) {
-                Log.e(LOG_TAG, "Connection error.", e);
-                tvStatus.setText("Error! " + e.getMessage());
-            }
-        }
-    };
-
-    View.OnClickListener subscribeClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-            final String topic = txtSubcribe.getText().toString();
-
-            Log.d(LOG_TAG, "topic = " + topic);
-
-            try {
-                mqttManager.subscribeToTopic(topic, AWSIotMqttQos.QOS0,
-                        new AWSIotMqttNewMessageCallback() {
-                            @Override
-                            public void onMessageArrived(final String topic, final byte[] data) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            String message = new String(data, "UTF-8");
-                                            Log.d(LOG_TAG, "Message arrived:");
-                                            Log.d(LOG_TAG, "   Topic: " + topic);
-                                            Log.d(LOG_TAG, " Message: " + message);
-
-                                            tvLastMessage.setText(message);
-
-                                        } catch (UnsupportedEncodingException e) {
-                                            Log.e(LOG_TAG, "Message encoding error.", e);
-                                        }
-                                    }
-                                });
-                            }
-                        });
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Subscription error.", e);
-            }
-        }
-    };
-
-    View.OnClickListener publishClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-            final String topic = txtTopic.getText().toString();
-            final String msg = txtMessage.getText().toString();
-
-            try {
-                mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Publish error.", e);
-            }
-
-        }
-    };
-
-    View.OnClickListener disconnectClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-            try {
-                mqttManager.disconnect();
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Disconnect error.", e);
-            }
-
-        }
-    };
 }
