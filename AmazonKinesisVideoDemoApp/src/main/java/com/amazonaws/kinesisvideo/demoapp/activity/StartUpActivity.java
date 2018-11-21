@@ -1,44 +1,49 @@
 package com.amazonaws.kinesisvideo.demoapp.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.amazonaws.kinesisvideo.demoapp.util.ActivityUtils;
-import com.amazonaws.mobile.auth.core.DefaultSignInResultHandler;
-import com.amazonaws.mobile.auth.core.IdentityManager;
-import com.amazonaws.mobile.auth.core.IdentityProvider;
-import com.amazonaws.mobile.auth.core.StartupAuthResult;
-import com.amazonaws.mobile.auth.core.StartupAuthResultHandler;
-import com.amazonaws.mobile.auth.ui.AuthUIConfiguration;
-import com.amazonaws.mobile.auth.ui.SignInActivity;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.Callback;
+import com.amazonaws.mobile.client.SignInUIOptions;
+import com.amazonaws.mobile.client.UserStateDetails;
 
 public class StartUpActivity extends AppCompatActivity {
+    public static final String TAG = StartUpActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        IdentityManager.getDefaultIdentityManager().doStartupAuth(this, new StartupAuthResultHandler() {
-            @Override
-            public void onComplete(StartupAuthResult authResults) {
-                if (authResults.isUserSignedIn()) {
-                    ActivityUtils.startActivity(StartUpActivity.this, SimpleNavActivity.class);
-                } else {
-                    IdentityManager.getDefaultIdentityManager().setUpToAuthenticate(StartUpActivity.this, new DefaultSignInResultHandler() {
+        final AWSMobileClient auth = AWSMobileClient.getInstance();
+
+        if (auth.isSignedIn()) {
+            ActivityUtils.startActivity(this, SimpleNavActivity.class);
+        } else {
+            auth.showSignIn(this,
+                    SignInUIOptions.builder()
+                            .nextActivity(SimpleNavActivity.class)
+                            .build(),
+                    new Callback<UserStateDetails>() {
                         @Override
-                        public void onSuccess(Activity callingActivity, IdentityProvider provider) {
-                            ActivityUtils.startActivity(StartUpActivity.this, SimpleNavActivity.class);
+                        public void onResult(UserStateDetails result) {
+                            Log.d(TAG, "onResult: User signed-in " + result.getUserState());
                         }
 
                         @Override
-                        public boolean onCancel(Activity callingActivity) {
-                            return false; // false = User cannot cancel login
+                        public void onError(final Exception e) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.e(TAG, "onError: User sign-in error", e);
+                                    Toast.makeText(StartUpActivity.this, "User sign-in error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
                     });
-                    SignInActivity.startSignInActivity(StartUpActivity.this, new AuthUIConfiguration.Builder().userPools(true).build());
-                }
-            }
-        });
+        }
     }
 }
