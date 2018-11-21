@@ -11,13 +11,23 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.amazonaws.demo.polly.MainActivity">
 
+    <TextView
+        android:id="@+id/spinner_label"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/choose_voice"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <Spinner
+        android:id="@+id/voicesSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/voicesSpinner"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/spinner_label"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_alignParentStart="true"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -57,6 +67,7 @@
 
     <Button
         android:text="@string/read"
+        android:onClick="playVoice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/readButton"

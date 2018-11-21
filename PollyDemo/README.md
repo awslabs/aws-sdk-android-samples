@@ -36,11 +36,11 @@ This sample demonstrates how to use Amazon Polly client library on Android.  Thi
 
 1. Open the PollyDemo project.
 
-1. Open `MainActivity.java` and update the following constants with the appropriate values:
+1. Open `awsconfiguration.json` and update the following constants with the appropriate values:
 
     ```
-    COGNITO_POOL_ID = "CHANGE_ME";
-    MY_REGION = Regions.US_EAST_1;
+    "PoolId": "REPLACE_ME",
+    "Region": "REPLACE_ME"
     ```
 
 1. Build and run the sample app.
