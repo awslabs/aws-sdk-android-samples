@@ -1,32 +1,35 @@
-repositories {
-    jcenter()
-}
-
 buildscript {
     repositories {
         jcenter()
+        google()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.2.1'
     }
 }
 
 apply plugin: 'com.android.application'
 
+repositories {
+    jcenter()
+    google()
+}
+
 dependencies {
-    compile 'com.amazonaws:aws-android-sdk-iot:2.8.+'
+    def aws_version = "2.8.+"
+    implementation "com.amazonaws:aws-android-sdk-iot:$aws_version"
+    implementation "com.amazonaws:aws-android-sdk-mobile-client:$aws_version"
 }
 
 android {
-    buildToolsVersion "26.0.2"
-    compileSdkVersion 25
+    compileSdkVersion 28
 
     defaultConfig {
         versionCode 1
         versionName "1.0.0"
         minSdkVersion 19
-        targetSdkVersion 22
+        targetSdkVersion 28
     }
 
     lintOptions {

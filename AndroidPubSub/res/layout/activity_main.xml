@@ -58,6 +58,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="6"
+            android:onClick="connectClick"
             android:text="Connect" />
 
         <Button
@@ -66,6 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:layout_gravity="right"
+            android:onClick="disconnectClick"
             android:text="Disconnect" />
     </LinearLayout>
 
@@ -87,6 +89,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:onClick="subscribeClick"
             android:text="Subscribe" />
     </LinearLayout>
 
@@ -157,6 +160,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
+        android:onClick="publishClick"
         android:text="Publish" />
 
 </LinearLayout>
