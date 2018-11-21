@@ -23,11 +23,29 @@ This sample demonstrates how to use the high-level class TransferUtility to perf
 
 4. **Import the sample project**
    * Import the sample as Android project into your IDE of choice.
-   * Open `Constants.java` in src/com/amazonaws/demo/s3transferutility directory.
-   * Update `COGNITO_POOL_ID` with the ID of the Cognito Identity Pool created in Step-1.
-   * Update `COGNITO_POOL_REGION` with the region of the Cognito Identity Pool created from Step-1. For example, `us-east-1`. The `Region` column in [Amazon Cognito Identity Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#cognito_identity_region) represents the region string.
-   * Update `BUCKET_NAME` with the name of the S3 Bucket created in Step-3.
-   * Update `BUCKET_REGION` with the region of the S3 Bucket created from Step-3. For example, `us-east-1`. The `Region`column in [Aamazon S3 Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region) represents the region string.
+   * Open `awsconfiguration.json` in src/com/amazonaws/demo/s3transferutility directory.
+   * Update `PoolId` with the ID of the Cognito Identity Pool created in Step-1.
+   * Update `Region` with the region of the Cognito Identity Pool created from Step-1. For example, `us-east-1`. The `Region` column in [Amazon Cognito Identity Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#cognito_identity_region) represents the region string.
+     ```
+     "CredentialsProvider": {
+       "CognitoIdentity": {
+         "Default": {
+           "PoolId": "REPLACE_ME",
+           "Region": "REPLACE_ME"
+         }
+       }
+     },
+     ```
+   * Update `Bucket` with the name of the S3 Bucket created in Step-3.
+   * Update `Region` with the region of the S3 Bucket created from Step-3. For example, `us-east-1`. The `Region`column in [Aamazon S3 Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region) represents the region string.
+     ```
+     "S3TransferUtility": {
+       "Default": {
+         "Bucket": "REPLACE_ME",
+         "Region": "REPLACE_ME"
+       }
+     }
+     ```
 
 5. **Import the AWS SDK for Android**
    * This application used `Gradle` to resolve the dependencies required by the app and fetches from maven. This app depends on `aws-android-sdk-s3` in `build.gradle`.
