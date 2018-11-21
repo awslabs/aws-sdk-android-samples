@@ -21,11 +21,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.amazonaws.auth.CognitoCredentialsProvider;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.Callback;
+import com.amazonaws.mobile.client.UserStateDetails;
 import com.amazonaws.mobileconnectors.lex.interactionkit.Response;
 import com.amazonaws.mobileconnectors.lex.interactionkit.config.InteractionConfig;
 import com.amazonaws.mobileconnectors.lex.interactionkit.ui.InteractiveVoiceView;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.util.StringUtils;
 
 import java.util.Locale;
@@ -43,8 +44,8 @@ public class InteractiveVoiceActivity extends Activity
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_interactive_voice);
-        transcriptTextView = (TextView) findViewById(R.id.transcriptTextView);
-        responseTextView = (TextView) findViewById(R.id.responseTextView);
+        transcriptTextView = findViewById(R.id.transcriptTextView);
+        responseTextView = findViewById(R.id.responseTextView);
         init();
         StringUtils.isBlank("notempty");
     }
@@ -56,16 +57,24 @@ public class InteractiveVoiceActivity extends Activity
 
     private void init() {
         appContext = getApplicationContext();
-        voiceView = (InteractiveVoiceView) findViewById(R.id.voiceInterface);
+        voiceView = findViewById(R.id.voiceInterface);
         voiceView.setInteractiveVoiceListener(this);
-        CognitoCredentialsProvider credentialsProvider = new CognitoCredentialsProvider(
-                appContext.getResources().getString(R.string.identity_id_test),
-                Regions.fromName(appContext.getResources().getString(R.string.cognito_region)));
-        voiceView.getViewAdapter().setCredentialProvider(credentialsProvider);
-        voiceView.getViewAdapter().setInteractionConfig(
-                new InteractionConfig(appContext.getString(R.string.bot_name),
-                        appContext.getString(R.string.bot_alias)));
-        voiceView.getViewAdapter().setAwsRegion(appContext.getString(R.string.lex_region));
+        AWSMobileClient.getInstance().initialize(this, new Callback<UserStateDetails>() {
+            @Override
+            public void onResult(UserStateDetails result) {
+                Log.d(TAG, "onResult: ");
+                voiceView.getViewAdapter().setCredentialProvider(AWSMobileClient.getInstance());
+                voiceView.getViewAdapter().setInteractionConfig(
+                        new InteractionConfig(appContext.getString(R.string.bot_name),
+                                appContext.getString(R.string.bot_alias)));
+                voiceView.getViewAdapter().setAwsRegion(appContext.getString(R.string.lex_region));
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e(TAG, "onError: ", e);
+            }
+        });
     }
 
     private void exit() {
