@@ -154,16 +154,39 @@ The keytool command does not allow importing an existing private key into a keys
 
 This sample demonstrates enabling guest users to use the AWS IoT APIs to securely publish-to and subscribe-from MQTT topics. Following steps demonstrates usage of AWS IoT with user sign-in. 
 
-1. Follow the steps [here](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/add-aws-mobile-user-sign-in.html) to add authentication UI to your app.
+1. Follow the steps [here](https://aws-amplify.github.io/docs/android/authentication) to add authentication UI to your app.
 
-2. Get the credentials provider
+2. Attach the following IAM Policy to the role of authenticated pool to authenticate and authorize the Cognito user to communicate with AWS IoT
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iot:AttachPrincipalPolicy",
+                "iot:Connect",
+                "iot:Publish",
+                "iot:Subscribe",
+                "iot:Receive"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
+```
+
+3. Get the credentials provider
 
 ```
 credentialsProvider =
                IdentityManager.getDefaultIdentityManager().getCredentialsProvider();
 ```
 
-3. In the app, after the user logs in using the sign-in UI, get CognitoIdentity from credentialsProvider and use it to attach principal policy to the IotAndroidClient. Create IoT policy as specified in step 4 of [Using the sample](https://github.com/awslabs/aws-sdk-android-samples/tree/master/AndroidPubSub#using-the-sample) section above. 
+4. In the app, after the user logs in using the sign-in UI, get CognitoIdentity from credentialsProvider and use it to attach principal policy to the IotAndroidClient. Create IoT policy as specified in step 4 of [Using the sample](https://github.com/awslabs/aws-sdk-android-samples/tree/master/AndroidPubSub#using-the-sample) section above.
 
 ```
 // Setup the logins map
@@ -195,7 +218,9 @@ new Thread(new Runnable() {
 }).start();
 ```
 
-4. Create MQTT client and connect
+An Amazon Cognito authenticated user needs two policies to access AWS IoT. The first policy is attached to the role of the authenticated pool to authenticate and authorize the Cognito user to communicate with AWS IoT. The second policy is attached to the authenticated Cognito user ID principal for fine-grained permissions.
+
+5. Create MQTT client and connect
 
 ```
 // MQTT Client
@@ -209,4 +234,4 @@ mqttManager.connect(credentialsProvider, new AWSIotMqttClientStatusCallback() {
                     }
                 });
 ```
-**Note**: To keep things simple, the policy created in step 3 above allows access to all the topics under your AWS IoT account. This can be used for getting started and prototypes. In a product, you should scope this policy down to specific topics, specify them explicitly as ARNs in the resource section. Scoping the policy down to specific topics is however not supported currently.
+**Note**: To keep things simple, the policy created in step 4 above allows access to all the topics under your AWS IoT account. This can be used for getting started and prototypes. In a product, you should scope this policy down to specific topics, specify them explicitly as ARNs in the resource section. Scoping the policy down to specific topics is however not supported currently.
