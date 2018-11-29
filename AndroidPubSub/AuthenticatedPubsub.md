@@ -1,6 +1,6 @@
 ## Using AWS IOT with user sign-in
 
-The sample demonstrates enabling guest users to use the AWS IoT APIs to securely publish-to and subscribe-from MQTT topics. This section demonstrates how to enable signed-in users to use the AWS IoT APIs to securely publish-to and subscribe-from MQTT topics. 
+The sample demonstrates how to use IOT with certificate based authentication. This section demonstrates how to enable signed-in users to use the AWS IoT APIs to securely publish-to and subscribe-from MQTT topics. 
 
 1. First, lets add the sign-in functionality to the app. We provide a drop-in UI that provides a basic set of sign-in screens. You can add the default authentication UI to the app by following the steps [here](https://aws-amplify.github.io/docs/android/authentication).
 
