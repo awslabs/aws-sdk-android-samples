@@ -18,10 +18,14 @@ package com.amazonaws.demo.s3transferutility;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import com.amazonaws.demo.s3transferutility.R;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.Callback;
+import com.amazonaws.mobile.client.UserStateDetails;
 
 /*
  * This is the beginning screen that lets the user select if they want to upload or download
@@ -30,11 +34,23 @@ public class MainActivity extends Activity {
 
     private Button btnDownload;
     private Button btnUpload;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AWSMobileClient.getInstance().initialize(getApplicationContext(), new Callback<UserStateDetails>() {
+            @Override
+            public void onResult(UserStateDetails userStateDetails) {
+                Log.i(TAG, "AWSMobileClient initialized. User State is : " + userStateDetails.getUserState());
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e(TAG, "Initialization error.", e);
+            }
+        });
         initUI();
     }
 

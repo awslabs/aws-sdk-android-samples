@@ -26,10 +26,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TextView;
-import com.amazonaws.demo.s3transferutility.R;
 import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +67,7 @@ public class DownloadSelectionActivity extends ListActivity {
 
     private void initData() {
         // Gets the default S3 client.
-        s3 = util.getS3Client(DownloadSelectionActivity.this);
+        s3 = util.getS3Client();
         transferRecordMaps = new ArrayList<HashMap<String, Object>>();
     }
 
