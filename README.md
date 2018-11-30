@@ -32,7 +32,7 @@ Please refer to README file in each folder for more specific instructions. For g
   + Amazon Cognito Identity
   + AWS IoT
 
-* [TemperatureControl](TemperatureControl/README.md). This sample demonstrates use of the AWS IoT device shadow APIs. Involved AWS Services are:
+* [DEPRECATED] [TemperatureControl]([DEPRECATED]%20TemperatureControl/README.md). This sample demonstrates use of the AWS IoT device shadow APIs. Involved AWS Services are:
   + Amazon Cognito Identity
   + AWS IoT
 
