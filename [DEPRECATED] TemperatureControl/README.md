@@ -1,4 +1,4 @@
-# Temperature Control Sample
+# [DEPRECATED] Temperature Control Sample
 
 This sample demonstrates use of the AWS IoT device shadow APIs.  It works in conjunction with the Temperature Control Example Program in the [AWS IoT JavaScript SDK for Embedded Devices](https://github.com/aws/aws-iot-device-sdk-js).  This application uses AWS Cognito for authentication with AWS IoT.
 
