@@ -2,6 +2,7 @@ package com.amazonaws.demo.s3transferutility;
 
 
 import android.support.test.espresso.DataInteraction;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -38,6 +39,8 @@ public class MainActivityTest {
 
     @Test
     public void mainActivityTest() {
+
+        DownloadCompleteIdlingResource downloadCompleteIdlingResource = new DownloadCompleteIdlingResource();
         ViewInteraction button = onView(
                 allOf(withId(R.id.buttonDownloadMain), withText("Manage downloads"),
                         childAtPosition(
@@ -75,12 +78,10 @@ public class MainActivityTest {
                                         0),
                                 4),
                         isDisplayed()));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        IdlingRegistry.getInstance().register(downloadCompleteIdlingResource);
         textView.check(matches(withText("COMPLETED")));
+        IdlingRegistry.getInstance().unregister(downloadCompleteIdlingResource);
     }
 
     private static Matcher<View> childAtPosition(
