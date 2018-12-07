@@ -94,7 +94,7 @@ public class Util {
             try {
                 String regionString = new AWSConfiguration(context)
                         .optJsonObject("S3TransferUtility")
-                        .getString("Bucket");
+                        .getString("Region");
                 sS3Client.setRegion(Region.getRegion(regionString));
             } catch (JSONException e) {
                 e.printStackTrace();
