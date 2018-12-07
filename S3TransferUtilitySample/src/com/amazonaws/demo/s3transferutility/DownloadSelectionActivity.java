@@ -67,7 +67,7 @@ public class DownloadSelectionActivity extends ListActivity {
 
     private void initData() {
         // Gets the default S3 client.
-        s3 = util.getS3Client();
+        s3 = util.getS3Client(DownloadSelectionActivity.this);
         transferRecordMaps = new ArrayList<HashMap<String, Object>>();
     }
 
