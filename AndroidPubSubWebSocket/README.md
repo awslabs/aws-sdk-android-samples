@@ -4,36 +4,26 @@ This sample demonstrates use of the AWS IoT APIs to publish to and subscribe fro
 
 ## Requirements
 
-* AndroidStudio or Eclipse
-* Android API 10 or greater
+* AndroidStudio 3.2+
+* Android API 15+
 
 ## Using the Sample
 
 1. Import the AndroidPubSubWebSocket project into your IDE.
-   - If you are using Android Studio:
-      * From the Welcome screen, click on "Import project".
-      * Browse to the AndroidPubSubWebSocket directory and press OK.
-      * Accept the messages about adding Gradle to the project.
-      * If the SDK reports some missing Android SDK packages (like Build Tools or the Android API package), follow the instructions to install them.
-   - If you are using Eclipse:
-      * Go to File -> Import. Import Wizard will open.
-      * Select General -> Existing Projects into Workspace. Click Next.
-      * In Select root directory, browse to the samples directory.
-      * Select the AndroidPubSubWebSocket project to import.
-      * Click Finish.
-      
+    * From the Welcome screen, click on "Import project".
+    * Browse to the AndroidPubSubWebSocket directory and press OK.
+    * Accept the messages about adding Gradle to the project.
+    * If the SDK reports some missing Android SDK packages (like Build Tools or the Android API package), follow the instructions to install them.
+
 1. Import the libraries :
-   - If you use Android Studio, Gradle will take care of downloading these dependencies for you.
-   - If you use Eclipse, you will need to download the AWS SDK for Android (http://aws.amazon.com/mobile/sdk/) and extract and copy these jars into the 'libs' directory for the project:
-      * aws-android-sdk-core-X.X.X.jar
-      * aws-android-sdk-iot-X.X.X.jar
-      
+   - Gradle will take care of downloading these dependencies for you.
+
 1. This sample requires Cognito to authorize to AWS IoT and establish a WebSocket connection. Use Amazon Cognito to create a new identity pool:
 	1. In the [Amazon Cognito Console](https://console.aws.amazon.com/cognito/), press the `Manage Federated Identities` button and on the resulting page press the `Create new identity pool` button.
 	1. Give your identity pool a name and ensure that `Enable access to unauthenticated identities` under the `Unauthenticated identities` section is checked.  This allows the sample application to assume the unauthenticated role associated with this identity pool.  Press the `Create Pool` button to create your identity pool.
 
 		**Important**: See the note below on unauthenticated user access.
-        
+
 	1. As part of creating the identity pool, Cognito will setup two roles in [Identity and Access Management (IAM)](https://console.aws.amazon.com/iam/home#roles).  These will be named something similar to: `Cognito_IoTSampleAuth_Role` and `Cognito_IoTSampleUnauth_Role`.  You can view them by pressing the `View Details` button.  Now press the `Allow` button to create the roles.
 	1. Save the `Identity pool ID` value that shows up in red in the "Getting started with Amazon Cognito" page, it should look similar to: `us-east-1:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" and note the region that is being used.  These will be used in the application code later.
     1. Now we will attach a policy to the unauthenticated role which has permissions to access the required AWS IoT APIs.  This is done by attaching an IAM Policy to the unauthenticated role in the [IAM Console](https://console.aws.amazon.com/iam/home#roles). First, search for the unauth role that you created in step 3 above (named something similar to `Cognito_IoTSampleUnauth_Role`) and select its hyperlink.  In the resulting "Summary" page press the `Attach Policy` button in the "Permissions" tab.
@@ -74,14 +64,24 @@ This sample demonstrates use of the AWS IoT APIs to publish to and subscribe fro
 
 1. Open the AndroidPubSubWebSocket project.
 
+1. Open `awsconfiguration.json` and update the following constants with the appropriate values:
+
+    ```
+    "CredentialsProvider": {
+        "CognitoIdentity": {
+            "Default": {
+            "PoolId": "REPLACE_ME",
+            "Region": "REPLACE_ME"
+            }
+        }
+    }
+    ```
+
 1. Open `PubSubActivity.java` and update the following constants with the appropriate values:
 
     ```
     // customer specific endpoint can be found under the settings tab on the left-hand panel
     CUSTOMER_SPECIFIC_ENDPOINT = "CHANGE_ME";
-    // Identity pool ID
-    COGNITO_POOL_ID = "CHANGE_ME";
-    MY_REGION = Regions.US_EAST_1;
     ```
 
 1. Build and run the sample app.

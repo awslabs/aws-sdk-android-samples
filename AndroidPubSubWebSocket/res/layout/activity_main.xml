@@ -54,16 +54,18 @@
 
         <Button
             android:id="@+id/btnConnect"
+            android:onClick="connect"
             android:layout_width="0dp"
-            android:layout_weight="6"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:text="Connect" />
 
         <Button
             android:id="@+id/btnDisconnect"
+            android:onClick="disconnect"
             android:layout_width="0dp"
-            android:layout_weight="4"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:text="Disconnect" />
@@ -84,6 +86,7 @@
 
         <Button
             android:id="@+id/btnSubscribe"
+            android:onClick="subscribe"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
@@ -93,20 +96,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="vertical" >
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical|top"
             android:text="Last message:" />
 
         <TextView
             android:id="@+id/tvLastMessage"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical|top"
             android:text="N/A" />
     </LinearLayout>
@@ -114,20 +115,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="vertical" >
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:text="Topic:" />
 
         <EditText
             android:id="@+id/txtTopic"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical" />
     </LinearLayout>
 
@@ -135,25 +134,24 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="horizontal" >
+        android:orientation="vertical" >
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:text="Message:" />
 
         <EditText
             android:id="@+id/txtMessage"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical" />
     </LinearLayout>
 
     <Button
         android:id="@+id/btnPublish"
+        android:onClick="publish"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
