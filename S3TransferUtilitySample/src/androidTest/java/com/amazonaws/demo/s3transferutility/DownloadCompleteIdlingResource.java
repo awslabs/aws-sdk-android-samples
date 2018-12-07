@@ -30,10 +30,10 @@ public class DownloadCompleteIdlingResource implements IdlingResource {
     }
 
     private Activity getCurrentActivity() {
-        final Activity[] activity = new Activity[1];
+        Activity activity;
         java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
-        activity[0] = Iterables.getOnlyElement(activities);
-        return activity[0];
+        activity = Iterables.getOnlyElement(activities);
+        return activity;
     }
 
     @Override
