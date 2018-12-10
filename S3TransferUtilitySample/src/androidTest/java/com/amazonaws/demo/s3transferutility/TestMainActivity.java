@@ -49,6 +49,7 @@ public class TestMainActivity {
     private static String bucket;
     private static String testFileName = "ui-test-file";
     private static String testFileContent = "AWS Samples test file contents. ";
+    private static int NUM_OF_RETRIES = 3;
     /**
      * Upload a test file to the S3 bucket
      */
@@ -76,11 +77,15 @@ public class TestMainActivity {
         bucket = awsConfiguration.optJsonObject("S3TransferUtility").getString("Bucket");
 
         s3 = new AmazonS3Client(AWSMobileClient.getInstance());
-        try{
-            s3.putObject(bucket, testFileName, testFileContent);
-        }catch(Exception e){
-            e.printStackTrace();
-            fail(e.getMessage());
+
+        // Attempt to upload the file NUM_OF_RETRIES times
+        for (int i = 0; i < NUM_OF_RETRIES; i++) {
+            try {
+                s3.putObject(bucket, testFileName, testFileContent);
+            } catch (Exception e) {
+                e.printStackTrace();
+                if(i == NUM_OF_RETRIES - 1) fail(e.getMessage());
+            }
         }
     }
 
@@ -101,20 +106,20 @@ public class TestMainActivity {
         ViewInteraction button = onView(
                 allOf(withId(R.id.buttonDownloadMain)));
         button.perform(click());
-            ViewInteraction button2 = onView(
-                    allOf(withId(R.id.buttonDownload)));
-            button2.perform(click());
+        ViewInteraction button2 = onView(
+                allOf(withId(R.id.buttonDownload)));
+        button2.perform(click());
 
-            DataInteraction linearLayout = onData(anything())
-                    .inAdapterView(allOf(withId(android.R.id.list)))
-                    .atPosition(0);
-            linearLayout.perform(click());
+        DataInteraction linearLayout = onData(anything())
+                .inAdapterView(allOf(withId(android.R.id.list)))
+                .atPosition(0);
+        linearLayout.perform(click());
 
-            ViewInteraction textView = onView(
-                    allOf(withId(R.id.textState)));
+        ViewInteraction textView = onView(
+                allOf(withId(R.id.textState)));
 
-            IdlingRegistry.getInstance().register(downloadCompleteIdlingResource);
-            textView.check(matches(withText("COMPLETED")));
-            IdlingRegistry.getInstance().unregister(downloadCompleteIdlingResource);
+        IdlingRegistry.getInstance().register(downloadCompleteIdlingResource);
+        textView.check(matches(withText("COMPLETED")));
+        IdlingRegistry.getInstance().unregister(downloadCompleteIdlingResource);
     }
 }
