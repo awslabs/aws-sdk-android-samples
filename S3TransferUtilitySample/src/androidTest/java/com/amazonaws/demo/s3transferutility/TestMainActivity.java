@@ -82,6 +82,7 @@ public class TestMainActivity {
         for (int i = 0; i < NUM_OF_RETRIES; i++) {
             try {
                 s3.putObject(bucket, testFileName, testFileContent);
+                break;
             } catch (Exception e) {
                 e.printStackTrace();
                 if(i == NUM_OF_RETRIES - 1) fail(e.getMessage());
