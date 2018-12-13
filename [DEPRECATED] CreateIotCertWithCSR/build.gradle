@@ -15,7 +15,7 @@ buildscript {
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile 'com.amazonaws:aws-android-sdk-iot:2.8.+'
+    compile 'com.amazonaws:aws-android-sdk-iot:2.9.+'
     compile 'com.madgag.spongycastle:pkix:1.54.0.0'
 }
 
