@@ -17,9 +17,13 @@ buildscript {
 apply plugin: 'com.android.application'
 
 dependencies {
-    def aws_version = "2.8.+"
+    def aws_version = "2.9.+"
     implementation "com.amazonaws:aws-android-sdk-s3:$aws_version"
     implementation ("com.amazonaws:aws-android-sdk-mobile-client:$aws_version") { transitive = true }
+    implementation 'com.android.support.test.espresso:espresso-core:3.0.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+    implementation 'com.android.support.test:rules:1.0.2'
 }
 
 android {
@@ -30,6 +34,7 @@ android {
         versionName "1.0.0"
         minSdkVersion 19
         targetSdkVersion 28
+        testInstrumentationRunner = 'android.support.test.runner.AndroidJUnitRunner'
     }
 
     lintOptions {

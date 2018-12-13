@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import com.amazonaws.demo.s3transferutility.R;
 
 /*
  * This is the beginning screen that lets the user select if they want to upload or download
