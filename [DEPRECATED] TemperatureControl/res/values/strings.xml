@@ -1,9 +1,0 @@
-<resources>
-    <string name="app_name">TemperatureControl</string>
-    <string name="get_button">Refresh</string>
-    <string name="request_default_text">Nothing...</string>
-    <string name="enableLableText">Enable/Disable</string>
-    <string name="enabled">Enabled</string>
-    <string name="SetpointButtonText">Set</string>
-    <string name="UnknownTemperatureText">\?\?</string>
-</resources>

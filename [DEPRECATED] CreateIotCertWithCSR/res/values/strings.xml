@@ -1,5 +1,0 @@
-<resources>
-    <string name="app_name">CreateIotCertWithCSR</string>
-    <string name="CreateCertificateButtonText">Create Certificate with CSR</string>
-    <string name="UnknownCertText">Certificate Status Unknown</string>
-</resources>

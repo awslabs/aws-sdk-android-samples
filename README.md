@@ -36,14 +36,6 @@ Please refer to README file in each folder for more specific instructions. For g
   + Amazon Cognito Identity
   + Amazon Lex
 
-* [DEPRECATED] [CreateIotCertWithCSR](CreateIotCertWithCSR/README.md). This sample demonstrates use of the AWS IoT APIs to create an AWS IoT certificate. Involved AWS Services are:
-  + Amazon Cognito Identity
-  + AWS IoT
-
-* [DEPRECATED] [TemperatureControl]([DEPRECATED]%20TemperatureControl/README.md). This sample demonstrates use of the AWS IoT device shadow APIs. Involved AWS Services are:
-  + Amazon Cognito Identity
-  + AWS IoT
-
 ### How to Run a Sample
 #### Requirements
 * Android SDK. You can install the SDK via Android Studio or as stand-alone tools. See [Installing the Android SDK](http://developer.android.com/sdk/installing/index.html).
