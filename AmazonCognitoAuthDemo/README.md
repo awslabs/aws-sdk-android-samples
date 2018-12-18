@@ -52,7 +52,7 @@ Add the following dependencies to your `app/build.gradle`.
 ***AWS Android Cognito Auth*** The SDK with sign-in and sign-up functions `aws-android-sdk-cognitoauth`
 ```
 dependency {
-  compile 'com.amazonaws:aws-android-sdk-cognitoauth:2.7.+@aar'
+  implementation ('com.amazonaws:aws-android-sdk-cognitoauth:2.9.+@aar') { transitive = true }
 }
 ```
 To add other AWS Android SDK's in your app read the [Guide for AWS Android Mobile SDK](http://docs.aws.amazon.com/mobile/sdkforandroid/developerguide/setup.html).
@@ -61,10 +61,14 @@ To add other AWS Android SDK's in your app read the [Guide for AWS Android Mobil
 ***Chrome Custom Tabs*** This SDK opens Cognito's hosted webpage's on Chrome.<br/>
 ```
 dependency {
-  compile 'com.android.support:customtabs:25.0.0+'
+  implementation 'com.android.support:customtabs:25.0.0+'
 }
 ```
 **Note** Chrome is required on the Android device to use this SDK.
+
+***Maven Central Repo***
+
+To use the latest versions of aws-android-sdk-cognitoauth, you will need to add `mavenCentral()` to the list of repositories in your top-level `build.gradle` file.
 
 ## Instantiate Cognito Auth
 Create a new instance of `Auth` with the following userpool settings.
