@@ -64,9 +64,14 @@ public class InteractiveVoiceActivity extends Activity
             public void onResult(UserStateDetails result) {
                 Log.d(TAG, "onResult: ");
                 voiceView.getViewAdapter().setCredentialProvider(AWSMobileClient.getInstance());
-                voiceView.getViewAdapter().setInteractionConfig(
-                        new InteractionConfig(appContext.getString(R.string.bot_name),
-                                appContext.getString(R.string.bot_alias)));
+
+                String identityId = AWSMobileClient.getInstance().getIdentityId();
+                InteractionConfig lexInteractionConfig = new InteractionConfig(
+                        appContext.getString(R.string.bot_name),
+                        appContext.getString(R.string.bot_alias),
+                        identityId);
+                voiceView.getViewAdapter().setInteractionConfig(lexInteractionConfig);
+
                 voiceView.getViewAdapter().setAwsRegion(appContext.getString(R.string.lex_region));
             }
 
