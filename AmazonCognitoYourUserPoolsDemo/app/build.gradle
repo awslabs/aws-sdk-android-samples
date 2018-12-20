@@ -19,7 +19,7 @@ android {
     }
 }
 repositories {
-    mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
