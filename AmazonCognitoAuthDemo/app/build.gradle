@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.amazonaws.cognito.android.samples.authdemo"
         minSdkVersion 21
