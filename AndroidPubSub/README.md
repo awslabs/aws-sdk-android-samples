@@ -82,6 +82,11 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
 1. Open `PubSubActivity.java` and update the following constants:
 
     ```
+    MY_REGION = Regions.US_EAST_1;
+    ```
+    This would be the name of the Region that you noted down previously.
+
+    ```
     CUSTOMER_SPECIFIC_ENDPOINT = "<CHANGE_ME>";
     ```
     The customer specific endpoint can be found on the IoT console settings page. Navigate to the [AWS IoT Console](https://console.aws.amazon.com/iot/home) and press the `Settings` button.
