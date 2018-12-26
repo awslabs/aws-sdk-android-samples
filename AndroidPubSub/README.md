@@ -84,7 +84,7 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
     ```
     MY_REGION = Regions.US_EAST_1;
     ```
-    This would be the name of the Region that you noted down previously.
+    This would be the name of the IoT region that you noted down previously.
 
     ```
     CUSTOMER_SPECIFIC_ENDPOINT = "<CHANGE_ME>";
