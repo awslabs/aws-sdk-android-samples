@@ -87,12 +87,6 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
     The customer specific endpoint can be found on the IoT console settings page. Navigate to the [AWS IoT Console](https://console.aws.amazon.com/iot/home) and press the `Settings` button.
 
     ```
-    COGNITO_POOL_ID = "<CHANGE_ME>";
-    MY_REGION = Regions.US_EAST_1;
-    ```
-    This would be the name of the Cognito pool ID and the Region that you noted down previously. 
-
-    ```
     AWS_IOT_POLICY_NAME = "CHANGE_ME";
     ```
     This would be the name of the AWS IoT policy that you created previously. 
@@ -105,6 +99,13 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
     For these parameters, the default values will work for the sample application.  The keystore name is the name used when writing the keystore file to the application's file directory.  The password is the password given to protect the keystore when written.  Certificate ID is the alias in the keystore for the certificate and private key entry.  
 
    **Note**: If you end up creating a keystore off of the device you will need to update this to match the alias given when importing the certificate into the keystore.
+
+1. Open `res/raw/awsconfiguration.json` and update the values for `PoolId` with the ID of the Cognito Identity Pool created above and `Region` with the region of the Cognito Identity Pool created above (for example us-east-1):
+
+    ```
+    "PoolId": "REPLACE_ME",
+    "Region": "REPLACE_ME"
+    ```
 
 1. Build and run the sample app.
 
