@@ -170,7 +170,7 @@ public class TextActivity extends Activity {
             AWSMobileClient.getInstance().getAWSCredentials(new Callback<AWSCredentials>() {
                 @Override
                 public void onResult(AWSCredentials result) {
-                    Log.d(TAG, "getAWSCredentials.onResult, credentials: " + result.toString());
+                    Log.d(TAG, "obtained AWS credentials successfully.");
                     getCredentialsLatch.countDown();
                 }
 
