@@ -25,10 +25,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.UserStateDetails;
 import com.amazonaws.mobileconnectors.lex.interactionkit.InteractionClient;
+import com.amazonaws.mobileconnectors.lex.interactionkit.config.InteractionConfig;
 import com.amazonaws.mobileconnectors.lex.interactionkit.Response;
 import com.amazonaws.mobileconnectors.lex.interactionkit.continuations.LexServiceContinuation;
 import com.amazonaws.mobileconnectors.lex.interactionkit.listeners.AudioPlaybackListener;
@@ -98,7 +100,6 @@ public class TextActivity extends Activity {
             }
         }
     };
-    private int file_count = 0;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -143,33 +144,68 @@ public class TextActivity extends Activity {
     private void initializeLexSDK() {
         Log.d(TAG, "Lex Client");
 
+        final CountDownLatch initializeLatch = new CountDownLatch(1);
+        final CountDownLatch getCredentialsLatch = new CountDownLatch(1);
+
         // Initialize the mobile client
         AWSMobileClient.getInstance().initialize(this, new Callback<UserStateDetails>() {
             @Override
             public void onResult(UserStateDetails result) {
-                Log.d(TAG, "onResult: ");
-                // Create Lex interaction client.
-                lexInteractionClient = new InteractionClient(getApplicationContext(),
-                        AWSMobileClient.getInstance(),
-                        Regions.fromName(appContext.getResources().getString(R.string.lex_region)),
-                        appContext.getResources().getString(R.string.bot_name),
-                        appContext.getResources().getString(R.string.bot_alias));
-                lexInteractionClient.setAudioPlaybackListener(audioPlaybackListener);
-                lexInteractionClient.setInteractionListener(interactionListener);
+                Log.d(TAG, "initialize.onResult, userState: " + result.getUserState().toString());
+                initializeLatch.countDown();
             }
 
             @Override
             public void onError(Exception e) {
-                Log.e(TAG, "onError: ", e);
+                Log.e(TAG, "initialize.onError: ", e);
+                initializeLatch.countDown();
             }
         });
+
+        try {
+            initializeLatch.await();
+
+            // Identity ID is not available until we make a call to get credentials, which also
+            // caches identity ID.
+            AWSMobileClient.getInstance().getAWSCredentials(new Callback<AWSCredentials>() {
+                @Override
+                public void onResult(AWSCredentials result) {
+                    Log.d(TAG, "obtained AWS credentials successfully.");
+                    getCredentialsLatch.countDown();
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Log.e(TAG, "getAWSCredentials.onError: ", e);
+                    getCredentialsLatch.countDown();
+                }
+            });
+
+            getCredentialsLatch.await();
+            String identityId = AWSMobileClient.getInstance().getIdentityId();
+            Log.d(TAG, "identityId: " + identityId);
+
+            InteractionConfig lexInteractionConfig = new InteractionConfig(
+                    appContext.getResources().getString(R.string.bot_name),
+                    appContext.getResources().getString(R.string.bot_alias),
+                    identityId);
+
+            lexInteractionClient = new InteractionClient(getApplicationContext(),
+                    AWSMobileClient.getInstance(),
+                    Regions.fromName(appContext.getResources().getString(R.string.lex_region)),
+                    lexInteractionConfig);
+
+            lexInteractionClient.setAudioPlaybackListener(audioPlaybackListener);
+            lexInteractionClient.setInteractionListener(interactionListener);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Read user text input.
      */
     private void textEntered() {
-        // showToast("Text input not implemented");
         String text = userTextInput.getText().toString();
         if (!inConversation) {
             Log.d(TAG, " -- New conversation started");
