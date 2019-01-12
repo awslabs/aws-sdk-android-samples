@@ -18,7 +18,7 @@ buildscript {
 apply plugin: 'com.android.application'
 
 dependencies {
-    def aws_version = "2.9.+"
+    def aws_version = "2.10.+"
     implementation "com.amazonaws:aws-android-sdk-s3:$aws_version"
     implementation ("com.amazonaws:aws-android-sdk-mobile-client:$aws_version") { transitive = true }
     implementation 'com.android.support.test.espresso:espresso-core:3.0.2', {
