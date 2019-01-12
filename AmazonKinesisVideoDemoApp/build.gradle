@@ -47,7 +47,7 @@ repositories {
     mavenCentral()
 }
 
-def aws_version = '2.9.+'
+def aws_version = '2.10.+'
 def android_library_version = '26.1.0'
 
 dependencies {
