@@ -32,11 +32,13 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import android.util.Log;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -99,6 +101,8 @@ public class TestMainActivity {
     public void mainActivityTest() {
         // Set the Idling Resource timeout to 1 miniute
         long waitingTime = DateUtils.SECOND_IN_MILLIS * 60;
+        String TAG = "mainActivityTest";
+        Log.e(TAG,"setIdlingResourceTimeout");
         IdlingPolicies.setIdlingResourceTimeout(
                 waitingTime, TimeUnit.MILLISECONDS);
         DownloadCompleteIdlingResource downloadCompleteIdlingResource = new DownloadCompleteIdlingResource();
@@ -106,9 +110,11 @@ public class TestMainActivity {
         // Perform the test steps
         ViewInteraction button = onView(
                 allOf(withId(R.id.buttonDownloadMain)));
+        Log.e(TAG,"button.perform(click());");
         button.perform(click());
         ViewInteraction button2 = onView(
                 allOf(withId(R.id.buttonDownload)));
+        Log.e(TAG,"button2.perform(click());");
         button2.perform(click());
 
         DataInteraction linearLayout = onData(anything())
@@ -120,7 +126,10 @@ public class TestMainActivity {
                 allOf(withId(R.id.textState)));
 
         IdlingRegistry.getInstance().register(downloadCompleteIdlingResource);
+        Log.e(TAG,"textView.check");
         textView.check(matches(withText("COMPLETED")));
+        Log.e(TAG,"unregister(downloadCompleteIdlingResource)");
         IdlingRegistry.getInstance().unregister(downloadCompleteIdlingResource);
+        Log.e(TAG,"finished");
     }
 }
