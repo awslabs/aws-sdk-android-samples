@@ -36,6 +36,7 @@ android {
     defaultConfig {
         versionCode 1
         versionName "1.0.0"
+        // aws-android-sdk-mobile-client depends on aws-android-sdk-auth-ui which requires a minSdkVersion of 23
         minSdkVersion 23
         targetSdkVersion 28
         testInstrumentationRunner = 'android.support.test.runner.AndroidJUnitRunner'
