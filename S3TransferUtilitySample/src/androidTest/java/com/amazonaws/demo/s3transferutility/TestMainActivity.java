@@ -97,8 +97,8 @@ public class TestMainActivity {
 
     @Test
     public void mainActivityTest() {
-        // Set the Idling Resource timeout to 1 second
-        long waitingTime = DateUtils.SECOND_IN_MILLIS;
+        // Set the Idling Resource timeout to 1 miniute
+        long waitingTime = DateUtils.SECOND_IN_MILLIS * 60;
         IdlingPolicies.setIdlingResourceTimeout(
                 waitingTime, TimeUnit.MILLISECONDS);
         DownloadCompleteIdlingResource downloadCompleteIdlingResource = new DownloadCompleteIdlingResource();
