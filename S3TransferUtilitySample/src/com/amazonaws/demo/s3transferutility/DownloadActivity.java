@@ -344,7 +344,7 @@ public class DownloadActivity extends ListActivity {
         });
 
         updateButtonAvailability();
-        requestPermission();
+        requestWriteExternalStoragePermission();
     }
 
     @Override
@@ -366,20 +366,18 @@ public class DownloadActivity extends ListActivity {
         }
     }
 
-
-    private void  requestPermission()
-    {
+    private void  requestWriteExternalStoragePermission() {
         //ask for the permission in android M
         int permission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            Log.i(TAG, "Permission to record denied");
+            Log.i(TAG, "Permission to store data in external storage is not granted");
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Permission to access the SD-CARD is required for this app to Download PDF.")
+                builder.setMessage("Permission to access the External Storage is required for this application to store the downloaded data from Amazon S3")
                         .setTitle("Permission required");
 
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -396,6 +394,9 @@ public class DownloadActivity extends ListActivity {
             } else {
                 makeRequest();
             }
+        }
+        else {
+            Log.i(TAG, "Permission to store data in external storage is granted.");
         }
 
     }
