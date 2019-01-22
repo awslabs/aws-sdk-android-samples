@@ -15,14 +15,20 @@
 
 package com.amazonaws.demo.s3transferutility;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.DownloadListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -32,6 +38,7 @@ import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v4.content.ContextCompat;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -58,6 +65,7 @@ public class DownloadActivity extends ListActivity {
 
     // Indicates no row element has beens selected
     private static final int INDEX_NOT_CHECKED = -1;
+    private static final int REQUEST_WRITE_STORAGE = 112;
 
     private Button btnDownload;
     private Button btnDownloadInBackground;
@@ -336,6 +344,7 @@ public class DownloadActivity extends ListActivity {
         });
 
         updateButtonAvailability();
+        requestWriteExternalStoragePermission();
     }
 
     @Override
@@ -357,12 +366,53 @@ public class DownloadActivity extends ListActivity {
         }
     }
 
+    private void  requestWriteExternalStoragePermission() {
+        //ask for the permission in android M
+        int permission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "Permission to store data in external storage is not granted");
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Permission to access the External Storage is required for this application to store the downloaded data from Amazon S3")
+                        .setTitle("Permission required");
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+                        Log.i(TAG, "Clicked");
+                        makeRequest();
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            } else {
+                makeRequest();
+            }
+        }
+        else {
+            Log.i(TAG, "Permission to store data in external storage is granted.");
+        }
+
+    }
+    protected void makeRequest() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                REQUEST_WRITE_STORAGE);
+    }
+
     /*
      * Begins to download the file specified by the key in the bucket.
      */
     private void beginDownload(String key) {
         // Location to download files from S3 to. You can choose any accessible
         // file.
+
         File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
 
         // Initiate the download
