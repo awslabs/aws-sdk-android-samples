@@ -114,6 +114,7 @@ public class TestMainActivity {
         long waitingTime = DateUtils.SECOND_IN_MILLIS;
         String TAG = "mainActivityTest";
         Log.e(TAG,"setIdlingResourceTimeout");
+
         IdlingPolicies.setIdlingResourceTimeout(
                 waitingTime, TimeUnit.MILLISECONDS);
         DownloadCompleteIdlingResource downloadCompleteIdlingResource = new DownloadCompleteIdlingResource();
