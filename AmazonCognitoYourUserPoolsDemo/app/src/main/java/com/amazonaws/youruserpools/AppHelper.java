@@ -98,7 +98,7 @@ public class AppHelper {
      * Set Your User Pools region.
      * e.g. if your user pools are in US East (N Virginia) then set cognitoRegion = Regions.US_EAST_1.
      */
-    private static final Regions cognitoRegion = Regions.DEFAULT;
+    private static final Regions cognitoRegion = Regions.DEFAULT_REGION;
 
     // User details from the service
     private static CognitoUserSession currSession;
