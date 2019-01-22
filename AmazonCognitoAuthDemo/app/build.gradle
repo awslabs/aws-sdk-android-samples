@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.amazonaws.cognito.android.samples.authdemo"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
@@ -29,7 +29,7 @@ dependencies {
     implementation "com.android.support:support-v4:${androidLibraryVersion}"
 
     // Required for Cognito
-    implementation ('com.amazonaws:aws-android-sdk-cognitoauth:2.11.+@aar') { transitive = true}
+    implementation ('com.amazonaws:aws-android-sdk-cognitoauth:2.10.+@aar') { transitive = true}
     implementation "com.android.support:customtabs:${androidLibraryVersion}"
 }
 
