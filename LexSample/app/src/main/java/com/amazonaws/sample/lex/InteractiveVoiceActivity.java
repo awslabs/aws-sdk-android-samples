@@ -16,7 +16,6 @@
 package com.amazonaws.sample.lex;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -29,13 +28,15 @@ import com.amazonaws.mobileconnectors.lex.interactionkit.config.InteractionConfi
 import com.amazonaws.mobileconnectors.lex.interactionkit.ui.InteractiveVoiceView;
 import com.amazonaws.util.StringUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Locale;
 import java.util.Map;
 
 public class InteractiveVoiceActivity extends Activity
         implements InteractiveVoiceView.InteractiveVoiceListener {
     private static final String TAG = "VoiceActivity";
-    private Context appContext;
     private InteractiveVoiceView voiceView;
     private TextView transcriptTextView;
     private TextView responseTextView;
@@ -47,7 +48,6 @@ public class InteractiveVoiceActivity extends Activity
         transcriptTextView = findViewById(R.id.transcriptTextView);
         responseTextView = findViewById(R.id.responseTextView);
         init();
-        StringUtils.isBlank("notempty");
     }
 
     @Override
@@ -56,7 +56,6 @@ public class InteractiveVoiceActivity extends Activity
     }
 
     private void init() {
-        appContext = getApplicationContext();
         voiceView = findViewById(R.id.voiceInterface);
         voiceView.setInteractiveVoiceListener(this);
         AWSMobileClient.getInstance().initialize(this, new Callback<UserStateDetails>() {
@@ -64,15 +63,30 @@ public class InteractiveVoiceActivity extends Activity
             public void onResult(UserStateDetails result) {
                 Log.d(TAG, "onResult: ");
                 voiceView.getViewAdapter().setCredentialProvider(AWSMobileClient.getInstance());
+                AWSMobileClient.getInstance().getCredentials();
 
                 String identityId = AWSMobileClient.getInstance().getIdentityId();
+                String botName = null;
+                String botAlias = null;
+                String botRegion = null;
+                JSONObject lexConfig;
+                try {
+                    lexConfig = AWSMobileClient.getInstance().getConfiguration().optJsonObject("Lex");
+                    lexConfig = lexConfig.getJSONObject(lexConfig.keys().next());
+
+                    botName = lexConfig.getString("Name");
+                    botAlias = lexConfig.getString("Alias");
+                    botRegion = lexConfig.getString("Region");
+                } catch (JSONException e) {
+                    Log.e(TAG, "onResult: Failed to read configuration", e);
+                }
+
                 InteractionConfig lexInteractionConfig = new InteractionConfig(
-                        appContext.getString(R.string.bot_name),
-                        appContext.getString(R.string.bot_alias),
+                        botName,
+                        botAlias,
                         identityId);
                 voiceView.getViewAdapter().setInteractionConfig(lexInteractionConfig);
-
-                voiceView.getViewAdapter().setAwsRegion(appContext.getString(R.string.lex_region));
+                voiceView.getViewAdapter().setAwsRegion(botRegion);
             }
 
             @Override
