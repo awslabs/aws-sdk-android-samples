@@ -16,10 +16,10 @@ This sample demonstrates how to use Amazon Lex interaction client library on And
     - Accept the messages about adding Gradle to the project.
     - If the SDK reports some missing Android SDK packages (like Build Tools or the Android API package), follow the instructions to install them.
 
-2. Import the libraries :
+1. Import the libraries :
     - Gradle will take care of downloading these dependencies for you.
 
-3. This sample uses the Amplify CLI to setup your backend resources including Amazon Cognito for authentication and Amazon Lex for interactions (the bot).
+1. This sample uses the Amplify CLI to setup your backend resources including Amazon Cognito for authentication and Amazon Lex for interactions (the bot).
     - Inside LexSample, initialize an Amplify project: `cd LexSample && amplify init`
     - Create a sample bot: `amplify add interactions`
 
