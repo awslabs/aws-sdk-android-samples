@@ -1,14 +1,21 @@
 {
   "Version": "1.0",
-  "IdentityManager": {
-    "Default": {}
-  },
   "CredentialsProvider": {
     "CognitoIdentity": {
       "Default": {
-        "PoolId": "REPLACE_ME",
-        "Region": "REPLACE_ME"
+        "PoolId": "REPLACED_BY_CLI",
+        "Region": "REPLACED_BY_CLI"
       }
+    }
+  },
+  "IdentityManager": {
+    "Default": {}
+  },
+  "Lex": {
+    "REPLACED_BY_CLI": {
+      "Name": "REPLACED_BY_CLI",
+      "Alias": "REPLACED_BY_CLI",
+      "Region": "REPLACED_BY_CLI"
     }
   }
 }

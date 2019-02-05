@@ -38,6 +38,9 @@ import com.amazonaws.mobileconnectors.lex.interactionkit.listeners.InteractionLi
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lexrts.model.DialogState;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
@@ -133,6 +136,7 @@ public class TextActivity extends Activity {
                 return false;
             }
         });
+        userTextInput.setEnabled(false);
 
         initializeLexSDK();
         startNewConversation();
@@ -144,62 +148,53 @@ public class TextActivity extends Activity {
     private void initializeLexSDK() {
         Log.d(TAG, "Lex Client");
 
-        final CountDownLatch initializeLatch = new CountDownLatch(1);
-        final CountDownLatch getCredentialsLatch = new CountDownLatch(1);
-
         // Initialize the mobile client
         AWSMobileClient.getInstance().initialize(this, new Callback<UserStateDetails>() {
             @Override
             public void onResult(UserStateDetails result) {
                 Log.d(TAG, "initialize.onResult, userState: " + result.getUserState().toString());
-                initializeLatch.countDown();
+
+                // Identity ID is not available until we make a call to get credentials, which also
+                // caches identity ID.
+                AWSMobileClient.getInstance().getCredentials();
+
+                String identityId = AWSMobileClient.getInstance().getIdentityId();
+                Log.d(TAG, "identityId: " + identityId);
+                String botName = null;
+                String botAlias = null;
+                String botRegion = null;
+                JSONObject lexConfig;
+                try {
+                    lexConfig = AWSMobileClient.getInstance().getConfiguration().optJsonObject("Lex");
+                    lexConfig = lexConfig.getJSONObject(lexConfig.keys().next());
+
+                    botName = lexConfig.getString("Name");
+                    botAlias = lexConfig.getString("Alias");
+                    botRegion = lexConfig.getString("Region");
+                } catch (JSONException e) {
+                    Log.e(TAG, "onResult: Failed to read configuration", e);
+                }
+
+                InteractionConfig lexInteractionConfig = new InteractionConfig(
+                        botName,
+                        botAlias,
+                        identityId);
+
+                lexInteractionClient = new InteractionClient(getApplicationContext(),
+                        AWSMobileClient.getInstance(),
+                        Regions.fromName(botRegion),
+                        lexInteractionConfig);
+
+                lexInteractionClient.setAudioPlaybackListener(audioPlaybackListener);
+                lexInteractionClient.setInteractionListener(interactionListener);
+                userTextInput.setEnabled(true);
             }
 
             @Override
             public void onError(Exception e) {
                 Log.e(TAG, "initialize.onError: ", e);
-                initializeLatch.countDown();
             }
         });
-
-        try {
-            initializeLatch.await();
-
-            // Identity ID is not available until we make a call to get credentials, which also
-            // caches identity ID.
-            AWSMobileClient.getInstance().getAWSCredentials(new Callback<AWSCredentials>() {
-                @Override
-                public void onResult(AWSCredentials result) {
-                    Log.d(TAG, "obtained AWS credentials successfully.");
-                    getCredentialsLatch.countDown();
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    Log.e(TAG, "getAWSCredentials.onError: ", e);
-                    getCredentialsLatch.countDown();
-                }
-            });
-
-            getCredentialsLatch.await();
-            String identityId = AWSMobileClient.getInstance().getIdentityId();
-            Log.d(TAG, "identityId: " + identityId);
-
-            InteractionConfig lexInteractionConfig = new InteractionConfig(
-                    appContext.getResources().getString(R.string.bot_name),
-                    appContext.getResources().getString(R.string.bot_alias),
-                    identityId);
-
-            lexInteractionClient = new InteractionClient(getApplicationContext(),
-                    AWSMobileClient.getInstance(),
-                    Regions.fromName(appContext.getResources().getString(R.string.lex_region)),
-                    lexInteractionConfig);
-
-            lexInteractionClient.setAudioPlaybackListener(audioPlaybackListener);
-            lexInteractionClient.setInteractionListener(interactionListener);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
