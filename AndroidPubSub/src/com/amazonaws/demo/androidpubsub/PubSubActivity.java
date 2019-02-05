@@ -235,6 +235,8 @@ public class PubSubActivity extends Activity {
                     // load keystore from file into memory to pass on connection
                     clientKeyStore = AWSIotKeystoreHelper.getIotKeystore(certificateId,
                             keystorePath, keystoreName, keystorePassword);
+                    /* initIoTClient is invoked from the callback passed during AWSMobileClient initialization.
+                    The callback is executed on a background thread so UI update must be moved to run on UI Thread. */
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
