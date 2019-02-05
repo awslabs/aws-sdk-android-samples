@@ -10,7 +10,7 @@ This sample demonstrates how to use Amazon Lex interaction client library on And
 
 ## Using the Sample
 
-1. Import the LexDemo project into Android Studio.
+1. Import the LexSample project into Android Studio.
     - From the Welcome screen, click on "Import project".
     - Browse to the LexSample directory and press OK.
     - Accept the messages about adding Gradle to the project.
