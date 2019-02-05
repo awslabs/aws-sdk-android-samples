@@ -42,4 +42,4 @@ This sample demonstrates how to use Amazon Lex interaction client library on And
 
     - Provision these resources: `amplify push`
 
-4. Run the app. Select Text Demo or Voice Demo as appropriate, and try out some of the sample utterance you have configured on the Amazon Lex console.
+1. Run the app. Select Text Demo or Voice Demo as appropriate, and try out some of the sample utterance you have configured on the Amazon Lex console.
