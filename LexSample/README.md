@@ -6,7 +6,7 @@ This sample demonstrates how to use Amazon Lex interaction client library on And
 
 * [AndroidStudio 3.2+](https://developer.android.com/studio/)
 * Android API 21+
-* [Amplify CLI 0.1.46+](https://aws-amplify.github.io/docs/)
+* [Amplify CLI 0.1.45+](https://aws-amplify.github.io/docs/)
 
 ## Using the Sample
 
