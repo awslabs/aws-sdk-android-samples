@@ -19,7 +19,7 @@ apply plugin: 'com.android.application'
 
 dependencies {
 //BEGIN AWS DEPENDENCIES
-    def aws_version = "2.11.+"
+    def aws_version = "2.12.+"
     implementation "com.amazonaws:aws-android-sdk-s3:$aws_version"
     implementation ("com.amazonaws:aws-android-sdk-mobile-client:$aws_version") { transitive = true }
 //END AWS DEPENDENCIES
