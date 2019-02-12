@@ -27,5 +27,5 @@ dependencies {
     implementation 'com.android.support:cardview-v7:23.4.0'
     implementation 'com.android.support:recyclerview-v7:23.4.0'
     implementation 'com.android.support.constraint:constraint-layout:1.+'
-    implementation 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.11.+'
+    implementation 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.12.+'
 }
