@@ -13,7 +13,7 @@
   * Fill-in `App client name`
   * Click `Create app client`
   * Click `Show details` and copy `App client id` and `App client secret` :clipboard:
-    * ![Shows show details button](screenshots/click_show_details.png) --> ![](screenshots/copy_app_client_id_and_secret.png)
+    * ![Shows show details button](screenshots/click_show_details.png) `-->` ![](screenshots/copy_app_client_id_and_secret.png)
 
 ## 2. Create an identity pool
   * Go to https://console.aws.amazon.com/cognito/
@@ -47,4 +47,4 @@
 
 ## 3. Paste
   * You will need all the information from the above steps that have :clipboard: and paste them into this file on your local copy [awsconfiguration.json](src/main/res/raw/awsconfiguration.json)
-  * Change the region that the app will stream to by editing this [line of code](https://github.com/awslabs/aws-sdk-android-samples/blob/master/AmazonKinesisVideoDemoApp/src/main/java/com/amazonaws/kinesisvideo/demoapp/KinesisVideoDemoApp.java#L14)
+  * Change the region that the app will stream to by editing the `KINESIS_VIDEO_REGION` constant in your local copy of [KinesisVideoDemoApp.java](https://github.com/awslabs/aws-sdk-android-samples/blob/master/AmazonKinesisVideoDemoApp/src/main/java/com/amazonaws/kinesisvideo/demoapp/KinesisVideoDemoApp.java)
