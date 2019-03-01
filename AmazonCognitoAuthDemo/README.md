@@ -85,7 +85,7 @@ This must include the scheme. **e.g.** myApp://www.myApp.com
 ```java
 Auth.Builder builder = new Auth.Builder();
 builder.setAppClientId(cognitoClientId)
-       .setAppCognitoWedDomain(cognitoAuthWebDomian)
+       .setAppCognitoWebDomain(cognitoAuthWebDomain)
        .setSignInRedirect(signInRedirectUri)
        .setSignOutRedirect(signOutRedirectUri);
 ```
