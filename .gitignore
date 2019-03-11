@@ -19,5 +19,5 @@ build.xml
 .idea
 build/
 *.iml
-
+./AndroidPubSub/res/raw/awsconfiguration.json
 *.DS_Store
