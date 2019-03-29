@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2016-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package com.amazonaws.sample.lex;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -25,7 +24,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.UserStateDetails;
@@ -43,7 +41,6 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.concurrent.CountDownLatch;
 
 public class TextActivity extends Activity {
     private static final String TAG = "TextActivity";
@@ -67,7 +64,6 @@ public class TextActivity extends Activity {
         }
     };
     private EditText userTextInput;
-    private Context appContext;
     private InteractionClient lexInteractionClient;
     private boolean inConversation;
     private LexServiceContinuation convContinuation;
@@ -121,7 +117,6 @@ public class TextActivity extends Activity {
      */
     private void init() {
         Log.d(TAG, "Initializing text component: ");
-        appContext = getApplicationContext();
         userTextInput = (EditText) findViewById(R.id.userInputEditText);
 
         // Set text edit listener.
@@ -187,7 +182,12 @@ public class TextActivity extends Activity {
 
                 lexInteractionClient.setAudioPlaybackListener(audioPlaybackListener);
                 lexInteractionClient.setInteractionListener(interactionListener);
-                userTextInput.setEnabled(true);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        userTextInput.setEnabled(true);
+                    }
+                });
             }
 
             @Override
