@@ -18,8 +18,8 @@ repositories {
 }
 
 dependencies {
-    def aws_version = "2.12.+"
-    implementation "com.amazonaws:aws-android-sdk-iot:$aws_version"
+    def aws_version = "2.13.+"
+    implementation ('com.amazonaws:aws-android-sdk-iot:$aws_version@aar') { transitive = true}
     implementation "com.amazonaws:aws-android-sdk-mobile-client:$aws_version"
     implementation "com.android.support:support-compat:28.0.0"
 }
