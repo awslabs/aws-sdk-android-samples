@@ -25,7 +25,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.UserStateDetails;
@@ -43,7 +42,6 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.concurrent.CountDownLatch;
 
 public class TextActivity extends Activity {
     private static final String TAG = "TextActivity";
@@ -202,6 +200,12 @@ public class TextActivity extends Activity {
      */
     private void textEntered() {
         String text = userTextInput.getText().toString();
+
+        if (text == null || text.trim().equals("")) {
+            Log.d(TAG, "text null or empty");
+            return;
+        }
+
         if (!inConversation) {
             Log.d(TAG, " -- New conversation started");
             startNewConversation();
