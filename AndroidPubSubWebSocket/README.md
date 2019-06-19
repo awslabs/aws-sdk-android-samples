@@ -4,7 +4,7 @@ This sample demonstrates use of the AWS IoT APIs to publish to and subscribe fro
 
 ## Requirements
 
-* AndroidStudio 3.2+
+* AndroidStudio 3.4+
 * Android API 15+
 
 ## Using the Sample
