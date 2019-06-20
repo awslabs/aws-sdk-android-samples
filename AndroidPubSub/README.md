@@ -4,7 +4,7 @@ This sample demonstrates the use of the AWS IoT APIs to securely publish-to and 
 
 ## Requirements
 
-* AndroidStudio 
+* AndroidStudio 3.4 or newer
 * Android API 10 or greater
 
 ## Using the Sample
