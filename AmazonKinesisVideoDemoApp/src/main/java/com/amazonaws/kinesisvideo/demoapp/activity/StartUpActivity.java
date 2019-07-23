@@ -1,5 +1,6 @@
 package com.amazonaws.kinesisvideo.demoapp.activity;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,31 +20,37 @@ public class StartUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         final AWSMobileClient auth = AWSMobileClient.getInstance();
+        final AppCompatActivity thisActivity = this;
 
-        if (auth.isSignedIn()) {
-            ActivityUtils.startActivity(this, SimpleNavActivity.class);
-        } else {
-            auth.showSignIn(this,
-                    SignInUIOptions.builder()
-                            .nextActivity(SimpleNavActivity.class)
-                            .build(),
-                    new Callback<UserStateDetails>() {
-                        @Override
-                        public void onResult(UserStateDetails result) {
-                            Log.d(TAG, "onResult: User signed-in " + result.getUserState());
-                        }
-
-                        @Override
-                        public void onError(final Exception e) {
-                            runOnUiThread(new Runnable() {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (auth.isSignedIn()) {
+                    ActivityUtils.startActivity(thisActivity, SimpleNavActivity.class);
+                } else {
+                    auth.showSignIn(thisActivity,
+                            SignInUIOptions.builder()
+                                    .nextActivity(SimpleNavActivity.class)
+                                    .build(),
+                            new Callback<UserStateDetails>() {
                                 @Override
-                                public void run() {
-                                    Log.e(TAG, "onError: User sign-in error", e);
-                                    Toast.makeText(StartUpActivity.this, "User sign-in error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                public void onResult(UserStateDetails result) {
+                                    Log.d(TAG, "onResult: User signed-in " + result.getUserState());
+                                }
+
+                                @Override
+                                public void onError(final Exception e) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Log.e(TAG, "onError: User sign-in error", e);
+                                            Toast.makeText(StartUpActivity.this, "User sign-in error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                        }
+                                    });
                                 }
                             });
-                        }
-                    });
-        }
+                }
+            }
+        });
     }
 }
