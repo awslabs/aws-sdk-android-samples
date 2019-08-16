@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Photo Album</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_getCredential">GetCredentialActivity</string>
+    <string name="title_activity_album" >AlbumActivity</string>
+    <string name="title_activity_photo">PhotoActivity</string>
+    <string name="title_activity_download">DownloadActivity</string>
+    <string name="title_activity_upload">UploadActivity</string>
+    <string name="title_activity_download_selection">DownloadSelectionActivity</string>
+    <string name="download_selection_activity">Select a file from the bucket</string>
+    <string name="download">Download</string>
+    <string name="downloadInBackground">Download In Background</string>
+    <string name="manage_download">Manage downloads</string>
+    <string name="upload">Upload</string>
+    <string name="upload_file_in_background">Upload In Background</string>
+    <string name="manage_upload">Manage uploads</string>
+    <string name="upload_file">Upload a file</string>
+    <string name="upload_image">Upload an image</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="pause_all">Pause all</string>
+    <string name="cancel_all">Cancel all</string>
+    <string name="refreshing">Refreshing</string>
+    <string name="please_wait">Please wait</string>
+</resources>
