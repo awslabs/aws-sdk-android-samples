@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/photoToolbar">
+
+    <item
+        android:id="@+id/photo_sign_out"
+        android:icon="@android:drawable/ic_lock_power_off"
+        android:title="Sign Out"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/photo_add"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="Add photo"
+        app:showAsAction="always"
+        />
+</menu>

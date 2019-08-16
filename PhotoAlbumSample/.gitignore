@@ -1,0 +1,8 @@
+# amplify codegen
+amplify
+
+# gradle
+.gradle
+
+# AWS configuration file
+app/src/main/res/raw/awsconfiguration.json
