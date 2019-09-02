@@ -14,7 +14,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.amazonaws.kinesisvideo.demoapp.R;
+import com.amazonaws.kinesisvideo.demoapp.fragment.StreamConfigurationAVFragment;
 import com.amazonaws.kinesisvideo.demoapp.fragment.StreamConfigurationFragment;
+import com.amazonaws.kinesisvideo.demoapp.fragment.StreamingAVFragment;
 import com.amazonaws.kinesisvideo.demoapp.fragment.StreamingFragment;
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
@@ -39,7 +41,12 @@ public class SimpleNavActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        this.startConfigFragment();
+
+        // Video only
+        //this.startConfigFragment();
+
+        // Audio Video
+        this.startConfigAVFragment();
     }
 
     @Override
@@ -82,7 +89,11 @@ public class SimpleNavActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             try {
-                startConfigFragment();
+                // Video only
+                //startConfigFragment();
+
+                // Audio Video
+                startConfigAVFragment();
             } catch (Exception e) {
                 Log.e("", "Failed to initialize streaming demo fragment.");
                 e.printStackTrace();
@@ -123,10 +134,31 @@ public class SimpleNavActivity extends AppCompatActivity
         }
     }
 
+    public void startStreamingAVFragment(Bundle extras) {
+        try {
+            Fragment streamAVFragment = StreamingAVFragment.newInstance(this);
+            streamAVFragment.setArguments(extras);
+            this.startFragment(streamAVFragment);
+        } catch (Exception e) {
+            Log.e("", "Failed to start streaming fragment.");
+            e.printStackTrace();
+        }
+    }
+
     public void startConfigFragment() {
         try {
             Fragment streamFragment = StreamConfigurationFragment.newInstance(this);
             this.startFragment(streamFragment);
+        } catch (Exception e) {
+            Log.e("", "Failed to go back to configure stream.");
+            e.printStackTrace();
+        }
+    }
+
+    public void startConfigAVFragment() {
+        try {
+            Fragment streamAVFragment = StreamConfigurationAVFragment.newInstance(this);
+            this.startFragment(streamAVFragment);
         } catch (Exception e) {
             Log.e("", "Failed to go back to configure stream.");
             e.printStackTrace();
