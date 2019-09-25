@@ -18,7 +18,6 @@
 package com.amazonaws.youruserpools;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ import android.widget.TextView;
 import com.amazonaws.youruserpools.CognitoYourUserPoolsDemo.R;
 
 public class FirstTimeLoginAttributesDisplayAdapter extends BaseAdapter {
-    private String TAG = "FirstTimeLoginDetails";
     private Context context;
     private int count;
     private static LayoutInflater layoutInflater;

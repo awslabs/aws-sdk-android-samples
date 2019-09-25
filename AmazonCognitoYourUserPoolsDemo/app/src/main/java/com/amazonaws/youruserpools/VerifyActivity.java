@@ -51,8 +51,6 @@ public class VerifyActivity extends AppCompatActivity {
 
     private EditText verifCode;
 
-    private CognitoUserAttributes userAttributes;
-
     private String attrReqCode;
 
     @Override
