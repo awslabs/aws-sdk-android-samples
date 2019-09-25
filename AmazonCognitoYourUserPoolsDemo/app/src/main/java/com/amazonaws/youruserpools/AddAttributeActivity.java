@@ -228,7 +228,7 @@ public class AddAttributeActivity extends AppCompatActivity {
                     userDialog.dismiss();
 
                 } catch (Exception e) {
-                    //
+                    e.printStackTrace();
                 }
             }
         });
@@ -241,7 +241,7 @@ public class AddAttributeActivity extends AppCompatActivity {
             waitDialog.dismiss();
         }
         catch (Exception e) {
-            //
+            e.printStackTrace();
         }
     }
 

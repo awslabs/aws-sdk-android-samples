@@ -159,7 +159,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
         @Override
         public void onSuccess() {
             closeWaitDialog();
-            //showDialogMessage("Success!","Password has been changed",true);
             Toast.makeText(getApplicationContext(),"Your password was changed",Toast.LENGTH_LONG).show();
             clearInput();
         }
@@ -210,6 +209,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         }
         catch (Exception e) {
             // Wait dialog is already closed or does not exist
+            e.printStackTrace();
         }
     }
 }
