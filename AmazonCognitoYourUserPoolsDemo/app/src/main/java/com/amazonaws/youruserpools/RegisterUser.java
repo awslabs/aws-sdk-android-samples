@@ -39,7 +39,7 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCognitoIdentityProvider;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
+import com.amazonaws.services.cognitoidentityprovider.model.CodeDeliveryDetailsType;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
@@ -50,6 +50,7 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.Authentic
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GenericHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler;
+import com.amazonaws.services.cognitoidentityprovider.model.SignUpResult;
 import com.amazonaws.youruserpools.CognitoYourUserPoolsDemo.R;
 
 import java.util.HashMap;
@@ -294,18 +295,17 @@ public class RegisterUser extends AppCompatActivity {
 
     SignUpHandler signUpHandler = new SignUpHandler() {
         @Override
-        public void onSuccess(CognitoUser user, boolean signUpConfirmationState,
-                              CognitoUserCodeDeliveryDetails cognitoUserCodeDeliveryDetails) {
+        public void onSuccess(CognitoUser user, SignUpResult signUpResult) {
             // Check signUpConfirmationState to see if the user is already confirmed
             closeWaitDialog();
-            Boolean regState = signUpConfirmationState;
-            if (signUpConfirmationState) {
+            Boolean regState = signUpResult.getUserConfirmed();
+            if (regState) {
                 // User is already confirmed
                 showDialogMessage("Sign up successful!",usernameInput+" has been Confirmed", true);
             }
             else {
                 // User is not confirmed
-               confirmSignUp(cognitoUserCodeDeliveryDetails);
+               confirmSignUp(signUpResult.getCodeDeliveryDetails());
             }
         }
 
@@ -319,7 +319,7 @@ public class RegisterUser extends AppCompatActivity {
         }
     };
 
-    private void confirmSignUp(CognitoUserCodeDeliveryDetails cognitoUserCodeDeliveryDetails) {
+    private void confirmSignUp(CodeDeliveryDetailsType cognitoUserCodeDeliveryDetails) {
         Intent intent = new Intent(this, SignUpConfirm.class);
         intent.putExtra("source","signup");
         intent.putExtra("name", usernameInput);
