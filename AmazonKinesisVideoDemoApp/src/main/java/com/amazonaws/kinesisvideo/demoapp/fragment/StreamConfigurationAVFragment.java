@@ -22,6 +22,7 @@ import com.amazonaws.kinesisvideo.demoapp.R;
 import com.amazonaws.kinesisvideo.demoapp.activity.SimpleNavActivity;
 import com.amazonaws.kinesisvideo.demoapp.ui.adapter.ToStrings;
 import com.amazonaws.kinesisvideo.demoapp.ui.widget.StringSpinnerWidget;
+import com.amazonaws.kinesisvideo.demoapp.util.CustomStreamCallbacks;
 import com.amazonaws.kinesisvideo.producer.MkvTrackInfoType;
 import com.amazonaws.kinesisvideo.producer.StreamInfo;
 import com.amazonaws.kinesisvideo.producer.TrackInfo;
@@ -202,6 +203,7 @@ public class StreamConfigurationAVFragment extends Fragment {
                                 new TrackInfo(AUDIO_TRACK_ID, AUDIO_CODEC_ID, "AndroidAudioTrack",
                                         null, MkvTrackInfoType.AUDIO)
                         })
+                        .withStreamCallbacks(new CustomStreamCallbacks())
                         .build();
     }
 
