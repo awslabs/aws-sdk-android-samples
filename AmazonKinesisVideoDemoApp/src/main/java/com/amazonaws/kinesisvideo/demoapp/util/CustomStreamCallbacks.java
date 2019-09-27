@@ -65,8 +65,8 @@ public class CustomStreamCallbacks implements StreamCallbacks {
                 ackType = "FRAGMENT_ACK_TYPE_UNKNOWN";
         }
         if (fragmentAck.getAckType().getIntType() == FragmentAckType.FRAGMENT_ACK_TYPE_ERROR) {
-            Log.e(TAG, String.format("fragmentAckReceived: AckType %s Timestamp %s FragmentNumber %s",
-                    ackType, fragmentAck.getTimestamp(), fragmentAck.getSequenceNumber()));
+            Log.e(TAG, String.format("fragmentAckReceived: AckType %s ErrorCode %d Timestamp %s FragmentNumber %s",
+                    ackType, fragmentAck.getResult(), fragmentAck.getTimestamp(), fragmentAck.getSequenceNumber()));
         } else {
             Log.d(TAG, String.format("fragmentAckReceived: AckType %s Timestamp %s FragmentNumber %s",
                     ackType, fragmentAck.getTimestamp(), fragmentAck.getSequenceNumber()));
