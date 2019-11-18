@@ -37,7 +37,7 @@ This sample demonstrates how to use the high-level class TransferUtility to perf
      },
      ```
    * Update `Bucket` with the name of the S3 Bucket created in Step-3.
-   * Update `Region` with the region of the S3 Bucket created from Step-3. For example, `us-east-1`. The `Region`column in [Aamazon S3 Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region) represents the region string.
+   * Update `Region` with the region of the S3 Bucket created from Step-3. For example, `us-east-1`. The `Region`column in [Amazon S3 Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region) represents the region string.
      ```
      "S3TransferUtility": {
        "Default": {
