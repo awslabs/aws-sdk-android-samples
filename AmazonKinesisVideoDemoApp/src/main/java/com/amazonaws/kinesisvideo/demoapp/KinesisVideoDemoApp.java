@@ -3,6 +3,7 @@ package com.amazonaws.kinesisvideo.demoapp;
 import android.app.Application;
 import android.util.Log;
 
+import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.kinesisvideo.auth.KinesisVideoCredentialsProvider;
 import com.amazonaws.kinesisvideo.common.logging.LogLevel;
 import com.amazonaws.kinesisvideo.common.logging.OutputChannel;
@@ -25,13 +26,16 @@ public class KinesisVideoDemoApp extends Application {
     public static final String TAG = KinesisVideoDemoApp.class.getSimpleName();
     public static Regions KINESIS_VIDEO_REGION = Regions.US_WEST_2;
 
-    public static KinesisVideoCredentialsProvider getCredentialsProvider() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException, IOException {
+    public static AWSCredentialsProvider getCredentialsProvider() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException, IOException {
+        return AWSMobileClient.getInstance();
+    }
+
+    public static KinesisVideoCredentialsProvider getKvsCredentialsProvider() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException, IOException {
         final OutputChannel outputChannel = new AndroidLogOutputChannel();
         final com.amazonaws.kinesisvideo.common.logging.Log log =
                 new com.amazonaws.kinesisvideo.common.logging.Log(outputChannel, LogLevel.VERBOSE, TAG);
-        return new AwsIoTKinesisVideoCredentialsProvider("REPLACE_ME_awsIotAuthUrl", "REPLACE_ME_keyStoreLocation",
+        return new AwsIoTKinesisVideoCredentialsProvider("REPLACE_ME_IoT_ThingName", "REPLACE_ME_awsIotAuthUrl", "REPLACE_ME_keyStoreLocation",
                 "REPLACE_ME_keyStorePassword", log);
-        //return AWSMobileClient.getInstance();
     }
 
     @Override

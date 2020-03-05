@@ -56,6 +56,7 @@ public class StreamConfigurationAVFragment extends Fragment {
     private static final int SAMPLES_PER_FRAME = 1024;
     private static final int FRAMES_PER_BUFFER = 25;
     private static final int BITRATE_64_KBPS = 64000;
+    private static final int AUDIO_FRAMES_PER_BUFFER = 60;
 
     private Button mStartStreamingButton;
     private EditText mStreamName;
@@ -196,6 +197,7 @@ public class StreamConfigurationAVFragment extends Fragment {
                         .withAudioSampleRate(SAMPLE_RATE_44100)
                         .withAudioSamplesPerFrame(SAMPLES_PER_FRAME)
                         .withAudioFramesPerBuffer(FRAMES_PER_BUFFER)
+                        .withAudioFrameRate(AUDIO_FRAMES_PER_BUFFER)
                         .withAudioEncodingBitRate(BITRATE_64_KBPS)
                         .withTrackInfoList(new TrackInfo[] {
                                 new TrackInfo(VIDEO_TRACK_ID, VIDEO_CODEC_ID, "AndroidVideoTrack",
