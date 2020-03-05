@@ -31,6 +31,7 @@ public class KinesisVideoDemoApp extends Application {
                 new com.amazonaws.kinesisvideo.common.logging.Log(outputChannel, LogLevel.VERBOSE, TAG);
         return new AwsIoTKinesisVideoCredentialsProvider("REPLACE_ME_awsIotAuthUrl", "REPLACE_ME_keyStoreLocation",
                 "REPLACE_ME_keyStorePassword", log);
+        //return AWSMobileClient.getInstance();
     }
 
     @Override

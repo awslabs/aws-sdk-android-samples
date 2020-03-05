@@ -18,7 +18,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:text="demo-stream"/>
+                android:text="demo-stream-av"/>
 
             <Space
                 android:layout_width="match_parent"
@@ -88,6 +88,23 @@
                     android:padding="10dp"
                     android:background="@drawable/button_selector"
                     android:layout_margin="10dp"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:background="@color/background_material_light"
+                android:padding="10dp">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/start_streaming_audio_video"
+                        android:text="Stream Audio and Video"
+                        android:padding="10dp"
+                        android:background="@drawable/button_selector"
+                        android:layout_margin="10dp"/>
             </RelativeLayout>
     </LinearLayout>
 </ScrollView>

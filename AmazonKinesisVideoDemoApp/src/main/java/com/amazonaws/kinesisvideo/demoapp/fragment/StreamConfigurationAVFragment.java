@@ -22,10 +22,13 @@ import com.amazonaws.kinesisvideo.demoapp.R;
 import com.amazonaws.kinesisvideo.demoapp.activity.SimpleNavActivity;
 import com.amazonaws.kinesisvideo.demoapp.ui.adapter.ToStrings;
 import com.amazonaws.kinesisvideo.demoapp.ui.widget.StringSpinnerWidget;
+import com.amazonaws.kinesisvideo.demoapp.util.CustomStreamCallbacks;
+import com.amazonaws.kinesisvideo.producer.MkvTrackInfoType;
 import com.amazonaws.kinesisvideo.producer.StreamInfo;
+import com.amazonaws.kinesisvideo.producer.TrackInfo;
 import com.amazonaws.mobileconnectors.kinesisvideo.client.KinesisVideoAndroidClientFactory;
 import com.amazonaws.mobileconnectors.kinesisvideo.data.MimeType;
-import com.amazonaws.mobileconnectors.kinesisvideo.mediasource.android.AndroidCameraMediaSourceConfiguration;
+import com.amazonaws.mobileconnectors.kinesisvideo.mediasource.android.AndroidAudioVideoMediaSourceConfiguration;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -34,16 +37,25 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
+import static com.amazonaws.kinesisvideo.util.StreamInfoConstants.AUDIO_CODEC_ID;
+import static com.amazonaws.kinesisvideo.util.StreamInfoConstants.AUDIO_TRACK_ID;
+import static com.amazonaws.kinesisvideo.util.StreamInfoConstants.VIDEO_CODEC_ID;
+import static com.amazonaws.kinesisvideo.util.StreamInfoConstants.VIDEO_TRACK_ID;
 import static com.amazonaws.mobileconnectors.kinesisvideo.util.CameraUtils.getCameras;
 import static com.amazonaws.mobileconnectors.kinesisvideo.util.CameraUtils.getSupportedResolutions;
 import static com.amazonaws.mobileconnectors.kinesisvideo.util.VideoEncoderUtils.getSupportedMimeTypes;
 
-public class StreamConfigurationFragment extends Fragment {
-    private static final String TAG = StreamConfigurationFragment.class.getSimpleName();
+public class StreamConfigurationAVFragment extends Fragment {
+    private static final String TAG = StreamConfigurationAVFragment.class.getSimpleName();
     private static final Size RESOLUTION_320x240 = new Size(320, 240);
     private static final int FRAMERATE_20 = 20;
     private static final int BITRATE_384_KBPS = 384 * 1024;
     private static final int RETENTION_PERIOD_48_HOURS = 2 * 24;
+
+    private static final int SAMPLE_RATE_44100 = 44100;
+    private static final int SAMPLES_PER_FRAME = 1024;
+    private static final int FRAMES_PER_BUFFER = 25;
+    private static final int BITRATE_64_KBPS = 64000;
 
     private Button mStartStreamingButton;
     private EditText mStreamName;
@@ -55,8 +67,8 @@ public class StreamConfigurationFragment extends Fragment {
 
     private SimpleNavActivity navActivity;
 
-    public static StreamConfigurationFragment newInstance(SimpleNavActivity navActivity) {
-        StreamConfigurationFragment s = new StreamConfigurationFragment();
+    public static StreamConfigurationAVFragment newInstance(SimpleNavActivity navActivity) {
+        StreamConfigurationAVFragment s = new StreamConfigurationAVFragment();
         s.navActivity = navActivity;
         return s;
     }
@@ -67,6 +79,10 @@ public class StreamConfigurationFragment extends Fragment {
                              final Bundle savedInstanceState) {
         if (ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.CAMERA}, 9393);
+        }
+
+        if (ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, 9394);
         }
 
         getActivity().setTitle(getActivity().getString(R.string.title_fragment_stream));
@@ -131,7 +147,7 @@ public class StreamConfigurationFragment extends Fragment {
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
-        mStartStreamingButton = (Button) view.findViewById(R.id.start_streaming);
+        mStartStreamingButton = (Button) view.findViewById(R.id.start_streaming_audio_video);
         mStartStreamingButton.setOnClickListener(startStreamingActivityWhenClicked());
         mStreamName = (EditText) view.findViewById(R.id.stream_name);
     }
@@ -149,19 +165,18 @@ public class StreamConfigurationFragment extends Fragment {
         final Bundle extras = new Bundle();
 
         extras.putParcelable(
-                StreamingFragment.KEY_MEDIA_SOURCE_CONFIGURATION,
+                StreamingAVFragment.KEY_AV_MEDIA_SOURCE_CONFIGURATION,
                 getCurrentConfiguration());
 
         extras.putString(
-                StreamingFragment.KEY_STREAM_NAME,
+                StreamingAVFragment.KEY_STREAM_NAME,
                 mStreamName.getText().toString());
 
-        navActivity.startStreamingFragment(extras);
+        navActivity.startStreamingAVFragment(extras);
     }
 
-    private AndroidCameraMediaSourceConfiguration getCurrentConfiguration() {
-        return new AndroidCameraMediaSourceConfiguration(
-                AndroidCameraMediaSourceConfiguration.builder()
+    private AndroidAudioVideoMediaSourceConfiguration getCurrentConfiguration() {
+        return new AndroidAudioVideoMediaSourceConfiguration.AudioVideoBuilder()
                         .withCameraId(mCamerasDropdown.getSelectedItem().getCameraId())
                         .withEncodingMimeType(mMimeTypeDropdown.getSelectedItem().getMimeType())
                         .withHorizontalResolution(mResolutionDropdown.getSelectedItem().getWidth())
@@ -169,13 +184,27 @@ public class StreamConfigurationFragment extends Fragment {
                         .withCameraFacing(mCamerasDropdown.getSelectedItem().getCameraFacing())
                         .withIsEncoderHardwareAccelerated(
                                 mCamerasDropdown.getSelectedItem().isEndcoderHardwareAccelerated())
-                        .withFrameRate(FRAMERATE_20)
+                        .withFps(FRAMERATE_20)
                         .withRetentionPeriodInHours(RETENTION_PERIOD_48_HOURS)
                         .withEncodingBitRate(getBitrate(mResolutionDropdown.getSelectedItem().getWidth(),
                                 mResolutionDropdown.getSelectedItem().getHeight()))
                         .withCameraOrientation(-mCamerasDropdown.getSelectedItem().getCameraOrientation())
-                        .withNalAdaptationFlags(StreamInfo.NalAdaptationFlags.NAL_ADAPTATION_ANNEXB_CPD_AND_FRAME_NALS)
-                        .withIsAbsoluteTimecode(false));
+                        .withNalAdaptationFlag(StreamInfo.NalAdaptationFlags.NAL_ADAPTATION_ANNEXB_CPD_AND_FRAME_NALS)
+                        .withAbsoluteTimecode(true)
+                        .withAudioEncodingMimeType("audio/mp4a-latm")
+                        .withAudioIsEncoderHardwareAccelerated(true)
+                        .withAudioSampleRate(SAMPLE_RATE_44100)
+                        .withAudioSamplesPerFrame(SAMPLES_PER_FRAME)
+                        .withAudioFramesPerBuffer(FRAMES_PER_BUFFER)
+                        .withAudioEncodingBitRate(BITRATE_64_KBPS)
+                        .withTrackInfoList(new TrackInfo[] {
+                                new TrackInfo(VIDEO_TRACK_ID, VIDEO_CODEC_ID, "AndroidVideoTrack",
+                                        null, MkvTrackInfoType.VIDEO),
+                                new TrackInfo(AUDIO_TRACK_ID, AUDIO_CODEC_ID, "AndroidAudioTrack",
+                                        null, MkvTrackInfoType.AUDIO)
+                        })
+                        .withStreamCallbacks(new CustomStreamCallbacks())
+                        .build();
     }
 
     private int getBitrate(int width, int height) {
