@@ -21,16 +21,12 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.cognitoidentityprovider.AmazonCognitoIdentityProvider;
-import com.amazonaws.services.cognitoidentityprovider.AmazonCognitoIdentityProviderClient;
 import com.amazonaws.services.cognitoidentityprovider.model.AttributeType;
 
 import java.util.ArrayList;
@@ -74,6 +70,10 @@ public class AppHelper {
 
     private static List<ItemToDisplay> mfaOptions;
     private static List<String> mfaAllOptionsCode;
+
+    // The lines below allow app users to register in your Cognito User Pool. Use
+    // a Cognito Identity Pool to control the user's access to your account resources.
+    // https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html
 
     // Change the next three lines of code to run this demo on your user pool
 

@@ -3,7 +3,7 @@ Running S3TransferUtility Sample
 This sample demonstrates how to use the high-level class TransferUtility to perform download and upload tasks and manage the tasks.  You can also follow the [tutorial](https://github.com/awslabs/aws-sdk-android-samples/blob/master/S3TransferUtilitySample/S3TransferUtilityTutorial.md) for a step-by-step guide in understanding the S3TransferUtilitySample.
 
 1. **Create a identity pool**
-   * Go to [Amazon Cognito Console](https://console.aws.amazon.com/cognito/) and choose `Manage Federated Identities`. 
+   * Go to [Amazon Cognito Console](https://console.aws.amazon.com/cognito/) and choose `Manage Identity Pools`. 
    * Click `Create new Identity pool` button on the top left of the console.
    * Give a name for the Identity pool and check `Enable access to unauthenticated identities` under the `Unauthenticated Identities` section, click `Create pool` button on the bottom right.
    * To enable Cognito Identities to access your resources, expand the `View Details` section to see the two roles that are to be created. Make a note of the `unauth` role whose name is of the form `Cognito_<IdentityPoolName>Unauth_Role`. Now click `Allow` button in the bottom right of the console.
@@ -23,7 +23,7 @@ This sample demonstrates how to use the high-level class TransferUtility to perf
 
 4. **Import the sample project**
    * Import the sample as Android project into your IDE of choice.
-   * Open `awsconfiguration.json` in src/com/amazonaws/demo/s3transferutility directory.
+   * Open `awsconfiguration.json` in /res/raw directory.
    * Update `PoolId` with the ID of the Cognito Identity Pool created in Step-1.
    * Update `Region` with the region of the Cognito Identity Pool created from Step-1. For example, `us-east-1`. The `Region` column in [Amazon Cognito Identity Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#cognito_identity_region) represents the region string.
      ```
@@ -37,7 +37,7 @@ This sample demonstrates how to use the high-level class TransferUtility to perf
      },
      ```
    * Update `Bucket` with the name of the S3 Bucket created in Step-3.
-   * Update `Region` with the region of the S3 Bucket created from Step-3. For example, `us-east-1`. The `Region`column in [Aamazon S3 Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region) represents the region string.
+   * Update `Region` with the region of the S3 Bucket created from Step-3. For example, `us-east-1`. The `Region`column in [Amazon S3 Regions](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region) represents the region string.
      ```
      "S3TransferUtility": {
        "Default": {

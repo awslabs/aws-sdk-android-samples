@@ -35,8 +35,6 @@ import com.amazonaws.youruserpools.CognitoYourUserPoolsDemo.R;
 public class ForgotPasswordActivity extends AppCompatActivity {
     private EditText passwordInput;
     private EditText codeInput;
-    private Button setPassword;
-    private AlertDialog userDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
