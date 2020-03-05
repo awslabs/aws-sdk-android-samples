@@ -21,13 +21,6 @@ import com.amazonaws.mobileconnectors.kinesisvideo.client.KinesisVideoAndroidCli
 import com.amazonaws.mobileconnectors.kinesisvideo.mediasource.android.AndroidAudioVideoMediaSource;
 import com.amazonaws.mobileconnectors.kinesisvideo.mediasource.android.AndroidAudioVideoMediaSourceConfiguration;
 
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-
 public class StreamingAVFragment extends Fragment implements TextureView.SurfaceTextureListener {
     public static final String KEY_AV_MEDIA_SOURCE_CONFIGURATION = "audioVideoMediaSourceConfiguration";
     public static final String KEY_STREAM_NAME = "streamName";
@@ -76,7 +69,7 @@ public class StreamingAVFragment extends Fragment implements TextureView.Surface
             mMediaSource.setPreviewSurfaces(new Surface(previewTexture));
 
             resumeStreaming();
-        } catch (final KinesisVideoException | CertificateException | UnrecoverableKeyException | NoSuchAlgorithmException | KeyManagementException | KeyStoreException | IOException e) {
+        } catch (final Exception e) {
             Log.e(TAG, "unable to start streaming");
             throw new RuntimeException("unable to start streaming", e);
         }

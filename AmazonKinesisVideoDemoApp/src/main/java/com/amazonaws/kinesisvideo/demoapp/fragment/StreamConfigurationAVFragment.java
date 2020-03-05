@@ -16,7 +16,6 @@ import android.widget.EditText;
 
 import com.amazonaws.kinesisvideo.client.KinesisVideoClient;
 import com.amazonaws.kinesisvideo.client.mediasource.CameraMediaSourceConfiguration;
-import com.amazonaws.kinesisvideo.common.exception.KinesisVideoException;
 import com.amazonaws.kinesisvideo.demoapp.KinesisVideoDemoApp;
 import com.amazonaws.kinesisvideo.demoapp.R;
 import com.amazonaws.kinesisvideo.demoapp.activity.SimpleNavActivity;
@@ -29,13 +28,6 @@ import com.amazonaws.kinesisvideo.producer.TrackInfo;
 import com.amazonaws.mobileconnectors.kinesisvideo.client.KinesisVideoAndroidClientFactory;
 import com.amazonaws.mobileconnectors.kinesisvideo.data.MimeType;
 import com.amazonaws.mobileconnectors.kinesisvideo.mediasource.android.AndroidAudioVideoMediaSourceConfiguration;
-
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 
 import static com.amazonaws.kinesisvideo.util.StreamInfoConstants.AUDIO_CODEC_ID;
 import static com.amazonaws.kinesisvideo.util.StreamInfoConstants.AUDIO_TRACK_ID;
@@ -95,7 +87,7 @@ public class StreamConfigurationAVFragment extends Fragment {
                     getActivity(),
                     KinesisVideoDemoApp.KINESIS_VIDEO_REGION,
                     KinesisVideoDemoApp.getCredentialsProvider());
-        } catch (KinesisVideoException | CertificateException | UnrecoverableKeyException | NoSuchAlgorithmException | KeyManagementException | KeyStoreException | IOException e) {
+        } catch (Exception e) {
             Log.e(TAG, "Failed to create Kinesis Video client", e);
         }
 

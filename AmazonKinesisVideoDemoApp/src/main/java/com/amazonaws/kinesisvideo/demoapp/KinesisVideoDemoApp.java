@@ -26,11 +26,11 @@ public class KinesisVideoDemoApp extends Application {
     public static final String TAG = KinesisVideoDemoApp.class.getSimpleName();
     public static Regions KINESIS_VIDEO_REGION = Regions.US_WEST_2;
 
-    public static AWSCredentialsProvider getCredentialsProvider() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException, IOException {
+    public static AWSCredentialsProvider getCredentialsProvider() {
         return AWSMobileClient.getInstance();
     }
 
-    public static KinesisVideoCredentialsProvider getKvsCredentialsProvider() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException, IOException {
+    public static KinesisVideoCredentialsProvider getKvsCredentialsProvider() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException, IOException, IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         final OutputChannel outputChannel = new AndroidLogOutputChannel();
         final com.amazonaws.kinesisvideo.common.logging.Log log =
                 new com.amazonaws.kinesisvideo.common.logging.Log(outputChannel, LogLevel.VERBOSE, TAG);

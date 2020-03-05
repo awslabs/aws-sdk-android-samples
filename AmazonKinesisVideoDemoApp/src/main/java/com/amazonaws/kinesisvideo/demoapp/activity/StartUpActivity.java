@@ -11,6 +11,7 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.SignInUIOptions;
 import com.amazonaws.mobile.client.UserStateDetails;
+import com.amazonaws.mobile.client.results.Tokens;
 
 public class StartUpActivity extends AppCompatActivity {
     public static final String TAG = StartUpActivity.class.getSimpleName();
@@ -26,7 +27,18 @@ public class StartUpActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (auth.isSignedIn()) {
-                    ActivityUtils.startActivity(thisActivity, SimpleNavActivity.class);
+                    auth.getTokens(new Callback<Tokens>() {
+                        @Override
+                        public void onResult(Tokens result) {
+                            ActivityUtils.startActivity(thisActivity, SimpleNavActivity.class);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e(TAG, "onError: Sign in failure - Auth get token error", e);
+                            Toast.makeText(StartUpActivity.this, "onError: Sign in failure - Auth get token error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
                 } else {
                     auth.showSignIn(thisActivity,
                             SignInUIOptions.builder()

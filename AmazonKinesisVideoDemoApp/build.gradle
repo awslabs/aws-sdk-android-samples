@@ -50,8 +50,8 @@ repositories {
 
 dependencies {
     def aws_version = '2.14.+'
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    //implementation ("com.amazonaws:aws-android-sdk-kinesisvideo:$aws_version@aar") { transitive = true }
+    //implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation ("com.amazonaws:aws-android-sdk-kinesisvideo:$aws_version@aar") { transitive = true }
     implementation ("com.amazonaws:aws-android-sdk-mobile-client:$aws_version@aar") { transitive = true }
     implementation ("com.amazonaws:aws-android-sdk-auth-ui:$aws_version@aar") { transitive = true }
     implementation ("com.amazonaws:aws-android-sdk-auth-userpools:$aws_version@aar") { transitive = true }
