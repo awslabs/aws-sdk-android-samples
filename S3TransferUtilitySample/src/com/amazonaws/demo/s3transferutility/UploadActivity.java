@@ -23,7 +23,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -45,7 +44,6 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferType;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -432,11 +430,10 @@ public class UploadActivity extends ListActivity {
         if (requestCode == UPLOAD_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 Uri uri = data.getData();
-
                 try {
-                    File file = getFile(uri);
+                    File file = readContentToFile(uri);
                     beginUpload(file);
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     Toast.makeText(this,
                             "Unable to find selected file. See error log for details",
                             Toast.LENGTH_LONG).show();
@@ -448,9 +445,9 @@ public class UploadActivity extends ListActivity {
                 Uri uri = data.getData();
 
                 try {
-                    File file = getFile(uri);
+                    File file = readContentToFile(uri);
                     beginUploadInBackground(file);
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     Toast.makeText(this,
                             "Unable to find selected file. See error log for details",
                             Toast.LENGTH_LONG).show();
@@ -464,12 +461,6 @@ public class UploadActivity extends ListActivity {
      * Begins to upload the file specified by the file path.
      */
     private void beginUpload(File file) {
-        if (file == null) {
-            Toast.makeText(this, "Could not access the selected file",
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
-
         TransferObserver observer = transferUtility.upload(
                 file.getName(),
                 file
@@ -489,12 +480,6 @@ public class UploadActivity extends ListActivity {
      * Begins to upload the file specified by the file path.
      */
     private void beginUploadInBackground(File file) {
-        if (file == null) {
-            Toast.makeText(this, "Could not access the selected file",
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
-
         // Wrap the upload call from a background service to
         // support long-running downloads. Uncomment the following
         // code in order to start a upload from the background
@@ -516,67 +501,44 @@ public class UploadActivity extends ListActivity {
         // observer.setTransferListener(new UploadListener());
     }
 
-    /*
-     * Copies the resource associated with the Uri to a new File in the cache directory.
-     * @param uri The Uri.
-     * @return a new File representing the Uri in the cache directory.
-
+    /**
+     * Copies the resource associated with the Uri to a new File in the cache directory, and returns the File
+     * @param uri the Uri
+     * @return a copy of the Uri's content as a File in the cache directory
+     * @throws IOException if openInputStream fails or writing to the OutputStream fails
      */
-    private File getFile(Uri uri) throws FileNotFoundException {
-        final InputStream in = getContentResolver().openInputStream(uri);
-        OutputStream out = null;
-        try {
-            final File file = new File(getCacheDir(), getFileName(uri));
-            out = new FileOutputStream(file, false);
+    private File readContentToFile(Uri uri) throws IOException {
+        final File file = new File(getCacheDir(), getDisplayName(uri));
+        try (
+            final InputStream in = getContentResolver().openInputStream(uri);
+            final OutputStream out = new FileOutputStream(file, false);
+        ) {
             byte[] buffer = new byte[1024];
             for (int len; (len = in.read(buffer)) != -1; ) {
                 out.write(buffer, 0, len);
             }
             return file;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-                if(out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
-        return null;
     }
 
-    private String getFileName(Uri uri) {
-        if ("content".equalsIgnoreCase(uri.getScheme())) {
-            final String[] projection = {
-                    MediaStore.Images.Media.DISPLAY_NAME
-            };
-            final String docId = DocumentsContract.getDocumentId(uri);
-            String selection = null;
-            String[] selectionArgs = null;
-            if(docId.contains(":")) {
-                final String[] split = docId.split(":");
-                selection = "_id=?";
-                selectionArgs = new String[]{
-                        split[1]
-                };
+    /**
+     * Returns the filename for the given Uri
+     * @param uri the Uri
+     * @return String representing the file name (DISPLAY_NAME)
+     */
+    private String getDisplayName(Uri uri) {
+        final String[] projection = { MediaStore.Images.Media.DISPLAY_NAME };
+        try (
+            Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        ){
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
+            if (cursor.moveToFirst()) {
+                return cursor.getString(column_index);
             }
-            try {
-                Cursor cursor = getContentResolver().query(uri, projection, selection, selectionArgs, null);
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
-                if (cursor.moveToFirst()) {
-                    return cursor.getString(column_index);
-                }
-            } catch (Exception e) {
-            }
-        } else {
-            return uri.getPath();
         }
-        return null;
+        // If the display name is not found for any reason, use the Uri path as a fallback.
+        Log.w(TAG, "Couldnt determine DISPLAY_NAME for Uri.  Falling back to Uri path: " + uri.getPath());
+        return uri.getPath();
     }
 
     /*
