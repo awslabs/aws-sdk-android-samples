@@ -344,7 +344,6 @@ public class DownloadActivity extends ListActivity {
         });
 
         updateButtonAvailability();
-        requestWriteExternalStoragePermission();
     }
 
     @Override
@@ -366,46 +365,6 @@ public class DownloadActivity extends ListActivity {
         }
     }
 
-    private void  requestWriteExternalStoragePermission() {
-        //ask for the permission in android M
-        int permission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            Log.i(TAG, "Permission to store data in external storage is not granted");
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Permission to access the External Storage is required for this application to store the downloaded data from Amazon S3")
-                        .setTitle("Permission required");
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int id) {
-                        Log.i(TAG, "Clicked");
-                        makeRequest();
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-
-            } else {
-                makeRequest();
-            }
-        }
-        else {
-            Log.i(TAG, "Permission to store data in external storage is granted.");
-        }
-
-    }
-    protected void makeRequest() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                REQUEST_WRITE_STORAGE);
-    }
-
     /*
      * Begins to download the file specified by the key in the bucket.
      */
@@ -413,7 +372,7 @@ public class DownloadActivity extends ListActivity {
         // Location to download files from S3 to. You can choose any accessible
         // file.
 
-        File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
+        File file = new File(getExternalFilesDir(null).toString() + "/" + key);
 
         // Initiate the download
         TransferObserver observer = transferUtility.download(key, file);
@@ -434,7 +393,7 @@ public class DownloadActivity extends ListActivity {
     private void beginDownloadInBackground(String key) {
         // Location to download files from S3 to. You can choose any accessible
         // file.
-        File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
+        File file = new File(getExternalFilesDir(null).toString() + "/" + key);
 
         // Wrap the download call from a background service to
         // support long-running downloads. Uncomment the following

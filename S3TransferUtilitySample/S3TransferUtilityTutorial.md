@@ -359,7 +359,7 @@ All we need to do to download a file is to specify where we want the file placed
 private void beginDownload(String key) {
     // Location to download files from S3 to. You can choose any accessible
     // file.
-    File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
+    File file = new File(getExternalFilesDir(null).toString() + "/" + key);
 
     // Initiate the download
     TransferObserver observer = transferUtility.download(Constants.BUCKET_NAME, key, file);

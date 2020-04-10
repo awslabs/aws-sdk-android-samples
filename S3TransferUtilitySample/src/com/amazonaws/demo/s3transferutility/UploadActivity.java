@@ -15,18 +15,14 @@
 
 package com.amazonaws.demo.s3transferutility;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ListActivity;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -48,7 +44,10 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferType;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 
 import java.io.File;
-import java.net.URISyntaxException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -431,13 +430,12 @@ public class UploadActivity extends ListActivity {
         if (requestCode == UPLOAD_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 Uri uri = data.getData();
-
                 try {
-                    String path = getPath(uri);
-                    beginUpload(path);
-                } catch (URISyntaxException e) {
+                    File file = readContentToFile(uri);
+                    beginUpload(file);
+                } catch (IOException e) {
                     Toast.makeText(this,
-                            "Unable to get the file from the given URI. See error log for details",
+                            "Unable to find selected file. See error log for details",
                             Toast.LENGTH_LONG).show();
                     Log.e(TAG, "Unable to upload file from the given uri", e);
                 }
@@ -447,11 +445,11 @@ public class UploadActivity extends ListActivity {
                 Uri uri = data.getData();
 
                 try {
-                    String path = getPath(uri);
-                    beginUploadInBackground(path);
-                } catch (URISyntaxException e) {
+                    File file = readContentToFile(uri);
+                    beginUploadInBackground(file);
+                } catch (IOException e) {
                     Toast.makeText(this,
-                            "Unable to get the file from the given URI. See error log for details",
+                            "Unable to find selected file. See error log for details",
                             Toast.LENGTH_LONG).show();
                     Log.e(TAG, "Unable to upload file from the given uri", e);
                 }
@@ -462,14 +460,7 @@ public class UploadActivity extends ListActivity {
     /*
      * Begins to upload the file specified by the file path.
      */
-    private void beginUpload(String filePath) {
-        if (filePath == null) {
-            Toast.makeText(this, "Could not find the filepath of the selected file",
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        File file = new File(filePath);
+    private void beginUpload(File file) {
         TransferObserver observer = transferUtility.upload(
                 file.getName(),
                 file
@@ -488,15 +479,7 @@ public class UploadActivity extends ListActivity {
     /*
      * Begins to upload the file specified by the file path.
      */
-    private void beginUploadInBackground(String filePath) {
-        if (filePath == null) {
-            Toast.makeText(this, "Could not find the filepath of the selected file",
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        File file = new File(filePath);
-
+    private void beginUploadInBackground(File file) {
         // Wrap the upload call from a background service to
         // support long-running downloads. Uncomment the following
         // code in order to start a upload from the background
@@ -518,84 +501,44 @@ public class UploadActivity extends ListActivity {
         // observer.setTransferListener(new UploadListener());
     }
 
-    /*
-     * Gets the file path of the given Uri.
+    /**
+     * Copies the resource associated with the Uri to a new File in the cache directory, and returns the File
+     * @param uri the Uri
+     * @return a copy of the Uri's content as a File in the cache directory
+     * @throws IOException if openInputStream fails or writing to the OutputStream fails
      */
-    @SuppressLint("NewApi")
-    private String getPath(Uri uri) throws URISyntaxException {
-        final boolean needToCheckUri = Build.VERSION.SDK_INT >= 19;
-        String selection = null;
-        String[] selectionArgs = null;
-        // Uri is different in versions after KITKAT (Android 4.4), we need to
-        // deal with different Uris.
-        if (needToCheckUri && DocumentsContract.isDocumentUri(getApplicationContext(), uri)) {
-            if (isExternalStorageDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                return Environment.getExternalStorageDirectory() + "/" + split[1];
-            } else if (isDownloadsDocument(uri)) {
-                final String id = DocumentsContract.getDocumentId(uri);
-                uri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-            } else if (isMediaDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-                if ("image".equals(type)) {
-                    uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
-                    uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
-                    uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                }
-                selection = "_id=?";
-                selectionArgs = new String[] {
-                        split[1]
-                };
+    private File readContentToFile(Uri uri) throws IOException {
+        final File file = new File(getCacheDir(), getDisplayName(uri));
+        try (
+            final InputStream in = getContentResolver().openInputStream(uri);
+            final OutputStream out = new FileOutputStream(file, false);
+        ) {
+            byte[] buffer = new byte[1024];
+            for (int len; (len = in.read(buffer)) != -1; ) {
+                out.write(buffer, 0, len);
+            }
+            return file;
+        }
+    }
+
+    /**
+     * Returns the filename for the given Uri
+     * @param uri the Uri
+     * @return String representing the file name (DISPLAY_NAME)
+     */
+    private String getDisplayName(Uri uri) {
+        final String[] projection = { MediaStore.Images.Media.DISPLAY_NAME };
+        try (
+            Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        ){
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
+            if (cursor.moveToFirst()) {
+                return cursor.getString(columnIndex);
             }
         }
-        if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = {
-                    MediaStore.Images.Media.DATA
-            };
-            Cursor cursor = null;
-            try {
-                cursor = getContentResolver()
-                        .query(uri, projection, selection, selectionArgs, null);
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                if (cursor.moveToFirst()) {
-                    return cursor.getString(column_index);
-                }
-            } catch (Exception e) {
-            }
-        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-        return null;
-    }
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is ExternalStorageProvider.
-     */
-    public static boolean isExternalStorageDocument(Uri uri) {
-        return "com.android.externalstorage.documents".equals(uri.getAuthority());
-    }
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is DownloadsProvider.
-     */
-    public static boolean isDownloadsDocument(Uri uri) {
-        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
-    }
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is MediaProvider.
-     */
-    public static boolean isMediaDocument(Uri uri) {
-        return "com.android.providers.media.documents".equals(uri.getAuthority());
+        // If the display name is not found for any reason, use the Uri path as a fallback.
+        Log.w(TAG, "Couldnt determine DISPLAY_NAME for Uri.  Falling back to Uri path: " + uri.getPath());
+        return uri.getPath();
     }
 
     /*
