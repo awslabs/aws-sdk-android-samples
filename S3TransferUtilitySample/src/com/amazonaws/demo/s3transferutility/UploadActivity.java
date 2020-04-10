@@ -531,9 +531,9 @@ public class UploadActivity extends ListActivity {
         try (
             Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
         ){
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
             if (cursor.moveToFirst()) {
-                return cursor.getString(column_index);
+                return cursor.getString(columnIndex);
             }
         }
         // If the display name is not found for any reason, use the Uri path as a fallback.
