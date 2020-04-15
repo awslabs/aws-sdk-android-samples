@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -35,15 +35,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
-/*
+/**
  * Handles basic helper functions used throughout the app.
  */
 public class Util {
-    public static final String TAG = Util.class.getSimpleName();
+    private static final String TAG = Util.class.getSimpleName();
 
     private AmazonS3Client sS3Client;
     private AWSCredentialsProvider sMobileClient;
@@ -53,7 +54,7 @@ public class Util {
      * Gets an instance of AWSMobileClient which is
      * constructed using the given Context.
      *
-     * @param context An Context instance.
+     * @param context Android context
      * @return AWSMobileClient which is a credentials provider
      */
     private AWSCredentialsProvider getCredProvider(Context context) {
@@ -85,17 +86,17 @@ public class Util {
      * Gets an instance of a S3 client which is constructed using the given
      * Context.
      *
-     * @param context An Context instance.
+     * @param context Android context
      * @return A default S3 client.
      */
     public AmazonS3Client getS3Client(Context context) {
         if (sS3Client == null) {
-            sS3Client = new AmazonS3Client(getCredProvider(context));
             try {
                 String regionString = new AWSConfiguration(context)
                         .optJsonObject("S3TransferUtility")
                         .getString("Region");
-                sS3Client.setRegion(Region.getRegion(regionString));
+                Region region = Region.getRegion(regionString);
+                sS3Client = new AmazonS3Client(getCredProvider(context), region);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -107,7 +108,7 @@ public class Util {
      * Gets an instance of the TransferUtility which is constructed using the
      * given Context
      *
-     * @param context
+     * @param context Android context
      * @return a TransferUtility instance
      */
     public TransferUtility getTransferUtility(Context context) {
@@ -139,7 +140,7 @@ public class Util {
             }
             speedNum /= 1024;
             if (speedNum < 512) {
-                return String.format("%.2f", speedNum) + " " + quantifiers[i];
+                return String.format(Locale.US, "%.2f", speedNum) + " " + quantifiers[i];
             }
         }
     }
@@ -148,15 +149,15 @@ public class Util {
      * Copies the data from the passed in Uri, to a new file for use with the
      * Transfer Service
      *
-     * @param context
-     * @param uri
-     * @return
-     * @throws IOException
+     * @param context Android context
+     * @param uri Content URI
+     * @return New file copied from given URI
+     * @throws IOException if data read/write fails
      */
     public File copyContentUriToFile(Context context, Uri uri) throws IOException {
         InputStream is = context.getContentResolver().openInputStream(uri);
-        File copiedData = new File(context.getDir("SampleImagesDir", Context.MODE_PRIVATE), UUID
-                .randomUUID().toString());
+        File copiedData = new File(context.getDir("SampleImagesDir", Context.MODE_PRIVATE),
+                UUID.randomUUID().toString());
         copiedData.createNewFile();
 
         FileOutputStream fos = new FileOutputStream(copiedData);
@@ -172,7 +173,7 @@ public class Util {
         return copiedData;
     }
 
-    /*
+    /**
      * Fills in the map with information in the observer so that it can be used
      * with a SimpleAdapter to populate the UI
      */

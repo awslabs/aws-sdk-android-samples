@@ -1,9 +1,21 @@
+/*
+ * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *  http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
 package com.amazonaws.demo.s3transferutility;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.DataInteraction;
 import android.support.test.espresso.IdlingPolicies;
@@ -12,13 +24,14 @@ import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v4.content.ContextCompat;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.UserStateDetails;
 import com.amazonaws.mobile.config.AWSConfiguration;
+import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3Client;
 
 import org.junit.After;
@@ -36,32 +49,24 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import android.util.Log;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject;
-import android.support.test.uiautomator.UiObjectNotFoundException;
-import android.support.test.uiautomator.UiSelector;
-import android.support.v4.content.ContextCompat;
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
+
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class TestMainActivity {
+    private static final String TAG = TestMainActivity.class.getSimpleName();
 
-    @Rule
-    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+    private static final String TEST_FILE_NAME = "ui-test-file";
+    private static final String TEST_FILE_CONTENTS = "AWS Samples test file contents.";
 
     private static AmazonS3Client s3;
     private static String bucket;
-    private static String testFileName = "ui-test-file";
-    private static String testFileContent = "AWS Samples test file contents. ";
-    private static int NUM_OF_RETRIES = 3;
-    private static final int PERMISSIONS_DIALOG_DELAY = 1000;
-    private static final int GRANT_BUTTON_INDEX = 1;
+    private static String region;
+
+    @Rule
+    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     /**
      * Upload a test file to the S3 bucket
@@ -88,97 +93,49 @@ public class TestMainActivity {
         // AWS Configuration file should have S3 bucket and region configured
         assertNotNull(awsConfiguration.optJsonObject("S3TransferUtility"));
         bucket = awsConfiguration.optJsonObject("S3TransferUtility").getString("Bucket");
+        region = awsConfiguration.optJsonObject("S3TransferUtility").getString("Region");
 
-        s3 = new AmazonS3Client(AWSMobileClient.getInstance());
-
-        // Attempt to upload the file NUM_OF_RETRIES times
-        for (int i = 0; i < NUM_OF_RETRIES; i++) {
-            try {
-                s3.putObject(bucket, testFileName, testFileContent);
-                break;
-            } catch (Exception e) {
-                e.printStackTrace();
-                if(i == NUM_OF_RETRIES - 1) fail(e.getMessage());
-            }
-        }
+        s3 = new AmazonS3Client(AWSMobileClient.getInstance(), Region.getRegion(region));
+        s3.putObject(bucket, TEST_FILE_NAME, TEST_FILE_CONTENTS);
     }
 
     @After
     public void cleanAfter() {
-        s3.deleteObject(bucket, testFileName);
+        s3.deleteObject(bucket, TEST_FILE_NAME);
     }
 
     @Test
     public void mainActivityTest() {
         // Set the Idling Resource timeout to 1 second
         long waitingTime = DateUtils.SECOND_IN_MILLIS;
-        String TAG = "mainActivityTest";
-        Log.e(TAG,"setIdlingResourceTimeout");
+        Log.d(TAG,"setIdlingResourceTimeout");
 
-        IdlingPolicies.setIdlingResourceTimeout(
-                waitingTime, TimeUnit.MILLISECONDS);
+        IdlingPolicies.setIdlingResourceTimeout(waitingTime, TimeUnit.MILLISECONDS);
         DownloadCompleteIdlingResource downloadCompleteIdlingResource = new DownloadCompleteIdlingResource();
 
         // Perform the test steps
-        ViewInteraction button = onView(
-                allOf(withId(R.id.buttonDownloadMain)));
-        Log.e(TAG,"click DownloadMain button");
+        ViewInteraction button = onView(withId(R.id.buttonDownloadMain));
+        Log.d(TAG,"click DownloadMain button");
         button.perform(click());
 
-        Log.e(TAG,"click allow button");
-        allowPermissionsIfNeeded();
-        ViewInteraction button2 = onView(
-                allOf(withId(R.id.buttonDownload)));
-        Log.e(TAG,"click Download button");
+        Log.d(TAG,"click allow button");
+        ViewInteraction button2 = onView(withId(R.id.buttonDownload));
+        Log.d(TAG,"click Download button");
         button2.perform(click());
 
         DataInteraction linearLayout = onData(anything())
-                .inAdapterView(allOf(withId(android.R.id.list)))
+                .inAdapterView(withId(android.R.id.list))
                 .atPosition(0);
-        Log.e(TAG,"Select downloading file");
+        Log.d(TAG,"Select downloading file");
         linearLayout.perform(click());
 
-        ViewInteraction textView = onView(
-                allOf(withId(R.id.textState)));
-
+        ViewInteraction textView = onView(withId(R.id.textState));
         IdlingRegistry.getInstance().register(downloadCompleteIdlingResource);
-        Log.e(TAG,"textView.check COMPLETED");
+        Log.d(TAG,"textView.check COMPLETED");
         textView.check(matches(withText("COMPLETED")));
-        Log.e(TAG,"unregister(downloadCompleteIdlingResource)");
+
+        Log.d(TAG,"unregister(downloadCompleteIdlingResource)");
         IdlingRegistry.getInstance().unregister(downloadCompleteIdlingResource);
-        Log.e(TAG,"finished");
-    }
-
-    public static void allowPermissionsIfNeeded() {
-        try {
-            String permissionNeeded = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !hasNeededPermission(permissionNeeded)) {
-                sleep(PERMISSIONS_DIALOG_DELAY);
-                UiDevice device = UiDevice.getInstance(getInstrumentation());
-                UiObject allowPermissions = device.findObject(new UiSelector()
-                        .clickable(true)
-                        .checkable(false)
-                        .index(GRANT_BUTTON_INDEX));
-                if (allowPermissions.exists()) {
-                    allowPermissions.click();
-                }
-            }
-        } catch (UiObjectNotFoundException e) {
-            System.out.println("There is no permissions dialog to interact with");
-        }
-    }
-
-    private static boolean hasNeededPermission(String permissionNeeded) {
-        Context context = InstrumentationRegistry.getTargetContext();
-        int permissionStatus = ContextCompat.checkSelfPermission(context, permissionNeeded);
-        return permissionStatus == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Cannot execute Thread.sleep()");
-        }
+        Log.d(TAG,"finished");
     }
 }
