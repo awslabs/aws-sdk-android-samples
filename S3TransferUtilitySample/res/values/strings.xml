@@ -1,6 +1,9 @@
 <resources>
 
     <string name="app_name">S3TransferUtility</string>
+    <string name="channel_name">Transfer Service Channel</string>
+    <string name="notification_title">Transfer Service Notification</string>
+    <string name="notification_text">Transfer Service is running</string>
     <string name="upload_activity">UploadActivity</string>
     <string name="download_activity">DownloadActivity</string>
     <string name="download_selection_activity">Select a file from the bucket</string>
