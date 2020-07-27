@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package com.amazonaws.demo.s3transferutility;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 
 /*
@@ -38,23 +36,10 @@ public class MainActivity extends Activity {
     }
 
     private void initUI() {
-        btnDownload = (Button) findViewById(R.id.buttonDownloadMain);
-        btnUpload = (Button) findViewById(R.id.buttonUploadMain);
+        btnDownload = findViewById(R.id.buttonDownloadMain);
+        btnUpload = findViewById(R.id.buttonUploadMain);
 
-        btnDownload.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                Intent intent = new Intent(MainActivity.this, DownloadActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        btnUpload.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                Intent intent = new Intent(MainActivity.this, UploadActivity.class);
-                startActivity(intent);
-            }
-        });
+        btnDownload.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, DownloadActivity.class)));
+        btnUpload.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, UploadActivity.class)));
     }
 }

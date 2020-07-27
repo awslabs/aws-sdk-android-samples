@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -25,15 +25,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
-import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -110,7 +105,7 @@ public class UploadActivity extends ListActivity {
         util = new Util();
         transferUtility = util.getTransferUtility(this);
         checkedIndex = INDEX_NOT_CHECKED;
-        transferRecordMaps = new ArrayList<HashMap<String, Object>>();
+        transferRecordMaps = new ArrayList<>();
         initUI();
     }
 
@@ -148,7 +143,7 @@ public class UploadActivity extends ListActivity {
             // For each transfer we will will create an entry in
             // transferRecordMaps which will display
             // as a single row in the UI
-            HashMap<String, Object> map = new HashMap<String, Object>();
+            HashMap<String, Object> map = new HashMap<>();
             util.fillMap(map, observer, false);
             transferRecordMaps.add(map);
 
@@ -163,7 +158,7 @@ public class UploadActivity extends ListActivity {
     }
 
     private void initUI() {
-        /**
+        /*
          * This adapter takes the data in transferRecordMaps and displays it,
          * with the keys of the map being related to the columns in the adapter
          */
@@ -175,226 +170,177 @@ public class UploadActivity extends ListActivity {
                         R.id.radioButton1, R.id.textFileName, R.id.progressBar1, R.id.textBytes,
                         R.id.textState, R.id.textPercentage
                 });
-        simpleAdapter.setViewBinder(new ViewBinder() {
-            @Override
-            public boolean setViewValue(View view, Object data,
-                    String textRepresentation) {
-                switch (view.getId()) {
-                    case R.id.radioButton1:
-                        RadioButton radio = (RadioButton) view;
-                        radio.setChecked((Boolean) data);
-                        return true;
-                    case R.id.textFileName:
-                        TextView fileName = (TextView) view;
-                        fileName.setText((String) data);
-                        return true;
-                    case R.id.progressBar1:
-                        ProgressBar progress = (ProgressBar) view;
-                        progress.setProgress((Integer) data);
-                        return true;
-                    case R.id.textBytes:
-                        TextView bytes = (TextView) view;
-                        bytes.setText((String) data);
-                        return true;
-                    case R.id.textState:
-                        TextView state = (TextView) view;
-                        state.setText(((TransferState) data).toString());
-                        return true;
-                    case R.id.textPercentage:
-                        TextView percentage = (TextView) view;
-                        percentage.setText((String) data);
-                        return true;
-                }
-                return false;
+        simpleAdapter.setViewBinder((view, data, textRepresentation) -> {
+            switch (view.getId()) {
+                case R.id.radioButton1:
+                    RadioButton radio = (RadioButton) view;
+                    radio.setChecked((Boolean) data);
+                    return true;
+                case R.id.progressBar1:
+                    ProgressBar progress = (ProgressBar) view;
+                    progress.setProgress((Integer) data);
+                    return true;
+                case R.id.textFileName:
+                case R.id.textBytes:
+                case R.id.textState:
+                case R.id.textPercentage:
+                    TextView text = (TextView) view;
+                    text.setText(data.toString());
+                    return true;
             }
+            return false;
         });
         setListAdapter(simpleAdapter);
 
         // Updates checked index when an item is clicked
-        getListView().setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
+        getListView().setOnItemClickListener((adapterView, view, pos, id) -> {
+            if (checkedIndex != pos) {
+                transferRecordMaps.get(pos).put("checked", true);
+                if (checkedIndex >= 0) {
+                    transferRecordMaps.get(checkedIndex).put("checked", false);
+                }
+                checkedIndex = pos;
+                updateButtonAvailability();
+                simpleAdapter.notifyDataSetChanged();
+            }
+        });
 
-                if (checkedIndex != pos) {
-                    transferRecordMaps.get(pos).put("checked", true);
-                    if (checkedIndex >= 0) {
-                        transferRecordMaps.get(checkedIndex).put("checked", false);
-                    }
-                    checkedIndex = pos;
-                    updateButtonAvailability();
-                    simpleAdapter.notifyDataSetChanged();
+        btnUploadFile = findViewById(R.id.buttonUploadFile);
+        btnUploadFileInBackground = findViewById(R.id.buttonUploadFileInBackground);
+        btnUploadImage = findViewById(R.id.buttonUploadImage);
+        btnPause = findViewById(R.id.buttonPause);
+        btnResume = findViewById(R.id.buttonResume);
+        btnCancel = findViewById(R.id.buttonCancel);
+        btnDelete = findViewById(R.id.buttonDelete);
+        btnPauseAll = findViewById(R.id.buttonPauseAll);
+        btnCancelAll = findViewById(R.id.buttonCancelAll);
+
+        btnUploadFile.setOnClickListener(view -> {
+            Intent intent = new Intent();
+            if (Build.VERSION.SDK_INT >= 19) {
+                // For Android KitKat, we use a different intent to ensure
+                // we can
+                // get the file path from the returned intent URI
+                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                intent.setType("*/*");
+            } else {
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("file/*");
+            }
+
+            startActivityForResult(intent, UPLOAD_REQUEST_CODE);
+        });
+
+        btnUploadFileInBackground.setOnClickListener(view -> {
+            Intent intent = new Intent();
+            if (Build.VERSION.SDK_INT >= 19) {
+                // For Android KitKat, we use a different intent to ensure
+                // we can
+                // get the file path from the returned intent URI
+                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                intent.setType("*/*");
+            } else {
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("file/*");
+            }
+
+            startActivityForResult(intent, UPLOAD_IN_BACKGROUND_REQUEST_CODE);
+        });
+
+        btnUploadImage.setOnClickListener(view -> {
+            Intent intent = new Intent();
+            if (Build.VERSION.SDK_INT >= 19) {
+                // For Android versions of KitKat or later, we use a
+                // different intent to ensure
+                // we can get the file path from the returned intent URI
+                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+            } else {
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+            }
+
+            intent.setType("image/*");
+            startActivityForResult(intent, UPLOAD_REQUEST_CODE);
+        });
+
+        btnPause.setOnClickListener(view -> {
+            // Make sure the user has selected a transfer
+            if (checkedIndex >= 0 && checkedIndex < observers.size()) {
+                Boolean paused = transferUtility.pause(observers.get(checkedIndex).getId());
+                /**
+                 * If paused does not return true, it is likely because the
+                 * user is trying to pause an upload that is not in a
+                 * pausable state (For instance it is already paused, or
+                 * canceled).
+                 */
+                if (!paused) {
+                    Toast.makeText(
+                            UploadActivity.this,
+                            "Cannot pause transfer.  You can only pause transfers in a IN_PROGRESS or WAITING state.",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        btnUploadFile = (Button) findViewById(R.id.buttonUploadFile);
-        btnUploadFileInBackground = (Button) findViewById(R.id.buttonUploadFileInBackground);
-        btnUploadImage = (Button) findViewById(R.id.buttonUploadImage);
-        btnPause = (Button) findViewById(R.id.buttonPause);
-        btnResume = (Button) findViewById(R.id.buttonResume);
-        btnCancel = (Button) findViewById(R.id.buttonCancel);
-        btnDelete = (Button) findViewById(R.id.buttonDelete);
-        btnPauseAll = (Button) findViewById(R.id.buttonPauseAll);
-        btnCancelAll = (Button) findViewById(R.id.buttonCancelAll);
-
-        btnUploadFile.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                if (Build.VERSION.SDK_INT >= 19) {
-                    // For Android KitKat, we use a different intent to ensure
-                    // we can
-                    // get the file path from the returned intent URI
-                    intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                    intent.setType("*/*");
-                } else {
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("file/*");
-                }
-
-                startActivityForResult(intent, UPLOAD_REQUEST_CODE);
-            }
-        });
-
-        btnUploadFileInBackground.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                if (Build.VERSION.SDK_INT >= 19) {
-                    // For Android KitKat, we use a different intent to ensure
-                    // we can
-                    // get the file path from the returned intent URI
-                    intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                    intent.setType("*/*");
-                } else {
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("file/*");
-                }
-
-                startActivityForResult(intent, UPLOAD_IN_BACKGROUND_REQUEST_CODE);
-            }
-        });
-
-        btnUploadImage.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intent = new Intent();
-                if (Build.VERSION.SDK_INT >= 19) {
-                    // For Android versions of KitKat or later, we use a
-                    // different intent to ensure
-                    // we can get the file path from the returned intent URI
-                    intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                } else {
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                }
-
-                intent.setType("image/*");
-                startActivityForResult(intent, UPLOAD_REQUEST_CODE);
-            }
-        });
-
-        btnPause.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Make sure the user has selected a transfer
-                if (checkedIndex >= 0 && checkedIndex < observers.size()) {
-                    Boolean paused = transferUtility.pause(observers.get(checkedIndex).getId());
-                    /**
-                     * If paused does not return true, it is likely because the
-                     * user is trying to pause an upload that is not in a
-                     * pausable state (For instance it is already paused, or
-                     * canceled).
-                     */
-                    if (!paused) {
-                        Toast.makeText(
-                                UploadActivity.this,
-                                "Cannot pause transfer.  You can only pause transfers in a IN_PROGRESS or WAITING state.",
-                                Toast.LENGTH_SHORT).show();
-                    }
+        btnResume.setOnClickListener(view -> {
+            // Make sure the user has selected a transfer
+            if (checkedIndex >= 0 && checkedIndex < observers.size()) {
+                TransferObserver resumed = transferUtility.resume(observers.get(checkedIndex)
+                        .getId());
+                // Sets a new transfer listener to the original observer.
+                // This will overwrite existing listener.
+                observers.get(checkedIndex).setTransferListener(new UploadListener());
+                /**
+                 * If resume returns null, it is likely because the transfer
+                 * is not in a resumable state (For instance it is already
+                 * running).
+                 */
+                if (resumed == null) {
+                    Toast.makeText(
+                            UploadActivity.this,
+                            "Cannot resume transfer.  You can only resume transfers in a PAUSED state.",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        btnResume.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Make sure the user has selected a transfer
-                if (checkedIndex >= 0 && checkedIndex < observers.size()) {
-                    TransferObserver resumed = transferUtility.resume(observers.get(checkedIndex)
-                            .getId());
-                    // Sets a new transfer listener to the original observer.
-                    // This will overwrite existing listener.
-                    observers.get(checkedIndex).setTransferListener(new UploadListener());
-                    /**
-                     * If resume returns null, it is likely because the transfer
-                     * is not in a resumable state (For instance it is already
-                     * running).
-                     */
-                    if (resumed == null) {
-                        Toast.makeText(
-                                UploadActivity.this,
-                                "Cannot resume transfer.  You can only resume transfers in a PAUSED state.",
-                                Toast.LENGTH_SHORT).show();
-                    }
+        btnCancel.setOnClickListener(view -> {
+            // Make sure a transfer is selected
+            if (checkedIndex >= 0 && checkedIndex < observers.size()) {
+                Boolean canceled = transferUtility.cancel(observers.get(checkedIndex).getId());
+                /*
+                 * If cancel returns false, it is likely because the
+                 * transfer is already canceled
+                 */
+                if (!canceled) {
+                    Toast.makeText(
+                            UploadActivity.this,
+                            "Cannot cancel transfer.  You can only resume transfers in a PAUSED, WAITING, or IN_PROGRESS state.",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        btnCancel.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Make sure a transfer is selected
-                if (checkedIndex >= 0 && checkedIndex < observers.size()) {
-                    Boolean canceled = transferUtility.cancel(observers.get(checkedIndex).getId());
-                    /**
-                     * If cancel returns false, it is likely because the
-                     * transfer is already canceled
-                     */
-                    if (!canceled) {
-                        Toast.makeText(
-                                UploadActivity.this,
-                                "Cannot cancel transfer.  You can only resume transfers in a PAUSED, WAITING, or IN_PROGRESS state.",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
+        btnDelete.setOnClickListener(view -> {
+            // Make sure a transfer is selected
+            if (checkedIndex >= 0 && checkedIndex < observers.size()) {
+                transferUtility.deleteTransferRecord(observers.get(checkedIndex).getId());
+                observers.remove(checkedIndex);
+                transferRecordMaps.remove(checkedIndex);
+                checkedIndex = INDEX_NOT_CHECKED;
+                updateButtonAvailability();
+                updateList();
             }
         });
 
-        btnDelete.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Make sure a transfer is selected
-                if (checkedIndex >= 0 && checkedIndex < observers.size()) {
-                    transferUtility.deleteTransferRecord(observers.get(checkedIndex).getId());
-                    observers.remove(checkedIndex);
-                    transferRecordMaps.remove(checkedIndex);
-                    checkedIndex = INDEX_NOT_CHECKED;
-                    updateButtonAvailability();
-                    updateList();
-                }
-            }
-        });
+        btnPauseAll.setOnClickListener(view -> transferUtility.pauseAllWithType(TransferType.UPLOAD));
 
-        btnPauseAll.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                transferUtility.pauseAllWithType(TransferType.UPLOAD);
-            }
-        });
-
-        btnCancelAll.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                transferUtility.cancelAllWithType(TransferType.UPLOAD);
-            }
-        });
+        btnCancelAll.setOnClickListener(view -> transferUtility.cancelAllWithType(TransferType.UPLOAD));
 
         updateButtonAvailability();
     }
@@ -403,8 +349,8 @@ public class UploadActivity extends ListActivity {
      * Updates the ListView according to the observers.
      */
     static void updateList() {
-        TransferObserver observer = null;
-        HashMap<String, Object> map = null;
+        TransferObserver observer;
+        HashMap<String, Object> map;
         for (int i = 0; i < observers.size(); i++) {
             observer = observers.get(i);
             map = transferRecordMaps.get(i);

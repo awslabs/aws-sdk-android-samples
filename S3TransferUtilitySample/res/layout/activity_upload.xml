@@ -9,19 +9,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:baselineAligned="false" >
 
         <Button
             android:id="@+id/buttonPauseAll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/pause_all" />
 
         <Button
             android:id="@+id/buttonCancelAll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/cancel_all" />
     </LinearLayout>
@@ -31,33 +32,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/pauseCancelAllLayout"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:baselineAligned="false" >
 
         <Button
             android:id="@+id/buttonPause"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/pause" />
 
         <Button
             android:id="@+id/buttonResume"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/resume" />
 
         <Button
             android:id="@+id/buttonCancel"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/cancel" />
 
         <Button
             android:id="@+id/buttonDelete"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/delete" />
     </LinearLayout>
@@ -67,19 +69,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/operationLayout"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:baselineAligned="false" >
 
         <Button
             android:id="@+id/buttonUploadFile"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/upload_file" />
 
         <Button
             android:id="@+id/buttonUploadFileInBackground"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/upload_file_in_background" />
 
@@ -87,7 +90,7 @@
         <Button
             android:id="@+id/buttonUploadImage"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/upload_image" />
     </LinearLayout>
