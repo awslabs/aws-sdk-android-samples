@@ -20,10 +20,6 @@ Please refer to README file in each folder for more specific instructions. For g
   + Amazon Cognito Identity
   + Amazon S3
 
-* [AndroidPubSub](AndroidPubSub/README.md). This sample demonstrates use of the AWS IoT APIs to securely publish to and subscribe from MQTT topics with TLS and IoT certificates. Involved AWS Services are:
-  + Amazon Cognito Identity
-  + AWS IoT
-
 * [AndroidPubSubWebSocket](AndroidPubSubWebSocket/README.md). This sample demonstrates use of the AWS IoT APIs to securely publish to and subscribe from MQTT topics with WebSockets. Involved AWS Services are:
   + Amazon Cognito Identity
   + AWS IoT
