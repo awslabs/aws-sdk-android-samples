@@ -1,5 +1,7 @@
 # Running AmazonKinesisVideoStreaming Sample
 
+More information: [https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/producer-sdk-android.html](https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/producer-sdk-android.html)
+
 ## 1. Create a user pool
   * Go to https://console.aws.amazon.com/cognito/
   * Click `Manage your User Pools`
