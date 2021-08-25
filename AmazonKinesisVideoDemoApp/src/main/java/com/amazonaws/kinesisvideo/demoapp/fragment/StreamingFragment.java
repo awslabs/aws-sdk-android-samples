@@ -2,7 +2,7 @@ package com.amazonaws.kinesisvideo.demoapp.fragment;
 
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.amazonaws.kinesisvideo.client.KinesisVideoClientConfiguration;
 import com.amazonaws.kinesisvideo.common.exception.KinesisVideoException;
 import com.amazonaws.kinesisvideo.demoapp.KinesisVideoDemoApp;
 import com.amazonaws.kinesisvideo.demoapp.R;
@@ -21,7 +20,6 @@ import com.amazonaws.kinesisvideo.client.KinesisVideoClient;
 import com.amazonaws.mobileconnectors.kinesisvideo.client.KinesisVideoAndroidClientFactory;
 import com.amazonaws.mobileconnectors.kinesisvideo.mediasource.android.AndroidCameraMediaSource;
 import com.amazonaws.mobileconnectors.kinesisvideo.mediasource.android.AndroidCameraMediaSourceConfiguration;
-import com.amazonaws.regions.Regions;
 
 public class StreamingFragment extends Fragment implements TextureView.SurfaceTextureListener {
     public static final String KEY_MEDIA_SOURCE_CONFIGURATION = "mediaSourceConfiguration";
