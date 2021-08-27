@@ -40,6 +40,9 @@
     <string name="start_streaming">Start Streaming</string>
     <string name="stop_streaming">Stop Streaming</string>
 
+    <string name="simple_nav_stream_from_camera">Stream From Camera</string>
+    <string name="simple_nav_stream_from_assets">Stream From Assets</string>
+
     <string name="main_nav_user_info">User Info</string>
     <string name="main_nav_configure_known">Ex 1. Configure a MediaSource</string>
     <string name="main_nav_register_existing">Ex 2. Register Existing MediaSource</string>
