@@ -164,6 +164,13 @@ public class StreamingFragment extends Fragment implements TextureView.SurfaceTe
         }
     }
 
+    /**
+     * Updates the cameraPreviewSize. If the aspect ratio should be maintained, then choose from the
+     * pool of sizes that the camera device supports.
+     *
+     * @param width the width of the surface
+     * @param height the height of the surface
+     */
     private void updatePreviewSize(int width, int height) {
         Log.d(TAG, "Choosing preview size...");
         if (mShouldMaintainAspectRatio) {
@@ -177,12 +184,19 @@ public class StreamingFragment extends Fragment implements TextureView.SurfaceTe
         updateTransform(width, height);
     }
 
+    /**
+     * Chooses the largest Size from the pool of possible sizes, where both dimensions are larger than
+     * the width and height.
+     *
+     * @param width the width of the surface
+     * @param height the height of the surface
+     */
     private Size chooseBestPreviewSize(int width, int height) {
         List<Size> allSizes = CameraHardwareCapabilitiesHelper.getSupportedResolutionsForYUV420_888(getContext(), mConfiguration.getCameraId());
         List<Size> possibleSizes = new ArrayList<>();
+        int longDimension = Math.max(width, height);
+        int shortDimension = Math.min(width, height);
         for (Size possibility : allSizes) {
-            int longDimension = Math.max(width, height);
-            int shortDimension = Math.min(width, height);
             if (possibility.getWidth() > longDimension && possibility.getHeight() > shortDimension) {
                 possibleSizes.add(possibility);
             }
@@ -198,12 +212,23 @@ public class StreamingFragment extends Fragment implements TextureView.SurfaceTe
         return allSizes.get(0);
     }
 
+    /**
+     * Sets up the transform matrix in order to rotate the video preview. This only changes what
+     * is displayed on the app screen. Video sent to AWS KVS is unaffected by this.
+     * The matrix will first map the pixels to fit the cameraPreviewSize.
+     * Then, the matrix will apply scaling to fit the screen.
+     * Finally, the matrix will perform a rotation, if necessary.
+     * If the option is checked, the preview will be mirrored after the rotation.
+     *
+     * @param width the width of the surface
+     * @param height the height of the surface
+     */
     private void updateTransform(int width, int height) {
         if (width != 0 && height != 0 && mTextureView != null && cameraPreviewSize != null) {
             Log.d(TAG, "Updating the matrix with width=" + width + ", height=" + height);
             Matrix transformationMatrix = new Matrix();
             RectF inputRectF = new RectF(0, 0, mTextureView.getWidth(), mTextureView.getHeight());
-            RectF outputRectF = new RectF(0, 0, cameraPreviewSize.getHeight(), cameraPreviewSize.getWidth()); // since it's offset by 90, the height and width are switched
+            RectF outputRectF = new RectF(0, 0, cameraPreviewSize.getHeight(), cameraPreviewSize.getWidth()); // since it's offset by 90, the width and height are switched
             // see https://source.android.com/compatibility/android-cdd#7_5_5_camera_orientation for more info
             float centerX = inputRectF.centerX();
             float centerY = inputRectF.centerY();
@@ -230,6 +255,8 @@ public class StreamingFragment extends Fragment implements TextureView.SurfaceTe
             mTextureView.setTransform(transformationMatrix);
 
             if (mIsMirrored) {
+                // https://source.android.com/compatibility/android-cdd#7_5_2_front-facing_camera
+                // Front-facing camera is mirrored by default. You need to mirror it again to un-mirror it.
                 if ((mConfiguration.getCameraFacing() == CameraCharacteristics.LENS_FACING_FRONT) == (mRotation % 180 == 0)) {
                     mTextureView.setScaleX(-1);
                 } else {
