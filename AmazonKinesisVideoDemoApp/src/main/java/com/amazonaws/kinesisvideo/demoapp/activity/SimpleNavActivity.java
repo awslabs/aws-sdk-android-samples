@@ -147,7 +147,7 @@ public class SimpleNavActivity extends AppCompatActivity
             Fragment framesFragment = FramesFragment.newInstance();
             this.startFragment(framesFragment);
         } catch (Exception e) {
-            Log.e("", "Failed to go back to configure stream.");
+            Log.e("", "Failed to start frames fragment.");
             e.printStackTrace();
         }
     }
