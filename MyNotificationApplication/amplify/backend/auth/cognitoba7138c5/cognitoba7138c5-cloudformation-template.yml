@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  env:
+    Type: String
+  authRoleArn:
+    Type: String
+  unauthRoleArn:
+    Type: String
+
+  
+
+    
+  identityPoolName:
+    Type: String
+  
+            
+  
+  allowUnauthenticatedIdentities:
+    Type: String
+            
+  authSelections:
+    Type: String
+  
+            
+  resourceName:
+    Type: String
+  
+            
+            
+            
+Conditions:
+  ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
+  
+
+Resources:
+  
+    
+  # BEGIN IDENTITY POOL RESOURCES
+  
+
+  IdentityPool:
+  # Always created
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: !If [ShouldNotCreateEnvResources, 'mynotificationapplication_identitypool_c10fb5d7', !Join ['',['mynotificationapplication_identitypool_c10fb5d7', '__', !Ref env]]]
+            
+      AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
+      
+    
+
+  IdentityPoolRoleMap:
+  # Created to map Auth and Unauth roles to the identity pool
+  # Depends on Identity Pool for ID ref
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref IdentityPool
+      Roles:
+          unauthenticated: !Ref unauthRoleArn
+          authenticated: !Ref authRoleArn
+    DependsOn: IdentityPool
+  
+
+Outputs :
+  
+  IdentityPoolId:
+    Value: !Ref 'IdentityPool'
+    Description:  Id for the identity pool
+  IdentityPoolName:
+    Value: !GetAtt IdentityPool.Name
+  
+  
+  
+  
