@@ -2,6 +2,7 @@ package com.amazonaws.kinesisvideo.demoapp.fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.hardware.camera2.CameraCharacteristics;
 import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.amazonaws.kinesisvideo.client.KinesisVideoClient;
@@ -27,6 +29,8 @@ import com.amazonaws.mobileconnectors.kinesisvideo.client.KinesisVideoAndroidCli
 import com.amazonaws.mobileconnectors.kinesisvideo.data.MimeType;
 import com.amazonaws.mobileconnectors.kinesisvideo.mediasource.android.AndroidCameraMediaSourceConfiguration;
 
+import java.util.ArrayList;
+
 import static com.amazonaws.mobileconnectors.kinesisvideo.util.CameraUtils.getCameras;
 import static com.amazonaws.mobileconnectors.kinesisvideo.util.CameraUtils.getSupportedResolutions;
 import static com.amazonaws.mobileconnectors.kinesisvideo.util.VideoEncoderUtils.getSupportedMimeTypes;
@@ -41,10 +45,12 @@ public class StreamConfigurationFragment extends Fragment {
     private Button mStartStreamingButton;
     private EditText mStreamName;
     private KinesisVideoClient mKinesisVideoClient;
+    private CheckBox mAspectRatioCheckBox, mFillCheckBox, mMirrorCheckBox;
 
     private StringSpinnerWidget<CameraMediaSourceConfiguration> mCamerasDropdown;
     private StringSpinnerWidget<Size> mResolutionDropdown;
     private StringSpinnerWidget<MimeType> mMimeTypeDropdown;
+    private StringSpinnerWidget<Float> mRotationDropdown;
 
     private SimpleNavActivity navActivity;
 
@@ -92,6 +98,7 @@ public class StreamConfigurationFragment extends Fragment {
                                 R.id.resolutions_spinner,
                                 getSupportedResolutions(getActivity(), mediaSource.getCameraId()));
                         select640orBelow();
+                        updateMirroredCheckBox();
                     }
                 });
 
@@ -101,7 +108,21 @@ public class StreamConfigurationFragment extends Fragment {
                 R.id.codecs_spinner,
                 getSupportedMimeTypes());
 
+        mRotationDropdown = new StringSpinnerWidget<>(
+                getActivity(),
+                view,
+                R.id.rotation_spinner,
+                getRotations());
         return view;
+    }
+
+    private ArrayList<Float> getRotations() {
+        final ArrayList<Float> rotations = new ArrayList<>();
+        rotations.add(0f);
+        rotations.add(90f);
+        rotations.add(180f);
+        rotations.add(270f);
+        return rotations;
     }
 
     private void select640orBelow() {
@@ -127,6 +148,10 @@ public class StreamConfigurationFragment extends Fragment {
         mStartStreamingButton = (Button) view.findViewById(R.id.start_streaming);
         mStartStreamingButton.setOnClickListener(startStreamingActivityWhenClicked());
         mStreamName = (EditText) view.findViewById(R.id.stream_name);
+        mAspectRatioCheckBox = (CheckBox) view.findViewById(R.id.aspect_ratio_checkbox);
+        mAspectRatioCheckBox.setOnClickListener(onAspectRatioCheckBoxClick());
+        mFillCheckBox = (CheckBox) view.findViewById(R.id.maximize_checkbox);
+        mMirrorCheckBox = (CheckBox) view.findViewById(R.id.mirror_checkbox);
     }
 
     private View.OnClickListener startStreamingActivityWhenClicked() {
@@ -136,6 +161,24 @@ public class StreamConfigurationFragment extends Fragment {
                 startStreamingActivity();
             }
         };
+    }
+
+    private View.OnClickListener onAspectRatioCheckBoxClick() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!mAspectRatioCheckBox.isChecked()) {
+                    mFillCheckBox.setChecked(true);
+                }
+                mFillCheckBox.setEnabled(mAspectRatioCheckBox.isChecked());
+            }
+        };
+    }
+
+    // front facing camera preview is mirrored, so we need to mirror it again to un-mirror it.
+    // see https://source.android.com/compatibility/android-cdd#7_5_2_front-facing_camera
+    private void updateMirroredCheckBox() {
+        mMirrorCheckBox.setChecked(mCamerasDropdown.getSelectedItem().getCameraFacing() == CameraCharacteristics.LENS_FACING_FRONT);
     }
 
     private void startStreamingActivity() {
@@ -148,6 +191,12 @@ public class StreamConfigurationFragment extends Fragment {
         extras.putString(
                 StreamingFragment.KEY_STREAM_NAME,
                 mStreamName.getText().toString());
+
+        extras.putFloat(StreamingFragment.KEY_ROTATION, mRotationDropdown.getSelectedItem() -
+                mCamerasDropdown.getSelectedItem().getCameraOrientation());
+        extras.putBoolean(StreamingFragment.KEY_SHOULD_MAINTAIN_ASPECT_RATIO, mAspectRatioCheckBox.isChecked());
+        extras.putBoolean(StreamingFragment.KEY_SHOULD_FILL_SCREEN, mFillCheckBox.isChecked());
+        extras.putBoolean(StreamingFragment.KEY_IS_MIRRORED, mMirrorCheckBox.isChecked());
 
         navActivity.startStreamingFragment(extras);
     }

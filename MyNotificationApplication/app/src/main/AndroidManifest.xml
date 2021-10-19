@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.mynotificationapplication">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyNotificationApplication">
+        <activity
+            android:name=".DeepLinkActivity"
+            android:label="@string/title_activity_deep_link"
+            android:theme="@style/Theme.MyNotificationApplication.NoActionBar">
+            <intent-filter android:label="inAppReceiver">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs of type "pinpoint://deeplink" -->
+                <data
+                    android:host="deeplink"
+                    android:scheme="pinpoint" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".PushListenerService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+<!--        <receiver-->
+<!--            android:name="com.amazonaws.mobileconnectors.pinpoint.targeting.notification.PinpointNotificationReceiver"-->
+<!--            android:exported="false">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="com.amazonaws.intent.fcm.NOTIFICATION_OPEN" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
+
+        <receiver
+            android:name=".PinpointOverrideNotificationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.amazonaws.intent.fcm.NOTIFICATION_OPEN" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MyNotificationApplication.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

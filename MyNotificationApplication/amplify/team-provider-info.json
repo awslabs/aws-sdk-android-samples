@@ -1,0 +1,27 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-mynotificationapplication-dev-164328-authRole",
+            "UnauthRoleArn": "arn:aws:iam::947983933190:role/amplify-mynotificationapplication-dev-164328-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::947983933190:role/amplify-mynotificationapplication-dev-164328-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "amplify-mynotificationapplication-dev-164328-deployment",
+            "UnauthRoleName": "amplify-mynotificationapplication-dev-164328-unauthRole",
+            "StackName": "amplify-mynotificationapplication-dev-164328",
+            "StackId": "arn:aws:cloudformation:us-west-2:947983933190:stack/amplify-mynotificationapplication-dev-164328/d2ccdbc0-cfc5-11eb-a29b-026495490fdd",
+            "AmplifyAppId": "d22l7b89zv5lhm"
+        },
+        "categories": {
+            "auth": {
+                "cognitoba7138c5": {}
+            },
+            "notifications": {
+                "Pinpoint": {
+                    "Name": "MyNotificationApplicationdmbNJ-dev",
+                    "Id": "d048d0ce4b484f3a9f37f47d56f9f00c",
+                    "Region": "us-west-2"
+                }
+            }
+        }
+    }
+}
