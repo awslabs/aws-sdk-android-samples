@@ -20,6 +20,8 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.UserStateDetails;
 
+import static com.amazonaws.kinesisvideo.demoapp.activity.StartUpActivity.kinesisVideoStreamsSignInOptions;
+
 public class SimpleNavActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static final String TAG = SimpleNavActivity.class.getSimpleName();
@@ -89,17 +91,19 @@ public class SimpleNavActivity extends AppCompatActivity
             }
         } else if (id == R.id.nav_logout) {
             AWSMobileClient.getInstance().signOut();
-            AWSMobileClient.getInstance().showSignIn(this, new Callback<UserStateDetails>() {
-                @Override
-                public void onResult(UserStateDetails result) {
-                    Log.d(TAG, "onResult: User sign-in " + result.getUserState());
-                }
+            AWSMobileClient.getInstance().showSignIn(this,
+                kinesisVideoStreamsSignInOptions(),
+                new Callback<UserStateDetails>() {
+                    @Override
+                    public void onResult(UserStateDetails result) {
+                        Log.d(TAG, "onResult: User sign-in " + result.getUserState());
+                    }
 
-                @Override
-                public void onError(Exception e) {
-                    Log.e(TAG, "onError: User sign-in", e);
-                }
-            });
+                    @Override
+                    public void onError(Exception e) {
+                        Log.e(TAG, "onError: User sign-in", e);
+                    }
+                });
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

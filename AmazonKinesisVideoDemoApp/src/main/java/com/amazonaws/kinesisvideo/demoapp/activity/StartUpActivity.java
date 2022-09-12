@@ -1,10 +1,12 @@
 package com.amazonaws.kinesisvideo.demoapp.activity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.amazonaws.kinesisvideo.demoapp.R;
 import com.amazonaws.kinesisvideo.demoapp.util.ActivityUtils;
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
@@ -24,9 +26,7 @@ public class StartUpActivity extends AppCompatActivity {
             ActivityUtils.startActivity(this, SimpleNavActivity.class);
         } else {
             auth.showSignIn(this,
-                    SignInUIOptions.builder()
-                            .nextActivity(SimpleNavActivity.class)
-                            .build(),
+                    kinesisVideoStreamsSignInOptions(),
                     new Callback<UserStateDetails>() {
                         @Override
                         public void onResult(UserStateDetails result) {
@@ -45,5 +45,13 @@ public class StartUpActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    public static SignInUIOptions kinesisVideoStreamsSignInOptions() {
+        return SignInUIOptions.builder()
+                .nextActivity(SimpleNavActivity.class)
+                .backgroundColor(Color.WHITE)
+                .logo(R.mipmap.kinesisvideo_logo)
+                .build();
     }
 }
