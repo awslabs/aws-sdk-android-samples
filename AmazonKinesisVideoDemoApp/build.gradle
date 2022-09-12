@@ -49,7 +49,7 @@ repositories {
 
 
 dependencies {
-    def aws_version = '2.31.+'
+    def aws_version = '2.52.+'
 
     implementation ("com.amazonaws:aws-android-sdk-kinesisvideo:$aws_version@aar") { transitive = true }
     implementation ("com.amazonaws:aws-android-sdk-mobile-client:$aws_version@aar") { transitive = true }
