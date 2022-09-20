@@ -1,6 +1,8 @@
 package com.amazonaws.kinesisvideo.demoapp.activity;
 
 import android.os.Bundle;
+
+import com.amazonaws.kinesisvideo.demoapp.fragment.FramesFragment;
 import com.google.android.material.navigation.NavigationView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -89,6 +91,13 @@ public class SimpleNavActivity extends AppCompatActivity
                 Log.e("", "Failed to initialize streaming demo fragment.");
                 e.printStackTrace();
             }
+        } else if (id == R.id.nav_frames) {
+            try {
+                startFramesFragment();
+            } catch (Exception e) {
+                Log.e("", "Failed to initialize file streaming demo fragment.");
+                e.printStackTrace();
+            }
         } else if (id == R.id.nav_logout) {
             AWSMobileClient.getInstance().signOut();
             AWSMobileClient.getInstance().showSignIn(this,
@@ -133,6 +142,16 @@ public class SimpleNavActivity extends AppCompatActivity
             this.startFragment(streamFragment);
         } catch (Exception e) {
             Log.e("", "Failed to go back to configure stream.");
+            e.printStackTrace();
+        }
+    }
+
+    public void startFramesFragment() {
+        try {
+            Fragment framesFragment = FramesFragment.newInstance();
+            this.startFragment(framesFragment);
+        } catch (Exception e) {
+            Log.e("", "Failed to start frames fragment.");
             e.printStackTrace();
         }
     }

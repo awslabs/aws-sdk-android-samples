@@ -74,3 +74,16 @@ More information: [https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/pro
 }
 ```
   * Change the region that the app will stream to by editing the `KINESIS_VIDEO_REGION` constant in your local copy of [KinesisVideoDemoApp.java](https://github.com/awslabs/aws-sdk-android-samples/blob/master/AmazonKinesisVideoDemoApp/src/main/java/com/amazonaws/kinesisvideo/demoapp/KinesisVideoDemoApp.java)
+
+
+## Streaming From Your Android Camera
+  * After signing in, you'll be taken to the Streaming Configuration screen.
+     * Note: If this is your first time signing in, you'll need to create an account. You can do this by clicking `Create New Account` on the sign-in screen.
+  * Modify these settings, or you can leave everything on the default values if you wish.
+  * Click the `Start Streaming` button and check out your video on the AWS Console.
+
+## Streaming Video Frame Files
+  * After signing in, you'll be taken to the Streaming Configuration screen.
+  * Click on the Hamburger icon in the top-left and in the navigation pane that pops up, choose `Stream From Assets`.
+  * Modify the Stream Name if you wish, then click the `Stream Frames` button.
+  * Check out the video on the AWS Console.
