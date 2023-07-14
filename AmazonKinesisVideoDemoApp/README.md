@@ -2,7 +2,7 @@
 
 ## 1. Provision and setup
 
-Follow the prerequisites section to provision AWS resources required to run this sample, and assign the appropriate permissions the IAM role: [https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/producer-sdk-android.html](https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/producer-sdk-android.html)
+Follow the prerequisites section to provision AWS resources required to run this sample, and assign the appropriate permissions to the IAM role: [https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/producer-sdk-android.html](https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/producer-sdk-android.html)
 
 * Amazon Cognito user pool
 * Amazon Cognito identity pool
